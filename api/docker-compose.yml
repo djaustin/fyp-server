@@ -3,8 +3,13 @@ version: '3.1'
 services:
   db:
     image: mongo
-    volumes: dbdata:/data/db
+    volumes:
+      - dbdata:/data/db
   web:
+    build: .
     image: daustin/monitor-api
     ports:
       - '80:80'
+
+volumes:
+  dbdata:

@@ -2,6 +2,7 @@
   This module contains the data model for users in the application.
   It provides a representation of the schema of the mongodb documents.
 */
+
 // Mongodb interface
 const mongoose = require('mongoose');
 // Password hashing
@@ -19,8 +20,8 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  firstname: String,
-  lastname: String
+  firstName: String,
+  lastName: String
 });
 
 // Define action to complete before saving a document.
@@ -58,7 +59,7 @@ UserSchema.methods.verifyPassword = function(password, callback){
     } else {
       callback(null, match);
     }
-  })
+  });
 }
 
 // Create a model as a programming interface with mogodb, specify the collection name 'User' and the schema 'UserSchema'
