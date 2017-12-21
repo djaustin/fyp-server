@@ -40,16 +40,4 @@ router.post('/', function(req, res){
   });
 });
 
-// Return all user details
-// NOTE: REMOVE THIS OBVIOUS SECURITY HOLE LATER
-router.get('/', function(req, res){
-  User.find(function(err, users){
-    if(err){
-      res.send(err);
-    } else {
-      res.json(users);
-    }
-  });
-});
-
 module.exports = router;
