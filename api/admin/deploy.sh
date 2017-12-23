@@ -1,9 +1,9 @@
 #! /bin/bash
 docker image build . -t daustin/monitor-api
-tar cfz server.tar.gz .
-scp -i ~/.ssh/my-ec2-key-pair.pem server.tar.gz ec2-user@ec2-35-177-41-163.eu-west-2.compute.amazonaws.com:~
+tar cvz --exclude=./node_modules --exclude=server.tar.gz -f server.tar.gz .
+scp -i ~/.ssh/my-ec2-key-pair.pem server.tar.gz ec2-user@35.177.187.171:~
 rm server.tar.gz
-ssh -i ~/.ssh/my-ec2-key-pair.pem ec2-user@ec2-35-177-41-163.eu-west-2.compute.amazonaws.com << 'ENDSSH'
+ssh -i ~/.ssh/my-ec2-key-pair.pem ec2-user@35.177.187.171 << 'ENDSSH'
 mkdir server
 cd server
 tar xf ../server.tar.gz

@@ -13,7 +13,7 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 
 const userRoutes = require('./routes/user');
-
+const organisationRoutes = require('./routes/organisation');
 /*
 * APPLICATION CONFIGURATION
 */
@@ -43,6 +43,7 @@ app.get('/api', function(req, res){
 });
 
 app.use('/api/users', userRoutes);
+app.use('/api/organisations', organisationRoutes);
 
 
 app.listen(80);
