@@ -3,7 +3,10 @@ version: '3.1'
 services:
   proxy:
     image: nginx
-    volumes: ./config/conf.d:/etc/nginx/conf.d
+    volumes:
+      - ./config/conf.d:/etc/nginx/conf.d
+    ports:
+      - '80:80'
   db:
     image: mongo
     volumes:
@@ -11,8 +14,6 @@ services:
   web:
     build: .
     image: daustin/monitor-api
-    ports:
-      - '80:80'
 
 volumes:
   dbdata:
