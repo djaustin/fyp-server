@@ -1,6 +1,9 @@
 version: '3.1'
 
 services:
+  proxy:
+    image: nginx
+    volumes: ./config/conf.d:/etc/nginx/conf.d
   db:
     image: mongo
     volumes:
