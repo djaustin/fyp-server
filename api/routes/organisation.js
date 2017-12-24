@@ -1,4 +1,6 @@
 const router = require('express').Router();
+
+const authentication = require('../controllers/authentication');
 const Organisation = require('../models/organisation');
 
 router.post('/', function (req, res){
@@ -22,6 +24,16 @@ router.post('/', function (req, res){
       })
     }
   })
+});
+
+router.get('/', authentication.isOrganisationAuthenticated, function(req, res){
+  Organisation.find(function(err, orgs){
+    if(err) res.send(err);
+    res.json({
+      message: `Request recieved by ${req.user.name}`,
+      organisations: orgs
+    });
+  });
 });
 
 module.exports = router;

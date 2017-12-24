@@ -5,7 +5,7 @@
 
 // Import and initialize new express router
 const router = require('express').Router();
-
+const authentication = require('../controllers/authentication');
 // Import user model
 const User = require('../models/user');
 
@@ -39,6 +39,17 @@ router.post('/', function(req, res){
     }
   });
 });
-
-
+//NOTE: ONLY USED TO TEST AUTH. REMOVE FOR PROD.
+router.get('/', authentication.isUserAuthenticated, function(req, res){
+  User.find(function(err, users){
+    if(err){
+      res.send(err);
+    } else {
+      res.json({
+        message: `Request received by ${req.user.email}`,
+        users: users
+      });
+    }
+  });
+});
 module.exports = router;

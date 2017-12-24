@@ -1,3 +1,9 @@
+/*
+  This module contains the data model for organisations in the application.
+  It provides a representation of the schema of the mongodb documents.
+  An organisation (eg. Facebook Inc.) can log in to administer their applications and clients for OAuth2
+*/
+
 const mongoose = require('mongoose');
 const password = require('./common/password');
 
@@ -29,4 +35,5 @@ OrganisationSchema.pre('save', password.hashPassword);
 // Helper function fo verifying document instance passwords
 OrganisationSchema.methods.verifyPassword = password.verifyPassword;
 
+// Create a model as a programming interface with mogodb, specify the collection name 'User' and the schema 'UserSchema'
 module.exports = mongoose.model('Organisation', OrganisationSchema);

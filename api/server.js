@@ -11,6 +11,7 @@ const morgan = require('morgan');
 // mongodb interface
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const passport = require('passport');
 
 const userRoutes = require('./routes/user');
 const organisationRoutes = require('./routes/organisation');
@@ -26,6 +27,9 @@ const app = express();
 
 // Set pug as the view engine for this express app
 app.set('view engine', 'pug');
+
+// Enable passport authentication middleware
+app.use(passport.initialize());
 
 // Use the 'dev' template of logging for all requests to the app
 app.use(morgan('dev'));
