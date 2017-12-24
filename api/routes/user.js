@@ -24,7 +24,7 @@ router.post('/', function(req, res){
   user.save(function(err){
     if(err){
       // Send error back to client
-      // NOTE: Consider changing this behaviour for security
+      // NOTE: Consider changing this behaviour for security. IT RETURNS THE PASSWORD OF THE USER YOU TRIED TO CREATE
       res.send(err);
     } else {
       res.json({
