@@ -13,8 +13,8 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const passport = require('passport');
 
-const userRoutes = require('./routes/user');
-const organisationRoutes = require('./routes/organisation');
+const userRoutes = require('./routes/api/user');
+const organisationRoutes = require('./routes/api/organisation');
 /*
 * APPLICATION CONFIGURATION
 */

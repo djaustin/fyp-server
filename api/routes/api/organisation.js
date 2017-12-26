@@ -1,8 +1,9 @@
 const router = require('express').Router();
 
-const authentication = require('../controllers/authentication');
-const Organisation = require('../models/organisation');
+const authentication = require('../../controllers/authentication');
+const Organisation = require('../../models/organisation');
 
+// ADD A NEW ORGANISATION
 router.post('/', function (req, res){
   const organisation = new Organisation({
     name: req.body.name,
@@ -26,6 +27,7 @@ router.post('/', function (req, res){
   })
 });
 
+// GET ALL ORGANISATIONS IN DATABASE
 router.get('/', authentication.isOrganisationAuthenticated, function(req, res){
   Organisation.find(function(err, orgs){
     if(err) res.send(err);

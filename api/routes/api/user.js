@@ -5,9 +5,9 @@
 
 // Import and initialize new express router
 const router = require('express').Router();
-const authentication = require('../controllers/authentication');
+const authentication = require('../../controllers/authentication');
 // Import user model
-const User = require('../models/user');
+const User = require('../../models/user');
 
 // POST .../users/
 // Used to add a user to the system
