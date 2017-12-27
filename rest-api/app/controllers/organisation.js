@@ -23,7 +23,7 @@ exports.newOrganisation = function (req, res){
 };
 
 exports.getOrganisation = function(req, res){
-  Organisation.find({_id: req.params.id}, '_id email name id', function(err, organisation){
+  Organisation.find({_id: req.params.organisationId}, '_id email name id', function(err, organisation){
     if(err){
       res.send(err);
     } else {

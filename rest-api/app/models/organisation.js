@@ -27,7 +27,7 @@ const OrganisationSchema = new mongoose.Schema({
   applications: {
     type: [mongoose.Schema.ObjectId]
   }
-});
+}, {usePushEach: true}); // required due to deprecated mongo feature being used by mongoose
 
 // Ensure all passwords are hashed before saving to the database
 OrganisationSchema.pre('save', password.hashPassword);

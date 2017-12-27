@@ -27,7 +27,7 @@ exports.newUser = function(req, res){
 };
 
 exports.getUser = function(req, res){
-  User.find({_id: req.params.id}, '_id email firstName lastName', function(err, user){
+  User.find({_id: req.params.userId}, '_id email firstName lastName', function(err, user){
     if(err){
       res.send(err);
     } else {
