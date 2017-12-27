@@ -15,8 +15,7 @@ const passport = require('passport');
 
 // Imports beginning with 'app' are possible using a symlink to ./app in at location node_modules/app.
 // This avoids excessive use of '../../' in other files as all files can be addressed from app directory
-const userRoutes = require('app/routes/api/user');
-const organisationRoutes = require('app/routes/api/organisation');
+const apiRouter = require('app/routes/api')
 /*
 * APPLICATION CONFIGURATION
 */
@@ -39,18 +38,17 @@ app.use(morgan('dev'));
 // Parse url enocded parameters from requests and place in req.params for all requests
 app.use(bodyParser.urlencoded({extended: true}));
 
+// ROUTING
+const router = express.Router();
+
 // Controller for route '<hostname>/'
-app.get('/', function(req, res){
+router.get('/', function(req, res){
   res.render('index');
 });
 
-app.get('/api', function(req, res){
-  res.json({message: 'Welcome to the Digital Monitor API'});
-});
+router.use('/api', apiRouter);
 
-app.use('/api/users', userRoutes);
-app.use('/api/organisations', organisationRoutes);
-
+app.use('/', router);
 
 app.listen(80);
 console.log('Listening on port 80');

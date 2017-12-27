@@ -6,7 +6,7 @@ const organisationController = require('app/controllers/organisation');
 // ADD A NEW ORGANISATION
 router.post('/', organisationController.newOrganisation);
 
-router.get('/:id')
+router.get('/:id', organisationController.getOrganisation);
 
 // GET ALL ORGANISATIONS IN DATABASE
 router.get('/', authentication.isOrganisationAuthenticated, organisationController.allOrganisations);

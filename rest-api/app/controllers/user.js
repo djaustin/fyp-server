@@ -17,18 +17,24 @@ exports.newUser = function(req, res){
       // NOTE: Consider changing this behaviour for security. IT RETURNS THE PASSWORD OF THE USER YOU TRIED TO CREATE
       res.send(err);
     } else {
+      // Respond with location of created entity
+      res.status(201);
       res.json({
-        message: 'New user added successfully',
-        user: {
-          id: user._id,
-          email: user.email,
-          firstName: user.firstName,
-          lastName: user.lastName
-        }
+        location: `https://digitalmonitor.tk/api/users/${user._id}`
       });
     }
   });
 };
+
+exports.getUser = function(req, res){
+  User.find({_id: req.params.id}, '_id email firstName lastName', function(err, user){
+    if(err){
+      res.send(err);
+    } else {
+      res.json(user);
+    }
+  })
+}
 
 exports.allUsers = function(req, res){
   User.find(function(err, users){

@@ -13,15 +13,24 @@ exports.newOrganisation = function (req, res){
       // NOTE: Consider changing this for security
       res.send(err);
     } else {
-      // Remove password from object we're sending back to client
-      organisation.password = undefined;
+      // Respond with location of created entity
+      res.status(201);
       res.json({
-        message: 'New organisation added successfully',
-        organisation: organisation
-      })
+        location: `https://digitalmonitor.tk/api/organisations/${organisation._id}`
+      });
     }
   })
 };
+
+exports.getOrganisation = function(req, res){
+  Organisation.find({_id: req.params.id}, '_id email name id', function(err, organisation){
+    if(err){
+      res.send(err);
+    } else {
+      res.json(organisation);
+    }
+  })
+}
 
 exports.allOrganisations = function(req, res){
   Organisation.find(function(err, orgs){
