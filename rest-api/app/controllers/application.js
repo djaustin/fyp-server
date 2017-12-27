@@ -23,7 +23,7 @@ exports.postApplication = async function(req, res){
         } else {
           res.status = 201;
           res.json({
-            location: `https://digitalmonitor.tk/organisations/${req.params.organisationId}/applications/${application._id}`
+            location: `https://digitalmonitor.tk/api/organisations/${req.params.organisationId}/applications/${application._id}`
           })
         }
       })
