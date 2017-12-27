@@ -6,7 +6,7 @@
 // Mongodb interface
 const mongoose = require('mongoose');
 // Password hashing
-const password = require('./common/password');
+const password = require('app/models/common/password');
 
 
 // Define the schema for a user document

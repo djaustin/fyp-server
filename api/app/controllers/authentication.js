@@ -9,8 +9,8 @@
 const passport = require('passport');
 const BasicStrategy = require('passport-http').BasicStrategy;
 
-const User = require('../models/user');
-const Organisation = require('../models/organisation');
+const User = require('app/models/user');
+const Organisation = require('app/models/organisation');
 
 passport.use('user-basic', new BasicStrategy(
   function(email, password, callback){

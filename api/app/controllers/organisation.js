@@ -1,4 +1,4 @@
-const Organisation = require('../models/organisation');
+const Organisation = require('app/models/organisation');
 
 exports.newOrganisation = function (req, res){
   const organisation = new Organisation({

@@ -1,5 +1,5 @@
 // User model for database interface
-const User = require('../models/user');
+const User = require('app/models/user');
 
 exports.newUser = function(req, res){
   // Generate a new user document using the model
