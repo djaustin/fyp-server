@@ -30,6 +30,7 @@ exports.postApplication = async function(req, res){
     // Provide endpoint location for the newly created application
     // TODO: Add another location if applications are available on different routes later
     res.json({
+      application: application,
       location: `https://digitalmonitor.tk/api/organisations/${req.params.organisationId}/applications/${application._id}`
     });
   } catch(err){
@@ -51,3 +52,13 @@ exports.getOrganisationApplications = async function(req, res){
     res.send(err);
   }
 };
+
+exports.getOrganisationApplication = async function(req, res){
+  const organisation = req.user;
+  try{
+    const application = await Application.findOne({_id: req.params.applicationId});
+    res.json(application);
+  } catch(err){
+    res.send(err);
+  }
+}

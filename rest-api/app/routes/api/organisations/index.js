@@ -4,6 +4,7 @@ const authentication = require('app/controllers/authentication');
 const organisationController = require('app/controllers/organisation');
 const applicationsRouter = require('app/routes/api/organisations/applications')
 
+//TODO: Consider whether these :organisationId endpoints should be authorized i.e. the authorized organisation is the same as the ID being requested
 router.use('/:organisationId/applications', applicationsRouter);
 
 // ADD A NEW ORGANISATION

@@ -16,9 +16,12 @@ exports.newUser = async function(req, res){
 
   try{
     await user.save();
+    // Set to undefined so we don't send it back to client
+    user.password = undefined;
     // Respond with location of created entity
     res.status(201);
     res.json({
+      user: user,
       location: `https://digitalmonitor.tk/api/users/${user._id}`
     });
   } catch(err){

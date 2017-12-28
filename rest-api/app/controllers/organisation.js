@@ -10,9 +10,12 @@ exports.newOrganisation = async function (req, res){
 
   try{
     await organisation.save();
+    // Set to undefined so we don't send it back to client
+    organisation.password = undefined;
     // Respond with location of created entity
     res.status(201);
     res.json({
+      organisation: organisation,
       location: `https://digitalmonitor.tk/api/organisations/${organisation._id}`
     });
   } catch(err){
