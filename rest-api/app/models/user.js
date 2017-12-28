@@ -22,7 +22,7 @@ const UserSchema = new mongoose.Schema({
   },
   firstName: String,
   lastName: String
-});
+}); 
 
 // Define action to complete before saving a document.
 // Here we make sure that every password is hashed before placing it in the database

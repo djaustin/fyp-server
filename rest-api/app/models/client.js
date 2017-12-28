@@ -24,34 +24,29 @@ const ClientSchema = new mongoose.Schema({
 });
 
 // NOTE: Consider changing the code in commons/password.js so that it can be imported here to avoid the code reuse
-ClientSchema.pre('save', function(callback){
-  // Preserve 'this' as documentInstance object because it gets overridden in the bcrypt functions
-  const documentInstance = this;
-
+ClientSchema.pre('save', async function(callback){
   // Exit function if the password has not been changed
-  if(!documentInstance.isModified('secret')){
+  if(!this.isModified('secret')){
     return callback();
   }
-
-  // Hash password with bcrypt using 10 salt rounds
-  bcrypt.hash(documentInstance.secret, 10, function(err, hash){
-    if(err){
-      // Propagate error to callback if hashing failed
-      callback(err);
-    } else {
-      // Change secret string to hashed secret
-      documentInstance.secret = hash;
-      callback();
-    }
-  });
+  try{
+    // Hash password with bcrypt using 10 salt rounds
+    const hash = bcrypt.hash(this.secret, 10);
+    // Change secret string to hashed secret
+    this.secret = hash;
+    callback();
+  } catch(err){
+    callback(err);
+  }
 });
 
-ClientSchema.methods.verifySecret = function(secret, callback){
-  bcrypt.compare(secret, this.secret, function(err, match){
-    if (err){
-      callback(err);
-    } else {
-      callback(null, match);
+ClientSchema.methods.verifySecret = function(secret){
+  new Promise(async function(resolve, reject){
+    try{
+      const match = await bcrypt.compare(secret, this.secret);
+      resolve(match);
+    } catch(err){
+      reject(err);
     }
   });
-}
+};

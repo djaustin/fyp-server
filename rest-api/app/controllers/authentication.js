@@ -26,27 +26,6 @@ passport.use('user-basic', new BasicStrategy(
     } catch(err){
       return callback(err);
     }
-
-    // User.findOne({email: email}, function (err, user){
-    //   // Return the error if one occurs during query
-    //   if(err) return callback(err);
-    //
-    //   // Report credentials as invalid if no user is found with that email
-    //   if(!user) return callback(null, false);
-    //
-    //   // If a user is found with no errors, verify the password provided against the one stored in the database.
-    //   user.verifyPassword(password, function(err, match){
-    //     // Return the error if one occurs during password verification
-    //     if(err) return callback(err);
-    //     if(match){
-    //       // Email and password match, return the user object to be used in further requests (req.user)
-    //       return callback(null, user);
-    //     } else {
-    //       // Password is incorrect, report invalid credentials
-    //       return callback(null, false);
-    //     }
-    //   });
-    // });
   }
 ));
 
@@ -71,28 +50,6 @@ passport.use('organisation-basic', new BasicStrategy(
       return callback(err);
     }
   }
-
-  //   Organisation.findOne({email: email}, function (err, organisation){
-  //     // Return the error if one occurs during query
-  //     if(err) return callback(err);
-  //
-  //     // Report credentials as invalid if no organisation is found with that email
-  //     if(!organisation) return callback(null, false);
-  //
-  //     // If an organisation is found with no errors, verify the password provided against the one stored in the database.
-  //     organisation.verifyPassword(password, function(err, match){
-  //       // Return the error if one occurs during password verification
-  //       if(err) return callback(err);
-  //       if(match){
-  //         // Email and password match, return the organisation object to be used in further requests (req.user)
-  //         return callback(null, organisation);
-  //       } else {
-  //         // Password is incorrect, report invalid credentials
-  //         return callback(null, false);
-  //       }
-  //     });
-  //   });
-  // }
 ));
 
 // Export authentication for easier use when module is imported
