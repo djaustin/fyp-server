@@ -7,6 +7,7 @@
 const mongoose = require('mongoose');
 const password = require('./common/password');
 
+//TODO: Consider checking the format of these fields before allowing saves
 const OrganisationSchema = new mongoose.Schema({
   // Organisation name eg. Facebook Inc.
   name: {

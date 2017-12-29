@@ -28,7 +28,7 @@ exports.newOrganisation = async function (req, res){
 // eg. /api/organisations/:organisationId
 exports.getOrganisation = async function(req, res){
   try{
-      const organisation = await Organisation.findOne({_id: req.params.organisationId}, '_id email name id');
+      const organisation = await Organisation.findOne({_id: req.params.organisationId}, {password: 0});
       res.json(organisation);
   } catch(err){
       res.sedn(err);

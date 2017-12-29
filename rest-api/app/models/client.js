@@ -6,7 +6,9 @@
 */
 
 const mongoose = require('mongoose');
+const bcrypt = require('bcrypt');
 
+//TODO: Consider checking the format of these fields before allowing saves
 const ClientSchema = new mongoose.Schema({
   name: {
     type:  String,
@@ -19,6 +21,12 @@ const ClientSchema = new mongoose.Schema({
   },
   secret: {
     type: String,
+    required: true
+  },
+  // Two-way reference breaks atomicity of reassigning the client but clients will not be reassigned.
+  // This helps speed up querying the application from a clientId which will be retrieved from a log.
+  applicationId: {
+    type: mongoose.Schema.ObjectId,
     required: true
   }
 });
@@ -50,3 +58,5 @@ ClientSchema.methods.verifySecret = function(secret){
     }
   });
 };
+
+module.exports = mongoose.model('Client', ClientSchema);

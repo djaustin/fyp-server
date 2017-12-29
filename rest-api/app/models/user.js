@@ -8,7 +8,7 @@ const mongoose = require('mongoose');
 // Password hashing
 const password = require('app/models/common/password');
 
-
+//TODO: Consider checking the format of these fields before allowing saves
 // Define the schema for a user document
 const UserSchema = new mongoose.Schema({
   email: {
@@ -22,7 +22,7 @@ const UserSchema = new mongoose.Schema({
   },
   firstName: String,
   lastName: String
-}); 
+});
 
 // Define action to complete before saving a document.
 // Here we make sure that every password is hashed before placing it in the database

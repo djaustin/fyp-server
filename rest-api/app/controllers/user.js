@@ -38,7 +38,7 @@ exports.newUser = async function(req, res){
  //NOTE: Is this even needed? Need to be careful about authentication if this is kept
 exports.getUser = async function(req, res){
   try{
-    const user = await User.findOne({_id: req.params.userId}, '_id email firstName lastName');
+    const user = await User.findOne({_id: req.params.userId}, {password: 0});
     res.json(user);
   } catch(err){
     res.send(err);
