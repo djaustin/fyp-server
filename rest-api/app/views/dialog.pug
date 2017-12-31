@@ -1,0 +1,13 @@
+doctype html
+html
+  head 
+    title Digital Monitor
+  body
+    p Hi #{user.firstName}!
+    p #[b #{client.name}] is requesting #[b full access] to your account
+    p Do you approve? 
+    form(method='POST' action='/api/oauth2/authorize')
+      input(name='transaction_id' type='hidden' value=transactionId)
+      div
+      input(type='submit' value='Allow' id='allow')
+      input(type='submit' value='Deny' name='cancel' id='deny')

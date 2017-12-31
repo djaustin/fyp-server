@@ -28,18 +28,24 @@ const ClientSchema = new mongoose.Schema({
   applicationId: {
     type: mongoose.Schema.ObjectId,
     required: true
+  },
+  redirectUri: {
+    type: String,
   }
 });
 
 // NOTE: Consider changing the code in commons/password.js so that it can be imported here to avoid the code reuse
 ClientSchema.pre('save', async function(callback){
   // Exit function if the password has not been changed
+  console.log('Entering pre save client function');
   if(!this.isModified('secret')){
+    console.log('Secret not modified, returning');
     return callback();
   }
   try{
+    console.log('Secret modified');
     // Hash password with bcrypt using 10 salt rounds
-    const hash = bcrypt.hash(this.secret, 10);
+    const hash = await bcrypt.hash(this.secret, 10);
     // Change secret string to hashed secret
     this.secret = hash;
     callback();
@@ -49,9 +55,12 @@ ClientSchema.pre('save', async function(callback){
 });
 
 ClientSchema.methods.verifySecret = function(secret){
-  new Promise(async function(resolve, reject){
+  const client = this;
+  return new Promise(async function(resolve, reject){
     try{
-      const match = await bcrypt.compare(secret, this.secret);
+      console.log(client, secret);
+      const match = await bcrypt.compare(secret, client.secret);
+      console.log('client.js match?', match);
       resolve(match);
     } catch(err){
       reject(err);

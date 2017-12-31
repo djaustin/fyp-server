@@ -26,7 +26,8 @@ exports.newApplicationClient = async function(req, res){
     name: req.body.name,
     id: req.body.id,
     secret: req.body.secret, //TODO: Think about how this will be generated. It will be hashed in the database but there are probably standards for this kind of thing. Maybe it could just be a GUID and then get sent back in the response
-    applicationId: req.params.applicationId
+    applicationId: req.params.applicationId,
+    redirectUri: req.body.redirectUri
   });
   try{
     // Try to save the new client object

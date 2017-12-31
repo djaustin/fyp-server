@@ -12,6 +12,8 @@ const morgan = require('morgan');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const passport = require('passport');
+const winston = require('winston');
+const session = require('express-session');
 
 // Imports beginning with 'app' are possible using a symlink to ./app in at location node_modules/app.
 // This avoids excessive use of '../../' in other files as all files can be addressed from app directory
@@ -37,7 +39,12 @@ app.use(morgan('dev'));
 
 // Parse url enocded parameters from requests and place in req.params for all requests
 app.use(bodyParser.urlencoded({extended: true}));
-
+// TODO: Research the options provided for this session middleware. This only stores session data in memory and is not suitable for production
+app.use(session({
+  secret: 'secretsessionkey', //TODO: Find a better way to do this
+  resave: true,
+  saveUninitialized: true
+}));
 // ROUTING
 const router = express.Router();
 

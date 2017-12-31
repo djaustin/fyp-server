@@ -18,6 +18,9 @@
     "oauth2orize": "^1.11.0",
     "passport": "^0.4.0",
     "passport-http": "^0.3.0",
-    "pug": "^2.0.0-rc.4"
+    "passport-http-bearer": "^1.0.1",
+    "pug": "^2.0.0-rc.4",
+    "uid2": "0.0.3",
+    "winston": "^2.4.0"
   }
 }

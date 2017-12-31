@@ -16,6 +16,6 @@ router.get('/:userId', authentication.isUserAuthenticated, userController.getUse
 //NOTE: ONLY USED TO TEST AUTH. REMOVE FOR PROD.
 router.get('/', authentication.isUserAuthenticated, userController.allUsers);
 
-router.use('/:userId/usage-logs', authentication.isUserAuthenticated, usageLogRouter);
+router.use('/:userId/usage-logs', authentication.isBearerAuthenticated, usageLogRouter);
 
 module.exports = router;

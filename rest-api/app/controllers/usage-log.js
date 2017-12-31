@@ -4,10 +4,12 @@ exports.newUsageLog = async function(req, res){
   //TODO: Client must be authenticated
   //TODO: Check that client is authorized by the user
   //TODO: Find a way to allow user to report usage without a client application
+  //TODO: Ensure user parameter is the same as the authenticated user
   console.log('newUsageLog body:', req.body);
+  console.log('User object', req.user);
   const log = new UsageLog({
     userId: req.params.userId,
-    clientId: req.body.clientId,
+    clientId: req.user.client._id, // bearerClient was added to the user object in the BearerStrategy for password. It only exists if a client made this requets with an access token
     log: {
       startTime: new Date(Number(req.body.startTime)), //TODO: Consider using a different method. This feels messy
       endTime: new Date(Number(req.body.endTime))
