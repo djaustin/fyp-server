@@ -1,3 +1,8 @@
+/**
+ * This module is responsible for enforcing a document schema in the nodejs code through mongoose.
+ * A usage log is a record of a users use of a certain client application.
+ */
+ 
 const mongoose = require('mongoose');
 
 const UsageLogSchema = new mongoose.Schema({

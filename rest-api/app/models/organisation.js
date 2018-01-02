@@ -5,6 +5,7 @@
 */
 
 const mongoose = require('mongoose');
+// Import module containing password utilities such as hashing and verification
 const password = require('./common/password');
 
 //TODO: Consider checking the format of these fields before allowing saves
