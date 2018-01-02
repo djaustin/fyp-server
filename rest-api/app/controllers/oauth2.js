@@ -1,9 +1,13 @@
 const oauth2orize = require('oauth2orize');
+const uid = require('uid2');
+
+const logger = require('app/utils/logger');
+
 const User = require('app/models/user');
 const Client = require('app/models/client');
 const Token = require('app/models/token');
 const Code = require('app/models/code');
-const uid = require('uid2');
+
 
 // This instance exposes config options and middleware that will be used in routes
 const server = oauth2orize.createServer();
@@ -20,6 +24,7 @@ server.deserializeClient(async function(id, callback){
     const client = await Client.findOne({_id: id});
     callback(null, client);
   } catch(err){
+    logger.error(err);
     callback(err);
   }
 });

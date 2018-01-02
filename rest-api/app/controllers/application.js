@@ -1,10 +1,18 @@
+/**
+ * Controller to manage the handling of requests to endpoints for the Application resource.
+ */
+
+// Import data model for mongodb interface
 const Application = require('app/models/application');
 
-// Add an application under an organisation. Uses async keyword because we are using await keyword in the body.
+/**
+ * Create a new application. Application name is provided in the req.body object
+ */
 exports.postApplication = async function(req, res){
   const organisation = req.user;
-  console.log('Start of postApplication', organisation);
+
   // Only allow operation if the authenticated organisation is the one to which we are attempting to add an application
+  // TODO: Move this out of here and use a similar strategy for other endpoints
   if(organisation._id.toString() !== req.params.organisationId){
     res.status(403);
     return res.json({message: 'Authenticated user is not authorized for that operation.'});
@@ -22,13 +30,12 @@ exports.postApplication = async function(req, res){
     await application.save();
     // Add the application id to the organisation's application list
     organisation.applications.push(application._id);
-    console.log('after pushing application', organisation);
     // Save the organisation
     await organisation.save();
     // Status 201 - Created
     res.status(201);
     // Provide endpoint location for the newly created application
-    // TODO: Add another location if applications are available on different routes later
+    // TODO: Consider making this location less hard-coded
     res.json({
       application: application,
       location: `https://digitalmonitor.tk/api/organisations/${req.params.organisationId}/applications/${application._id}`
@@ -53,6 +60,9 @@ exports.getOrganisationApplications = async function(req, res){
   }
 };
 
+/**
+ * Retrieve a single application belonging to the authenticated organisation by ID
+ */
 exports.getOrganisationApplication = async function(req, res){
   const organisation = req.user;
   try{

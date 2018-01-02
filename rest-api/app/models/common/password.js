@@ -1,5 +1,7 @@
 const bcrypt = require('bcrypt');
 
+const logger = require('app/utils/logger');
+
 /**
 * Used as a 'pre' condition on saving a mongodb document with a password field. This ensures that any passwords saved to the database are hashed.
 * @param callback Function to call after the password has been hashed or an error occurs. The function is the next stage in the saving process.
@@ -7,15 +9,14 @@ const bcrypt = require('bcrypt');
 exports.hashPassword = async function(callback){
   try{
     if (!this.isModified('password')){
-      console.log('password unchanged');
       // exit function if password is unchanged
       return callback();
     }
-    console.log('password was changed when saving', this);
     const hash = await bcrypt.hash(this.password, 10);
     this.password = hash;
     callback();
   } catch(err){
+    logger.error(err);
     callback(err);
   }
 };
@@ -33,6 +34,7 @@ exports.verifyPassword = function(password){
       const match = await bcrypt.compare(password, documentInstance.password);
       resolve(match);
     } catch(err){
+      logger.error(err);
       reject(err);
     }
   });

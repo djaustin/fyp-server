@@ -1,6 +1,8 @@
 const Client = require('app/models/client');
 const Application = require('app/models/application');
 
+const logger = require('app/utils/logger');
+
 /**
  * Gets all clients connected to the application provided.
  * @param req Request paramater that contains the application id in req.params.applicationId
@@ -16,6 +18,7 @@ exports.getApplicationClients = async function(req, res){
     const clients = await Client.find({_id : { $in: application.clients} }, '_id name id');
     res.json(clients);
   } catch(err){
+    logger.error(err);
     res.send(err);
   }
 }
@@ -44,7 +47,7 @@ exports.newApplicationClient = async function(req, res){
       location: `https://digitalmonitor.tk/api/organisations/${req.params.organisationId}/applications/${req.params.applicationId}/clients/${client._id}`
     });
   } catch (err){
-    console.log(err);
+    logger.error(err);
     res.status(500);
     res.send(err);
   }
@@ -55,8 +58,7 @@ exports.getApplicationClient = async function(req, res){
     const client = await Client.findOne({_id: req.params.clientId}, {secret: 0});
     res.json(client);
   } catch(err){
-    //TODO: Find a better logging system
-    console.log(err);
+    logger.error(err);
     res.send(err);
   }
 }

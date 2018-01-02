@@ -12,8 +12,10 @@ const morgan = require('morgan');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const passport = require('passport');
-const winston = require('winston');
 const session = require('express-session');
+
+// Import custom winston logger
+const logger = require('app/utils/logger');
 
 // Imports beginning with 'app' are possible using a symlink to ./app in at location node_modules/app.
 // This avoids excessive use of '../../' in other files as all files can be addressed from app directory
@@ -58,4 +60,4 @@ router.use('/api', apiRouter);
 app.use('/', router);
 
 app.listen(80);
-console.log('Listening on port 80');
+logger.info('Listening on port 80');

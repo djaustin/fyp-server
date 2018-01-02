@@ -10,6 +10,8 @@ const passport = require('passport');
 const BasicStrategy = require('passport-http').BasicStrategy;
 const BearerStrategy = require('passport-http-bearer').Strategy;
 
+const logger = require('app/utils/logger');
+
 const User = require('app/models/user');
 const Organisation = require('app/models/organisation');
 const Client = require('app/models/client');
@@ -35,21 +37,21 @@ passport.use('user-basic', new BasicStrategy(
 passport.use('organisation-basic', new BasicStrategy(
   async function(email, password, callback){
     try{
-      console.log('Finding organisation with email ' + email);
+      logger.debug('Finding organisation with email ' + email);
       const organisation = await Organisation.findOne({email: email});
-      console.log('Organisation found: ', organisation);
+      logger.debug('Organisation found: ', organisation);
       if(!organisation) return callback(null, false);
-      console.log('Verifying password of organisation');
+      logger.debug('Verifying password of organisation');
       const match = await organisation.verifyPassword(password);
       if(match){
-        console.log('Password matches');
+        logger.debug('Password matches');
         return callback(null, organisation);
       } else {
-        console.log('Password does not match');
+        logger.debug('Password does not match');
         return callback(null, false);
       }
     }catch(err){
-      console.log('Error during async calls');
+      logger.error(err);
       return callback(err);
     }
   }
@@ -64,7 +66,7 @@ passport.use('client-basic', new BasicStrategy(
       if(!client) return callback(null, false);
       // Attempt to verify the client secret (password)
       const match = await client.verifySecret(secret);
-      console.log('authentication.js match?', match);
+      logger.debug('authentication.js match?', match);
       // Return client object to callback if secret is verified else reject auth
       if(match){
         return callback(null, client);
@@ -72,7 +74,8 @@ passport.use('client-basic', new BasicStrategy(
         return callback(null, false)
       }
     } catch(err){
-       callback(err);
+      logger.error(err);
+      callback(err);
     }
   }
 ));
@@ -83,7 +86,7 @@ passport.use(new BearerStrategy(
     try{
       // Find a token with a value matching the one provided
       const token = await Token.findOne({value: accessToken});
-      console.log('Got token', token);
+      logger.debug('Got token', token);
       // Reject auth if token not found
       if(!token) return callback(null, false);
 
@@ -92,7 +95,7 @@ passport.use(new BearerStrategy(
         User.findOne({_id: token.userId}),
         Client.findOne({_id: token.clientId})
       ]);
-      console.log('User', user, 'Client', client);
+      logger.debug('User', user, 'Client', client);
 
       // Reject auth if no user or no client found
       if(!user || !client) return callback(null, false);
@@ -102,11 +105,12 @@ passport.use(new BearerStrategy(
         user: user,
         client: client
       }
-      console.log('Returning user object', user);
+      logger.debug('Returning user object', user);
       // Allow all scopes. TODO: Is this actually going to be used
       return callback(null, authenticatedEntities, {scope: '*'});
 
     } catch(err){
+      logger.error(err);
       callback(err);
     }
   }

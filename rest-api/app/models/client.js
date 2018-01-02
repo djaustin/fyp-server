@@ -8,6 +8,8 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 
+const logger = require('app/utils/logger');
+
 //TODO: Consider checking the format of these fields before allowing saves
 const ClientSchema = new mongoose.Schema({
   name: {
@@ -37,19 +39,17 @@ const ClientSchema = new mongoose.Schema({
 // NOTE: Consider changing the code in commons/password.js so that it can be imported here to avoid the code reuse
 ClientSchema.pre('save', async function(callback){
   // Exit function if the password has not been changed
-  console.log('Entering pre save client function');
   if(!this.isModified('secret')){
-    console.log('Secret not modified, returning');
     return callback();
   }
   try{
-    console.log('Secret modified');
     // Hash password with bcrypt using 10 salt rounds
     const hash = await bcrypt.hash(this.secret, 10);
     // Change secret string to hashed secret
     this.secret = hash;
     callback();
   } catch(err){
+    logger.error(err);
     callback(err);
   }
 });
@@ -58,11 +58,10 @@ ClientSchema.methods.verifySecret = function(secret){
   const client = this;
   return new Promise(async function(resolve, reject){
     try{
-      console.log(client, secret);
       const match = await bcrypt.compare(secret, client.secret);
-      console.log('client.js match?', match);
       resolve(match);
     } catch(err){
+      logger.error(err);
       reject(err);
     }
   });
