@@ -48,6 +48,7 @@ server.grant(oauth2orize.grant.code(async function(client, redirectUri, user, au
     await code.save();
     callback(null, code.value);
   } catch(err){
+    logger.error(err);
     callback(err);
   }
 
@@ -84,7 +85,7 @@ server.exchange(oauth2orize.exchange.code(async function(client, code, redirectU
     callback(null, token);
 
   } catch(err){
-    console.log(err);
+    logger.error(err);
     callback(err);
   }
 }));
@@ -95,17 +96,14 @@ exports.authorization = [
   // The function argument here is used to get a client instance for the clientid making the request
   server.authorization(async function(clientId, redirectUri, callback){
     try{
-      console.log(clientId, redirectUri);
       const client = await Client.findOne({id: clientId});
-      console.log('Client from database: ', client);
       // Make sure there is a client with that ID
       if(!client) return callback(null, false);
       // Make sure that the supplied redirectUri is the same as the one registered with the client in the database
-      console.log('Client', client, 'Client object redirectUri: ' , client.redirectUri, 'Provided Uri: ', redirectUri);
       if(client.redirectUri !== redirectUri) return callback(null, false);
       return callback(null, client, redirectUri);
     } catch(err){
-      console.log(err);
+      logger.error(err);
       callback(err);
     }
   }),

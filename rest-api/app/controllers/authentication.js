@@ -61,7 +61,6 @@ passport.use('client-basic', new BasicStrategy(
       if(!client) return callback(null, false);
       // Attempt to verify the client secret (password)
       const match = await client.verifySecret(secret);
-      logger.debug('authentication.js match?', match);
       // Return client object to callback if secret is verified else reject auth
       if(match){
         return callback(null, client);

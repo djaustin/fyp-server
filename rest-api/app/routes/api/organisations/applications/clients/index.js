@@ -1,12 +1,27 @@
+/**
+ * This module mananges routes for the organisations/:organisationId/applications/:applicationId endpoint
+ */
+
+// Import and initialize new express router
 const router = require('express').Router({mergeParams: true});
+// Import authentication to restrict access to certain URLs
 const authentication = require('app/controllers/authentication');
+// Import request controller
 const clientController = require('app/controllers/client');
 
-// Make sure that organisation is authenticated then get all the clients for the application specified in the endpoint
-router.get('/', authentication.isOrganisationAuthenticated, clientController.getApplicationClients);
+/**
+ * Get all clients for the specified application owned by the currently authenticated and authorised organisation
+ */
+router.get('/', clientController.getApplicationClients);
 
-router.post('/', authentication.isOrganisationAuthenticated, clientController.newApplicationClient);
+/**
+ * Add a new client to the specified application owned by the currently authenticated and authorised organisation
+ */
+router.post('/', clientController.newApplicationClient);
 
-router.get('/:clientId', authentication.isOrganisationAuthenticated, clientController.getApplicationClient);
+/**
+ * Get a specific client by ID from the specified application owned by the currently authenticated and authorised organisation
+ */
+router.get('/:clientId', clientController.getApplicationClient);
 
 module.exports = router;

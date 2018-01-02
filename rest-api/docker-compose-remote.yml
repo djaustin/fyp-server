@@ -6,6 +6,7 @@ services:
     volumes:
       - /etc/letsencrypt:/etc/nginx/ssl
       - ./config/nginx/remote/conf.d:/etc/nginx/conf.d
+      - ./images:/usr/share/nginx/html:ro
     ports:
       - '80:80'
       - '443:443'

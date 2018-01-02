@@ -1,5 +1,5 @@
 const Organisation = require('app/models/organisation');
-
+const logger = require('app/utils/logger');
 exports.newOrganisation = async function (req, res){
   const organisation = new Organisation({
     name: req.body.name,
@@ -31,7 +31,7 @@ exports.getOrganisation = async function(req, res){
       const organisation = await Organisation.findOne({_id: req.params.organisationId}, {password: 0});
       res.json(organisation);
   } catch(err){
-      res.sedn(err);
+      res.send(err);
   }
 }
 
@@ -42,9 +42,10 @@ exports.allOrganisations = async function(req, res){
     const organisations = await Organisation.find();
     res.json({
       message: `Request recieved by ${req.user.name}`,
-      organisations: orgs
+      organisations: organisations
     });
   } catch(err){
+    logger.error(err);
     res.send(err);
   }
 };
