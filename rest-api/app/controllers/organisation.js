@@ -1,5 +1,10 @@
 const Organisation = require('app/models/organisation');
 const logger = require('app/utils/logger');
+
+/**
+ * Add a new organisation to the database using provided data
+ * @param req Request parameter containing the organisation details in req.body
+ */
 exports.newOrganisation = async function (req, res){
   const organisation = new Organisation({
     name: req.body.name,
@@ -24,8 +29,10 @@ exports.newOrganisation = async function (req, res){
   }
 };
 
-// Get a single organisation from the database which is parsed in as part of the api endpoint.
-// eg. /api/organisations/:organisationId
+/**
+ * Get a single organisation by id provided in the request url
+ * @param req Request object containing object Id in req.params 
+ */
 exports.getOrganisation = async function(req, res){
   try{
       const organisation = await Organisation.findOne({_id: req.params.organisationId}, {password: 0});

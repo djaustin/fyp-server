@@ -1,3 +1,14 @@
+/**
+ * This module provides middleware as a more convenient way to check that an authenticated user is authorized to access a resource.
+ * For example, if /users/1234 is accessed, it can be checked that user 1234 has been authenicated on the request
+ */
+
+/**
+ * Checks that the authenticated user has the same ID as the resource being accessed.
+ * If they are the same, the next middleware is called.
+ * If they are not the same, a 403 error witha message is returned in the response
+ * @param paramIdName {String} The name of the ID parameter in the URL
+ */
 exports.authenticatedUserOwnsResource = function(paramIdName){
   return function(req, res, next){
     //TODO: Error handling here
