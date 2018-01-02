@@ -37,17 +37,12 @@ passport.use('user-basic', new BasicStrategy(
 passport.use('organisation-basic', new BasicStrategy(
   async function(email, password, callback){
     try{
-      logger.debug('Finding organisation with email ' + email);
       const organisation = await Organisation.findOne({email: email});
-      logger.debug('Organisation found: ', organisation);
       if(!organisation) return callback(null, false);
-      logger.debug('Verifying password of organisation');
       const match = await organisation.verifyPassword(password);
       if(match){
-        logger.debug('Password matches');
         return callback(null, organisation);
       } else {
-        logger.debug('Password does not match');
         return callback(null, false);
       }
     }catch(err){
@@ -86,7 +81,6 @@ passport.use(new BearerStrategy(
     try{
       // Find a token with a value matching the one provided
       const token = await Token.findOne({value: accessToken});
-      logger.debug('Got token', token);
       // Reject auth if token not found
       if(!token) return callback(null, false);
 
@@ -95,7 +89,6 @@ passport.use(new BearerStrategy(
         User.findOne({_id: token.userId}),
         Client.findOne({_id: token.clientId})
       ]);
-      logger.debug('User', user, 'Client', client);
 
       // Reject auth if no user or no client found
       if(!user || !client) return callback(null, false);
@@ -105,7 +98,6 @@ passport.use(new BearerStrategy(
         user: user,
         client: client
       }
-      logger.debug('Returning user object', user);
       // Allow all scopes. TODO: Is this actually going to be used
       return callback(null, authenticatedEntities, {scope: '*'});
 
