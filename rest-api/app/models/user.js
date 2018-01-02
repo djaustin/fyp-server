@@ -22,7 +22,6 @@ const UserSchema = new mongoose.Schema({
   },
   firstName: String,
   lastName: String,
-  authorizedClients: [mongoose.Schema.ObjectId]
 });
 
 // Define action to complete before saving a document.
