@@ -1,11 +1,19 @@
+/**
+ * This module defines the configuration of the winston logger for the application
+ */
+
+// Import winston library
 const winston = require('winston');
+// File system support
 const fs = require('fs');
 const logDir = './logs';
 
+// Create logDir if it does not exist already
 if (!fs.existsSync(logDir)) {
   fs.mkdirSync(logDir);
 }
 
+// Create the logger
 const logger = new (winston.Logger)({
   transports: [
     // Console output - colorised
@@ -17,7 +25,7 @@ const logger = new (winston.Logger)({
     new (winston.transports.File)({
       timestamp: () => {Date.now()},
       filename: `${logDir}/server.log`,
-      level: 'debug'
+      level: 'warn'
     })
   ]
 });

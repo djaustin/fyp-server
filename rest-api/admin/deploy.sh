@@ -3,7 +3,7 @@
 docker image build . -t daustin/monitor-api
 
 # Create compressed project archive
-tar cvz --exclude=./node_modules --exclude=server.tar.gz --exclude=docker-compose.yml -f server.tar.gz .
+tar cvz --exclude=./node_modules --exclude=server.tar.gz --exclude=docker-compose.yml --exclude=./logs -f server.tar.gz .
 
 # Copy the archive to the remote server
 scp -i ~/.ssh/my-ec2-key-pair.pem server.tar.gz ubuntu@35.177.187.171:~
