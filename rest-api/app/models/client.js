@@ -10,6 +10,7 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 // global logging instance
 const logger = require('app/utils/logger');
+const crypto = require('app/utils/crypto');
 
 const ClientSchema = new mongoose.Schema({
   name: {
@@ -40,39 +41,13 @@ const ClientSchema = new mongoose.Schema({
 /**
  * If the client secret has changed and the document is being saved, make sure the secret is hashed
  */
-ClientSchema.pre('save', async function(callback){
-  // Exit function if the password has not been changed
-  if(!this.isModified('secret')){
-    return callback();
-  }
-  try{
-    // Hash password with bcrypt using 10 salt rounds
-    const hash = await bcrypt.hash(this.secret, 10);
-    // Change secret string to hashed secret
-    this.secret = hash;
-    callback();
-  } catch(err){
-    logger.error(err);
-    callback(err);
-  }
-});
+ClientSchema.pre('save', crypto.hashSecret('secret'));
 
 /**
  * Verify a plaintext secret by hashing and comparing it to the stored hash
  * @param secret {String} The plaintext secret to verify
  */
-ClientSchema.methods.verifySecret = function(secret){
-  const client = this;
-  return new Promise(async function(resolve, reject){
-    try{
-      const match = await bcrypt.compare(secret, client.secret);
-      resolve(match);
-    } catch(err){
-      logger.error(err);
-      reject(err);
-    }
-  });
-};
+ClientSchema.methods.verifySecret = crypto.verifySecret('secret');
 
 // Export the model created by this schema for use in other files
 module.exports = mongoose.model('Client', ClientSchema);

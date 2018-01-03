@@ -5,7 +5,7 @@
 const mongoose = require('mongoose');
 
 const TokenSchema = new mongoose.Schema({
-  // TODO: Hash this
+  // TODO: Consider hashing this
   value: {
     type: String,
     required: true

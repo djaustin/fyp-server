@@ -5,9 +5,9 @@
  */
 
 const mongoose = require('mongoose');
+const crypto = require('app/utils/crypto');
 
 const CodeSchema = new mongoose.Schema({
-  // Stores the code value
   // NOTE: Consider hashing this
   value: {
     type: String,

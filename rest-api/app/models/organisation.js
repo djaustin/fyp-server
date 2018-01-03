@@ -6,7 +6,7 @@
 
 const mongoose = require('mongoose');
 // Import module containing password utilities such as hashing and verification
-const password = require('./common/password');
+const crypto = require('app/utils/crypto');
 
 const OrganisationSchema = new mongoose.Schema({
   // Organisation name eg. Facebook Inc.
@@ -31,10 +31,10 @@ const OrganisationSchema = new mongoose.Schema({
 }, {usePushEach: true}); // required due to deprecated mongo feature being used by mongoose
 
 // Ensure all passwords are hashed before saving to the database
-OrganisationSchema.pre('save', password.hashPassword);
+OrganisationSchema.pre('save', crypto.hashSecret('password'));
 
 // Helper function fo verifying document instance passwords
-OrganisationSchema.methods.verifyPassword = password.verifyPassword;
+OrganisationSchema.methods.verifyPassword = crypto.verifySecret('password');
 
 // Create a model as a programming interface with mogodb, specify the collection name 'User' and the schema 'UserSchema'
 module.exports = mongoose.model('Organisation', OrganisationSchema);

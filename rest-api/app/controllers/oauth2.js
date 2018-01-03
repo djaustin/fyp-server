@@ -91,7 +91,6 @@ server.exchange(oauth2orize.exchange.code(async function(client, code, redirectU
 }));
 
 // Endpoint to initialise new authorization transactions
-// TODO: Ensure that user has logged in
 exports.authorization = [
   // The function argument here is used to get a client instance for the clientid making the request
   server.authorization(async function(clientId, redirectUri, callback){
