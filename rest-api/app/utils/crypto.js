@@ -9,7 +9,6 @@ const logger = require('app/utils/logger');
 exports.hashSecret = function(secretName){
   return async function(callback){
     try{
-      logger.debug(this)
       if (!this.isModified(secretName)){
         // exit function if secretName is unchanged
         return callback();
@@ -33,10 +32,8 @@ exports.hashSecret = function(secretName){
 exports.verifySecret = function(secretName){
   return function(secretPlainText){
     documentInstance = this;
-
     // Return new promise to allow for async/await
     return new Promise(async function(resolve, reject){
-      logger.debug(this);
       try{
         const match = await bcrypt.compare(secretPlainText, documentInstance[secretName]);
         resolve(match);

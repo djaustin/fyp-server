@@ -5,9 +5,9 @@ exports.newUsageLog = async function(req, res){
   //TODO: Find a way to allow user to report usage without a client application
   const log = new UsageLog({
     userId: req.params.userId,
-    clientId: req.user.client._id, // client was added to the user object in the BearerStrategy for password. It only exists if a client made this requets with an access token
+    clientId: req.client._id, // client was added to the req object in the BearerStrategy. It only exists if a client made this requets with an access token
     log: {
-      startTime: new Date(Number(req.body.startTime)), 
+      startTime: new Date(Number(req.body.startTime)),
       endTime: new Date(Number(req.body.endTime))
     }
   });

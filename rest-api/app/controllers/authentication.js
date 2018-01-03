@@ -75,8 +75,8 @@ passport.use('client-basic', new BasicStrategy(
 ));
 
 // Allow authentication of requests made by applications on behalf of users
-passport.use(new BearerStrategy(
-  async function(accessToken, callback){
+passport.use(new BearerStrategy({passReqToCallback: true},
+  async function(req, accessToken, callback){
     try{
       // Find a token with a value matching the one provided
       const token = await Token.findOne({value: accessToken});
@@ -92,13 +92,10 @@ passport.use(new BearerStrategy(
       // Reject auth if no user or no client found
       if(!user || !client) return callback(null, false);
 
-      // HACK: bundle the two documents into one so they can both be accessed by request handlers
-      const authenticatedEntities = {
-        user: user,
-        client: client
-      }
+      // Add authenticated client to the request object
+      req.client = client;
       // Allow all scopes. TODO: Is this actually going to be used
-      return callback(null, authenticatedEntities, {scope: '*'});
+      return callback(null, user, {scope: '*'});
 
     } catch(err){
       logger.error(err);
