@@ -2,15 +2,12 @@ const logger = require('app/utils/logger');
 const UsageLog = require('app/models/usage-log');
 
 exports.newUsageLog = async function(req, res){
-  //TODO: Client must be authenticated
-  //TODO: Check that client is authorized by the user
   //TODO: Find a way to allow user to report usage without a client application
-  //TODO: Ensure user parameter is the same as the authenticated user
   const log = new UsageLog({
     userId: req.params.userId,
-    clientId: req.user.client._id, // bearerClient was added to the user object in the BearerStrategy for password. It only exists if a client made this requets with an access token
+    clientId: req.user.client._id, // client was added to the user object in the BearerStrategy for password. It only exists if a client made this requets with an access token
     log: {
-      startTime: new Date(Number(req.body.startTime)), //TODO: Consider using a different method. This feels messy
+      startTime: new Date(Number(req.body.startTime)), 
       endTime: new Date(Number(req.body.endTime))
     }
   });

@@ -113,7 +113,6 @@ exports.authorization = [
 ];
 
 // Endpoint to handle when the user grants or denies access to their account to the requesting application client
-// TODO: Ensure that user has logged in
 exports.decision = [
   // This handles data submitted in the POST request sent after the user accepts or denies access to their account.
   // If the user grants access, this calls the server.grant function created above.
@@ -121,7 +120,6 @@ exports.decision = [
 ];
 
 // Endpoint to handle the request made by the application client after they have been granted an authorization code by the user.
-// TODO: Ensure that user has logged in
 exports.token = [
   // Will initiate a call to server.exchange()
   server.token(),

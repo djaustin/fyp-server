@@ -9,7 +9,6 @@ const logger = require('app/utils/logger');
  */
 // TODO: More checks on null values
 exports.getApplicationClients = async function(req, res){
-  // TODO: Check that the organisation owning the application is the one authenticated. This should probably be done as an additional piece of middleware to avoid code reuse
   // TODO: Perhaps consider adding middleware to fetch the application from the db so it doesn't have to be done in all the children requests
   try{
     // Get application instance first

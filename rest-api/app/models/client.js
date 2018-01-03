@@ -11,7 +11,6 @@ const bcrypt = require('bcrypt');
 // global logging instance
 const logger = require('app/utils/logger');
 
-//TODO: Consider checking the format of these fields before allowing saves
 const ClientSchema = new mongoose.Schema({
   name: {
     type:  String,

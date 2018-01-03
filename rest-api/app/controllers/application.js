@@ -11,13 +11,6 @@ const Application = require('app/models/application');
 exports.postApplication = async function(req, res){
   const organisation = req.user;
 
-  // Only allow operation if the authenticated organisation is the one to which we are attempting to add an application
-  // TODO: Move this out of here and use a similar strategy for other endpoints
-  if(organisation._id.toString() !== req.params.organisationId){
-    res.status(403);
-    return res.json({message: 'Authenticated user is not authorized for that operation.'});
-  }
-
   // Create a new application document from the model. Initialise with provided name and empty client list
   const application = new Application({
     name: req.body.name,
@@ -35,7 +28,6 @@ exports.postApplication = async function(req, res){
     // Status 201 - Created
     res.status(201);
     // Provide endpoint location for the newly created application
-    // TODO: Consider making this location less hard-coded
     res.json({
       application: application,
       location: `https://digitalmonitor.tk/api/organisations/${req.params.organisationId}/applications/${application._id}`

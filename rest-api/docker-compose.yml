@@ -17,6 +17,7 @@ services:
     build: .
     image: daustin/monitor-api
     volumes:
+      - ./config/config.json:/var/www/api/config/config.json:ro
       - ./logs:/var/www/api/logs
 
 volumes:
