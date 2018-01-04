@@ -6,7 +6,9 @@
 const Application = require('app/models/application');
 
 /**
- * Create a new application. Application name is provided in the req.body object
+  Add a new application to the database under the given authenticated and authorized organisation
+  @param req {Object} request object containing the authenticated organisation in req.user
+  @param res {Object} respnse object with which to send client feedback
  */
 exports.postApplication = async function(req, res){
   const organisation = req.user;
@@ -27,40 +29,59 @@ exports.postApplication = async function(req, res){
     await organisation.save();
     // Status 201 - Created
     res.status(201);
-    // Provide endpoint location for the newly created application
-    res.json({
+    // Provide endpoint locations for the newly created application
+    res.jsend.success({
       application: application,
-      location: `https://digitalmonitor.tk/api/organisations/${req.params.organisationId}/applications/${application._id}`
+      locations: [`https://digitalmonitor.tk/api/organisations/${req.params.organisationId}/applications/${application._id}`]
     });
   } catch(err){
     // TODO: Improve error handling.
-    res.send(err);
+    res.jsend.error(err);
   }
 };
 
-// Get all applications for a given organisation. The organisation should be authenticated before this call is made.
-// Following authentication the req.user object should contain the organisation details but the ID is held in req.params.organisationId as this has passed through the organisation endpoint first.
-// eg. <host>/api/organisations/:organisationId/applications
+
+/**
+ * Get all applications for a given organisation.
+ * @param req {Object} request object containing the organisation object in req.user
+ * @param res {Object} response object with which to send client feedback.
+ */
 exports.getOrganisationApplications = async function(req, res){
   const organisation = req.user;
   try{
     // Find applications
     const applications = await Application.find({ _id : { $in: organisation.applications } });
-    res.json(applications);
+    res.jsend.success({applications: applications});
   } catch(err){
-    res.send(err);
+    res.jsend.error(err);
   }
 };
 
 /**
- * Retrieve a single application belonging to the authenticated organisation by ID
+ * Retrieve a single application belonging to the authenticated organisation by ID.
+ * @param req {Object} request object containing the applicationId in req.params
+ * @param res {Object} response object with which to send client feedback
  */
 exports.getOrganisationApplication = async function(req, res){
-  const organisation = req.user;
   try{
     const application = await Application.findOne({_id: req.params.applicationId});
-    res.json(application);
+    res.jsend.success({application: application});
   } catch(err){
-    res.send(err);
+    res.jsend.error(err);
+  }
+}
+
+/**
+ * Delete an organisation application by id.
+ * @param req Request parameter containing the applicationId in req.parameters
+ * @param res Response parameter with which to send result to client
+ */
+exports.deleteOrganisationApplication = async function(req, res){
+  const organisation = req.user;
+  try{
+    await Application.remove({_id: req.params.applicationId})
+    res.jsend.success(null);
+  } catch (err){
+    res.jsend.error(err);
   }
 }

@@ -1,6 +1,3 @@
-// Helper library for jsend compliant responses
-const jsend = require('jsend');
-
 const Organisation = require('app/models/organisation');
 const logger = require('app/utils/logger');
 
@@ -16,11 +13,11 @@ exports.newOrganisation = async function (req, res){
     await organisation.save();
     // Set to undefined so we don't send it back to client
     organisation.password = undefined;
-    // Respond with location of created entity
+    // Respond with locations of created entity
     res.status(201);
     res.jsend.success({
       organisation: organisation,
-      location: `https://digitalmonitor.tk/api/organisations/${organisation._id}`
+      locations: [`https://digitalmonitor.tk/api/organisations/${organisation._id}`]
     });
   } catch(err){
     // NOTE: Consider changing this for security

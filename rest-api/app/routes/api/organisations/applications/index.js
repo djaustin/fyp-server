@@ -11,20 +11,28 @@ const applicationController = require('app/controllers/application');
 // Import nested router
 const clientsRouter = require('app/routes/api/organisations/applications/clients');
 
-/**
- * Get all applications for the currently authenticated and authorised organisation
- */
-router.get('/', applicationController.getOrganisationApplications);
 
-/**
- * Add a new application to the currently authenticated and authorised organisation
- */
-router.post('/', applicationController.postApplication);
+router.route('/')
+  /**
+   * Get all applications for the currently authenticated and authorised organisation
+   */
+  .get(applicationController.getOrganisationApplications)
+  /**
+   * Add a new application to the currently authenticated and authorised organisation
+   */
+  .post(applicationController.postApplication);
 
-/**
- * Get an application by ID owned by the currently authenticated and authorised organisation
- */
-router.get('/:applicationId', applicationController.getOrganisationApplication);
+
+
+router.route('/:applicationId')
+  /**
+   * Get an application by ID owned by the currently authenticated and authorised organisation
+   */
+  .get(applicationController.getOrganisationApplication)
+  /**
+   * Delete an application by ID owned by the currently authenticated and authorised organisation
+   */
+  .post(applicationController.deleteOrganisationApplication);
 
 /**
  * Mount the nested router to this endpoint

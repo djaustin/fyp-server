@@ -16,19 +16,26 @@ const usageLogRouter = require('app/routes/api/users/usage-logs');
 const authorisation = require('app/middleware/authorisation');
 const userIdMatchesAuthenticatedUser = authorisation.authenticatedUserOwnsResource('userId');
 
-/**
- * Add a new user.
- */
-router.post('/', userController.newUser);
 
-/**
- * Get a user by their id. The user must be authenticated and and only access their own details
- */
-router.get('/:userId', authentication.isUserAuthenticated, userIdMatchesAuthenticatedUser, userController.getUser);
+router.route('/:userId')
+  /**
+   * Get a user by their id. The user must be authenticated and and only access their own details
+   */
+  .get(authentication.isUserAuthenticated, userIdMatchesAuthenticatedUser, userController.getUser)
+  /**
+   * Delete a user by their id. The user must be authenticated and and only access their own details
+   */
+  .delete(authentication.isUserAuthenticated, userIdMatchesAuthenticatedUser, userController.deleteUser);
 
-//TODO: ONLY USED TO TEST AUTH. REMOVE FOR PROD.
-// Get all user details. Must be logged in
-router.get('/', authentication.isUserAuthenticated, userController.allUsers);
+
+router.route('/')
+  //TODO: ONLY USED TO TEST AUTH. REMOVE FOR PROD.
+  // Get all user details. Must be logged in
+  .get(authentication.isUserAuthenticated, userController.allUsers)
+  /**
+   * Add a new user.
+   */
+  .post(userController.newUser);
 
 /**
  * Mount the nested router onto this endpoint. Only accessible via OAuth2 token

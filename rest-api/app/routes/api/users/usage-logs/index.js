@@ -8,18 +8,18 @@ const router = require('express').Router({mergeParams: true});
 // Import request controller
 const usageLogController = require('app/controllers/usage-log');
 
+router.route('/')
+  /**
+   * Get all logs for the currently authenticated and authorised user
+   */
+  .get(usageLogController.getUserLogs)
+  /**
+   * Add a new log to the currently authenticated and authorised user
+   */
+  .post(usageLogController.newUsageLog);
+  
 /**
- * Get all logs for the currently authenticated and authorised user
- */
-router.get('/', usageLogController.getUserLogs);
-
-/**
- * Add a new log to the currently authenticated and authorised user
- */
-router.post('/', usageLogController.newUsageLog);
-
-/**
- * Get a specific log for the currently authenticated and authorised user by ID 
+ * Get a specific log for the currently authenticated and authorised user by ID
  */
 router.get('/:usageLogId', usageLogController.getUserLog);
 

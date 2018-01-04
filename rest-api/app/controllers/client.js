@@ -15,10 +15,10 @@ exports.getApplicationClients = async function(req, res){
     const application = await Application.findOne({_id: req.params.applicationId});
     // Get clients from the application
     const clients = await Client.find({_id : { $in: application.clients} }, '_id name id');
-    res.json(clients);
+    res.jsend.success({clients: clients});
   } catch(err){
     logger.error(err);
-    res.send(err);
+    res.jsend.error(err);
   }
 }
 
@@ -41,23 +41,37 @@ exports.newApplicationClient = async function(req, res){
     // Try to save the application object
     await application.save();
     res.status(201);
-    res.json({
+    res.jsend.success({
       client: client,
-      location: `https://digitalmonitor.tk/api/organisations/${req.params.organisationId}/applications/${req.params.applicationId}/clients/${client._id}`
+      locations: [`https://digitalmonitor.tk/api/organisations/${req.params.organisationId}/applications/${req.params.applicationId}/clients/${client._id}`]
     });
   } catch (err){
     logger.error(err);
     res.status(500);
-    res.send(err);
+    res.jsend.error(err);
   }
 }
 
 exports.getApplicationClient = async function(req, res){
   try{
     const client = await Client.findOne({_id: req.params.clientId}, {secret: 0});
-    res.json(client);
+    res.jsend.success({client: client});
   } catch(err){
     logger.error(err);
     res.send(err);
+  }
+}
+
+/**
+ * Delete an application client by ID.
+ * @param req Request object containing the clientId in req.params
+ * @param res Response object with which to send client feedback
+ */
+exports.deleteApplicationClient = async function(req, res){
+  try{
+    await Client.remove({_id: req.params.clientId});
+    res.jsend.success(null);
+  } catch(err){
+    res.jsend.error(err);
   }
 }
