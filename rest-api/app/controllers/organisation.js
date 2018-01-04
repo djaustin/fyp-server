@@ -36,12 +36,34 @@ exports.getOrganisation = async function(req, res){
   }
 }
 
+/**
+ * Delete an organisatiom by Id
+ @param req {Object} request object containing the organisationId of the authencticated organisation to delete in req.params
+ @param res {Object} response object with which the results will be sent to the client
+ */
 exports.deleteOrganisation = async function(req, res){
   try{
     await Organisation.remove({_id: req.params.organisationId});
     res.jsend.success(null);
   } catch(err){
     logger.error(err);
+    res.jsend.error(err);
+  }
+}
+
+/**
+ * Edit an organisatiom by Id
+ @param req {Object} request object containing the organisationId of the authencticated organisation to edit in req.params as well as the details to be changed in req.body
+ @param res {Object} response object with which the results will be sent to the client
+ */
+exports.editOrganisation = async function(req, res){
+  try{
+    const detailsToUpdate = {}
+    if(req.body.email) detailsToUpdate.email = req.body.email;
+    if(req.body.name) detailsToUpdate.name = req.body.name;
+    await Organisation.update({_id: req.params.organisationId}, {$set: detailsToUpdate});
+    res.jsend.success(null);
+  } catch(err){
     res.jsend.error(err);
   }
 }
