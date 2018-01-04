@@ -18,6 +18,9 @@ const passport = require('passport');
 const session = require('express-session');
 // Mongodb storage of express-session data instead of keeping it in local memory
 const MongoStore = require('connect-mongo')(session);
+// Helper functions for jsend standard
+const jsend = require('jsend');
+
 // Import configurations for this machine
 const config = require('./config/config');
 
@@ -42,6 +45,10 @@ const app = express();
 // Set pug as the view engine for this express app
 app.set('view engine', 'pug');
 app.set('views', './app/views');
+
+// Enable jsend object in requests
+app.use(jsend.middleware);
+
 // Enable passport authentication middleware
 app.use(passport.initialize());
 

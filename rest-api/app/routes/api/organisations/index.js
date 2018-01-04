@@ -22,15 +22,25 @@ router.use('/:organisationId/applications', authentication.isOrganisationAuthent
 /**
  * Add a new organisation to the application.
  */
-router.post('/', organisationController.newOrganisation);
+router.route('/')
+  /**
+   * Add a new organisation to the application.
+   */
+  .post(organisationController.newOrganisation)
+  //TODO: Remove this in prod probably
+  // GET ALL ORGANISATIONS IN DATABASE
+  .get(authentication.isOrganisationAuthenticated, organisationController.allOrganisations);
 
-/**
- * Get the details of a specific organisation by ID. Requires authenticated and authorised organisation.
- */
-router.get('/:organisationId', authentication.isOrganisationAuthenticated, orgIdMatchesAuthenticatedOrg, organisationController.getOrganisation);
 
-//TODO: Remove this in prod probably
-// GET ALL ORGANISATIONS IN DATABASE
-router.get('/', authentication.isOrganisationAuthenticated, organisationController.allOrganisations);
+router.route('/:organisationId')
+  /**
+   * Get the details of a specific organisation by ID. Requires authenticated and authorised organisation.
+   */
+  .get(authentication.isOrganisationAuthenticated, orgIdMatchesAuthenticatedOrg, organisationController.getOrganisation)
+  /**
+   * Delete an organisation by ID. Must be authenticated and authorized as that organisation
+   */
+  .delete(authentication.isOrganisationAuthenticated, orgIdMatchesAuthenticatedOrg, organisationController.deleteOrganisation);
+
 
 module.exports = router;

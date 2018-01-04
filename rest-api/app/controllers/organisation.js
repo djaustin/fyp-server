@@ -1,5 +1,9 @@
+// Helper library for jsend compliant responses
+const jsend = require('jsend');
+
 const Organisation = require('app/models/organisation');
 const logger = require('app/utils/logger');
+
 exports.newOrganisation = async function (req, res){
   const organisation = new Organisation({
     name: req.body.name,
@@ -14,13 +18,13 @@ exports.newOrganisation = async function (req, res){
     organisation.password = undefined;
     // Respond with location of created entity
     res.status(201);
-    res.json({
+    res.jsend.success({
       organisation: organisation,
       location: `https://digitalmonitor.tk/api/organisations/${organisation._id}`
     });
   } catch(err){
     // NOTE: Consider changing this for security
-    res.send(err);
+    res.jsend.error(err);
   }
 };
 
@@ -29,9 +33,19 @@ exports.newOrganisation = async function (req, res){
 exports.getOrganisation = async function(req, res){
   try{
       const organisation = await Organisation.findOne({_id: req.params.organisationId}, {password: 0});
-      res.json(organisation);
+      res.jsend.success({organisation: organisation});
   } catch(err){
-      res.send(err);
+      res.jsend.error(err);
+  }
+}
+
+exports.deleteOrganisation = async function(req, res){
+  try{
+    await Organisation.remove({_id: req.params.organisationId});
+    res.jsend.success(null);
+  } catch(err){
+    logger.error(err);
+    res.jsend.error(err);
   }
 }
 
@@ -40,12 +54,9 @@ exports.getOrganisation = async function(req, res){
 exports.allOrganisations = async function(req, res){
   try{
     const organisations = await Organisation.find();
-    res.json({
-      message: `Request recieved by ${req.user.name}`,
-      organisations: organisations
-    });
+    res.jsend.success({organisations: organisations});
   } catch(err){
     logger.error(err);
-    res.send(err);
+    res.jsend.error(err);
   }
 };
