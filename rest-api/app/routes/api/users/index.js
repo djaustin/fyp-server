@@ -25,8 +25,11 @@ router.route('/:userId')
   /**
    * Delete a user by their id. The user must be authenticated and and only access their own details
    */
-  .delete(authentication.isUserAuthenticated, userIdMatchesAuthenticatedUser, userController.deleteUser);
-
+  .delete(authentication.isUserAuthenticated, userIdMatchesAuthenticatedUser, userController.deleteUser)
+  /**
+   * Delete a user by their id. The user must be authenticated and and only access their own details
+   */
+  .patch(authentication.isUserAuthenticated, userIdMatchesAuthenticatedUser, userController.editUser);
 
 router.route('/')
   //TODO: ONLY USED TO TEST AUTH. REMOVE FOR PROD.

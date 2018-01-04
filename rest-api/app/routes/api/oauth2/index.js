@@ -6,6 +6,9 @@
 const router = require('express').Router({mergeParams: true});
 // Import authentication to restrict access to certain URLs
 const authentication = require('app/controllers/authentication');
+
+const ensureLoggedIn = require('connect-ensure-login').ensureLoggedIn;
+
 // Import request controller
 const oauth2Controller = require('app/controllers/oauth2');
 // Import nested routers
@@ -13,7 +16,7 @@ const authorizeRouter = require('app/routes/api/oauth2/authorize');
 const tokenRouter = require('app/routes/api/oauth2/token');
 
 // Routes to request permission from the user to access the API on their behalf
-router.use('/authorize', authentication.isUserAuthenticated, authorizeRouter);
+router.use('/authorize', ensureLoggedIn('/login'), authorizeRouter);
 
 // Route to exchange an authorization code for an access token
 router.use('/token', authentication.isClientAuthenticated, tokenRouter);

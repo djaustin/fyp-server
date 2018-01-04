@@ -1,5 +1,6 @@
 // User model for database interface
 const User = require('app/models/user');
+const logger = require('app/utils/logger');
 
 /**
  * Add a new user to the database with the details provided
@@ -47,12 +48,32 @@ exports.getUser = async function(req, res){
 
 /**
  * Delete a user from the database by id
- * @param req Request object containing the userId of the user to delete in req.params
+ * @param req {Object} Request object containing the userId of the user to delete in req.params
+ * @param res {Object} Response object with which the results can be sent to the client
  */
 exports.deleteUser = async function(req, res){
   try{
     await User.remove({_id: req.params.userId});
-    req.jsend.success(null);
+    res.jsend.success(null);
+  } catch(err){
+    logger.error(err);
+    res.jsend.error(err);
+  }
+}
+
+/**
+ * Edit user details of an authenticated and authorized user
+ * @param req {Object} Request object containing the userId of the user to edit (req.params.userId) and the new details to save (req.body)
+ * @param res {Object} Response object with which the results can be sent to the client
+ */
+exports.editUser = async function(req, res){
+  try{
+    const detailsToUpdate = {}
+    if(req.body.email) detailsToUpdate.email = req.body.email;
+    if(req.body.firstName) detailsToUpdate.firstName = req.body.firstName;
+    if(req.body.lastName) detailsToUpdate.lastName = req.body.lastName;
+    await User.update({_id: req.params.userId}, {$set: detailsToUpdate});
+    res.jsend.success(null);
   } catch(err){
     res.jsend.error(err);
   }

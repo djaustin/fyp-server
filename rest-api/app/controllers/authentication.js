@@ -9,7 +9,7 @@
 const passport = require('passport');
 const BasicStrategy = require('passport-http').BasicStrategy;
 const BearerStrategy = require('passport-http-bearer').Strategy;
-
+const LocalStrategy = require('passport-local').Strategy;
 const logger = require('app/utils/logger');
 
 const User = require('app/models/user');
@@ -103,6 +103,22 @@ passport.use(new BearerStrategy({passReqToCallback: true},
     }
   }
 ));
+
+passport.use(new LocalStrategy(async function(email, password, callback){
+  try{
+    const user = await User.findOne({email: email});
+    if (!user) return callback(null, false);
+    const match = await user.verifyPassword(password);
+    if(match){
+      return callback(null, user);
+    } else {
+      return callback(null, false);
+    }
+  } catch(err){
+    return callback(err);
+  }
+}));
+
 
 // Export authentication for easier use when module is imported
 exports.isUserAuthenticated = passport.authenticate('user-basic', {session: false});

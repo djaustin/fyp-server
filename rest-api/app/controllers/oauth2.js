@@ -82,7 +82,7 @@ server.exchange(oauth2orize.exchange.code(async function(client, code, redirectU
     await token.save();
 
     // Return access token to the callback
-    callback(null, token);
+    callback(null, token.value);
 
   } catch(err){
     logger.error(err);

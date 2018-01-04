@@ -49,14 +49,12 @@ app.set('views', './app/views');
 // Enable jsend object in requests
 app.use(jsend.middleware);
 
-// Enable passport authentication middleware
-app.use(passport.initialize());
-
 // Use the 'dev' template of logging for all requests to the app
 app.use(morgan('dev'));
 
 // Parse url enocded parameters from requests and place in req.params for all requests
 app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.json());
 
 app.use(session({
   secret: config.sessionSecret, // Store session key in config file
@@ -64,6 +62,18 @@ app.use(session({
   saveUninitialized: false, // Do not keep 'empty' cookies. Only save if something was stored in them.
   store: new MongoStore({mongooseConnection: mongoose.connection})
 }));
+
+passport.serializeUser(function(user, callback){
+  callback(null, user._id);
+});
+
+passport.deserializeUser(function(userId, callback){
+  require('app/models/user').findOne({_id: userId}, callback);
+});
+
+// Enable passport authentication middleware
+app.use(passport.initialize());
+app.use(passport.session());
 
 /**
  * ROUTING
@@ -77,6 +87,13 @@ router.get('/', function(req, res){
 });
 
 router.use('/api', apiRouter);
+
+app.get('/login', function(req, res) {
+  res.render('login');
+});
+
+app.post('/login', passport.authenticate('local', { successReturnToOrRedirect: '/', failureRedirect: '/login' }));
+
 
 app.use('/', router);
 

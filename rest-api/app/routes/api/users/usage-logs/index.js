@@ -17,7 +17,8 @@ router.route('/')
    * Add a new log to the currently authenticated and authorised user
    */
   .post(usageLogController.newUsageLog);
-  
+
+
 /**
  * Get a specific log for the currently authenticated and authorised user by ID
  */
