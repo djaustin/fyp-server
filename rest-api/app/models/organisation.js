@@ -1,8 +1,8 @@
 /*
-  This module contains the data model for organisations in the application.
-  It provides a representation of the schema of the mongodb documents.
-  An organisation (eg. Facebook Inc.) can log in to administer their applications and clients for OAuth2
-*/
+ *  This module contains the data model for organisations in the application.
+ *  It provides a representation of the schema of the mongodb documents.
+ *  An organisation (eg. Facebook Inc.) can log in to administer their applications and clients for OAuth2
+ */
 
 const mongoose = require('mongoose');
 // Import module containing password utilities such as hashing and verification

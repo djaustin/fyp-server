@@ -1,11 +1,3 @@
-
-// Allow authentication of users with basic auth (username and password)
-// NOTE: Make sure HTTPS is used or this is silly.
-/**
- * Generate an authentication strategy to be used by passport on requests.
- * This middleware authenticates a 'User' by checking the provided email and password against the database documents.
- * 'user-basic' is the name of the authentication strategy we are generating
- */
 const passport = require('passport');
 const BasicStrategy = require('passport-http').BasicStrategy;
 const BearerStrategy = require('passport-http-bearer').Strategy;
@@ -17,6 +9,11 @@ const Organisation = require('app/models/organisation');
 const Client = require('app/models/client');
 const Token = require('app/models/token');
 
+/**
+ * Generate an authentication strategy to be used by passport on requests.
+ * This middleware authenticates a 'User' by checking the provided email and password against the database documents.
+ * 'user-basic' is the name of the authentication strategy we are generating
+ */
 passport.use('user-basic', new BasicStrategy(
   async function(email, password, callback){
     try{
@@ -34,6 +31,9 @@ passport.use('user-basic', new BasicStrategy(
   }
 ));
 
+/**
+ * Generate an authentications strategy that authenticates an organisation by checking the provided email and password against the database documents
+ */
 passport.use('organisation-basic', new BasicStrategy(
   async function(email, password, callback){
     try{
@@ -52,6 +52,9 @@ passport.use('organisation-basic', new BasicStrategy(
   }
 ));
 
+/**
+ * Generate an authentications strategy that authenticates a client by checking the provided client id and client secret against the database documents
+ */
 passport.use('client-basic', new BasicStrategy(
   async function(id, secret, callback){
     try{

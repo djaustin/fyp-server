@@ -1,6 +1,6 @@
-/*
-  This module contains the data model for users in the application.
-  It provides a representation of the schema of the mongodb documents.
+/**
+ *  This module contains the data model for users in the application.
+ *  It provides a representation of the schema of the mongodb documents.
 */
 
 // Mongodb interface

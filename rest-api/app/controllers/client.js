@@ -7,7 +7,6 @@ const logger = require('app/utils/logger');
  * Gets all clients connected to the application provided.
  * @param req Request paramater that contains the application id in req.params.applicationId
  */
-// TODO: More checks on null values
 exports.getApplicationClients = async function(req, res){
   // TODO: Perhaps consider adding middleware to fetch the application from the db so it doesn't have to be done in all the children requests
   try{
@@ -22,6 +21,10 @@ exports.getApplicationClients = async function(req, res){
   }
 }
 
+/**
+ * Add a new application client to the database using the applicationId in the request URL and the client details in the request body
+ * @param req Request parameter containing the applicationId (req.params) and the client details (req.body)
+ */
 exports.newApplicationClient = async function(req, res){
   // Create new in-memory client
   const client = new Client({
@@ -52,6 +55,10 @@ exports.newApplicationClient = async function(req, res){
   }
 }
 
+/**
+ * Get an application client by client Id
+ * @param req Request object containing the clientId in rew.params
+ */
 exports.getApplicationClient = async function(req, res){
   try{
     const client = await Client.findOne({_id: req.params.clientId}, {secret: 0});

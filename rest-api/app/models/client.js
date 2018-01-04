@@ -1,9 +1,9 @@
-/*
+/**
  *  This module contains the data model for clients in the application.
  *  It provides a representation of the schema of the mongodb documents.
  *  A client can be something like the Facebook web application or the Facebook mobile application.
  *  A client will access the API using OAuth2 bearer tokens and must therefore be authorized by a user.
-*/
+ */
 
 const mongoose = require('mongoose');
 // cryptographic hashing library

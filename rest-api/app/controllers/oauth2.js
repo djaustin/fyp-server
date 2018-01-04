@@ -30,7 +30,6 @@ server.deserializeClient(async function(id, callback){
 });
 
 // A grant is the permission obtained by the client from the user before it is issued an access token.
-
 // Generate the middleware for granting authorization codes
 // Given a client, redirectUri, user, authorizationResponse (user's decision after being prompted)
 // NOTE: oauth2orize.grant.code specifies that we are granting an authorization code as opposed to implicit, exchange, or username/password
@@ -57,6 +56,7 @@ server.grant(oauth2orize.grant.code(async function(client, redirectUri, user, au
 // TODO: Check these values for null
 server.exchange(oauth2orize.exchange.code(async function(client, code, redirectUri, callback){
   try{
+    // Attempt to find authorization code with provided value in the database
     const authCode = await Code.findOne({value: code});
 
     // If no code matching the supplied value is found, return false in callback to represent invalid auth code
