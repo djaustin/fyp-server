@@ -25,7 +25,7 @@ const OrganisationSchema = new mongoose.Schema({
     required: true,
   },
   // Registered applications eg. Facebook, Messenger, Instagram
-  applications: {
+  applicationIds: {
     type: [mongoose.Schema.ObjectId]
   }
 }, {usePushEach: true}); // required due to deprecated mongo feature being used by mongoose

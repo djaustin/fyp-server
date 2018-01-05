@@ -14,7 +14,7 @@ exports.getApplicationClients = async function(req, res){
     // Get application instance first
     const application = await Application.findOne({_id: req.params.applicationId});
     // Get clients from the application
-    const clients = await Client.find({_id : { $in: application.clients} }, '_id name id');
+    const clients = await Client.find({_id : { $in: application.clientIds} }, '_id name id');
     res.jsend.success({clients: clients});
   } catch(err){
     logger.error(err);
@@ -37,7 +37,7 @@ exports.newApplicationClient = async function(req, res){
     // Retrieve the application we are attaching this to
     const application = await Application.findOne({_id: req.params.applicationId});
     // Add the client _id field to the application document
-    application.clients.push(client._id);
+    application.clientIds.push(client._id);
     // Try to save the application object
     await application.save();
     res.status(201);

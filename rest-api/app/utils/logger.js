@@ -18,12 +18,12 @@ const logger = new (winston.Logger)({
   transports: [
     // Console output - colorised
     new (winston.transports.Console)({
-      timestamp: () => {Date.now()},
+      timestamp: true,
       colorize: true,
       level: 'debug'
     }),
     new (winston.transports.File)({
-      timestamp: () => {Date.now()},
+      timestamp: true,
       filename: `${logDir}/server.log`,
       level: 'warn'
     })

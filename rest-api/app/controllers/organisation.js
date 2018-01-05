@@ -32,6 +32,7 @@ exports.getOrganisation = async function(req, res){
       const organisation = await Organisation.findOne({_id: req.params.organisationId}, {password: 0});
       res.jsend.success({organisation: organisation});
   } catch(err){
+      logger.error(err);
       res.jsend.error(err);
   }
 }

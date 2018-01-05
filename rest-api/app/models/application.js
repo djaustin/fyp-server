@@ -17,7 +17,7 @@ const ApplicationSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  clients: {
+  clientIds: {
     type: [mongoose.Schema.ObjectId]
   }
 }, {usePushEach: true});

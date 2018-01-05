@@ -34,13 +34,15 @@ passport.use('user-basic', new BasicStrategy(
   }
 ));
 
-passport.use('organisation-basic', new BasicStrategy(
-  async function(email, password, callback){
+passport.use('organisation-basic', new BasicStrategy({passReqToCallback: true},
+  async function(req, email, password, callback){
     try{
       const organisation = await Organisation.findOne({email: email});
       if(!organisation) return callback(null, false);
       const match = await organisation.verifyPassword(password);
       if(match){
+        // req.user and req.organisation both point to the authenticated organisation
+        req.organisation = organisation;
         return callback(null, organisation);
       } else {
         return callback(null, false);
