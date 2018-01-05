@@ -67,10 +67,26 @@ exports.getApplicationClient = async function(req, res){
  * @param req Request object containing the clientId in req.params
  * @param res Response object with which to send client feedback
  */
+ //TODO: Consider desired behaviour if this is deleted. Should usage logs also go? Maybe just flag as deleted so it still exists in the system for posterity
 exports.deleteApplicationClient = async function(req, res){
   try{
     await Client.remove({_id: req.params.clientId});
     res.jsend.success(null);
+  } catch(err){
+    res.jsend.error(err);
+  }
+}
+
+/**
+ * Edit an application client by ID
+ * @param req {Object} request object containing the clientId in req.params and the new client data in req.body
+ * @param res {Object} response object with which results will be sent to the client making the request
+ */
+// TODO: Which fields should be allowed to change?
+exports.editApplicationClient = async function(req, res){
+  try{
+    await Client.update({_id: req.params.clientId}, {$set: req.body});
+    res.jsend.success(null)
   } catch(err){
     res.jsend.error(err);
   }

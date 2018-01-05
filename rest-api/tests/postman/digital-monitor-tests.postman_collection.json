@@ -1,0 +1,2147 @@
+{
+	"info": {
+		"name": "DigitalMonitor Tests",
+		"_postman_id": "d527f81b-7e9a-a62a-16d9-9c2d61cc3bb8",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Users",
+			"description": "",
+			"item": [
+				{
+					"name": "Create a new user",
+					"description": "Workflow to test creation of a new user",
+					"item": [
+						{
+							"name": "Add a user",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "25c77851-7eea-4148-bbc6-989dc6f98977",
+										"type": "text/javascript",
+										"exec": [
+											"pm.environment.set('userNumber', Math.floor(Math.random()*100000));"
+										]
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "57c72198-de3a-459c-affb-c3b68c1cf8d2",
+										"type": "text/javascript",
+										"exec": [
+											"postman.setGlobalVariable(\"commonTests\", () =>{",
+											"    ",
+											"  // The Content-Type must be JSON",
+											"  tests[\"Content-Type header includes application/json\"] = postman.getResponseHeader(\"Content-Type\").includes(\"application/json\");",
+											"",
+											"  // The response time must be less than 500 milliseconds",
+											"  tests[\"Response time is acceptable\"] = responseTime < 500;",
+											"",
+											"  // The response body must include an \"id\" property",
+											"  const jsonResponse = JSON.parse(responseBody);",
+											"  const jsendSchema = JSON.parse(environment.JSendBasicSchema);",
+											"  tests[\"Response matches JSend schema\"] = tv4.validate(jsonResponse, jsendSchema);",
+											"  tests[\"Response 'status' equals 'success'\"] = jsonResponse.status === \"success\";",
+											"})",
+											"",
+											"eval(globals.commonTests)();",
+											"",
+											"",
+											"const addUserResponse = JSON.parse(responseBody);",
+											"const addUserResponseSchema = {",
+											"  \"definitions\": {},",
+											"  \"$schema\": \"http://json-schema.org/draft-06/schema#\",",
+											"  \"$id\": \"https://digitalmonitor.tk/api/\",",
+											"  \"type\": \"object\",",
+											"  \"properties\": {",
+											"    \"status\": {",
+											"      \"$id\": \"/properties/status\",",
+											"      \"type\": \"string\"",
+											"    },",
+											"    \"data\": {",
+											"      \"$id\": \"/properties/data\",",
+											"      \"type\": \"object\",",
+											"      \"properties\": {",
+											"        \"user\": {",
+											"          \"$id\": \"/properties/data/properties/user\",",
+											"          \"type\": \"object\",",
+											"          \"properties\": {",
+											"            \"__v\": {",
+											"              \"$id\": \"/properties/data/properties/user/properties/__v\",",
+											"              \"type\": \"integer\"",
+											"            },",
+											"            \"email\": {",
+											"              \"$id\": \"/properties/data/properties/user/properties/email\",",
+											"              \"type\": \"string\"",
+											"            },",
+											"            \"firstName\": {",
+											"              \"$id\": \"/properties/data/properties/user/properties/firstName\",",
+											"              \"type\": \"string\"",
+											"            },",
+											"            \"lastName\": {",
+											"              \"$id\": \"/properties/data/properties/user/properties/lastName\",",
+											"              \"type\": \"string\"",
+											"            },",
+											"            \"_id\": {",
+											"              \"$id\": \"/properties/data/properties/user/properties/_id\",",
+											"              \"type\": \"string\"",
+											"            }",
+											"          },",
+											"          \"required\": [",
+											"            \"__v\",",
+											"            \"email\",",
+											"            \"firstName\",",
+											"            \"lastName\",",
+											"            \"_id\"",
+											"          ]",
+											"        },",
+											"        \"locations\": {",
+											"          \"$id\": \"/properties/data/properties/locations\",",
+											"          \"type\": \"array\",",
+											"          \"items\": {",
+											"            \"$id\": \"/properties/data/properties/locations/items\",",
+											"            \"type\": \"string\"",
+											"          }",
+											"        }",
+											"      },",
+											"      \"required\": [",
+											"        \"user\",",
+											"        \"locations\"",
+											"      ]",
+											"    }",
+											"  },",
+											"  \"required\": [",
+											"    \"status\",",
+											"    \"data\"",
+											"  ]",
+											"}",
+											"",
+											"tests[\"Status code is 201\"] = responseCode.code === 201;",
+											"tests[\"Response schema is valid\"] = tv4.validate(addUserResponse, addUserResponseSchema);",
+											"",
+											"pm.environment.set('userId', addUserResponse.data.user._id);",
+											"pm.environment.set('userEmail', addUserResponse.data.user.email);"
+										]
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "",
+										"value": ""
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"email\": \"user{{userNumber}}@mail.com\",\n\t\"password\": \"password\",\n\t\"firstName\": \"firstName{{userNumber}}\",\n\t\"lastName\": \"lastName{{userNumber}}\"\n}"
+								},
+								"url": {
+									"raw": "{{hostname}}/api/users",
+									"host": [
+										"{{hostname}}"
+									],
+									"path": [
+										"api",
+										"users"
+									]
+								},
+								"description": ""
+							},
+							"response": []
+						}
+					],
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Get user details",
+					"description": "",
+					"item": [
+						{
+							"name": "Get user by ID",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "6e085f61-61c5-4383-8d0c-b7f8187cb794",
+										"type": "text/javascript",
+										"exec": [
+											"eval(globals.commonTests)();",
+											"",
+											"tests[\"Status code is 200\"] = responseCode.code === 200;",
+											"",
+											"const jsonResponse = JSON.parse(responseBody);",
+											"const getUserResponseSchema = {",
+											"  \"definitions\": {},",
+											"  \"$schema\": \"http://json-schema.org/draft-06/schema#\",",
+											"  \"$id\": \"https://digitalmonitor.tk/api/\",",
+											"  \"type\": \"object\",",
+											"  \"properties\": {",
+											"    \"status\": {",
+											"      \"$id\": \"/properties/status\",",
+											"      \"type\": \"string\"",
+											"    },",
+											"    \"data\": {",
+											"      \"$id\": \"/properties/data\",",
+											"      \"type\": \"object\",",
+											"      \"properties\": {",
+											"        \"user\": {",
+											"          \"$id\": \"/properties/data/properties/user\",",
+											"          \"type\": \"object\",",
+											"          \"properties\": {",
+											"            \"_id\": {",
+											"              \"$id\": \"/properties/data/properties/user/properties/_id\",",
+											"              \"type\": \"string\"",
+											"            },",
+											"            \"email\": {",
+											"              \"$id\": \"/properties/data/properties/user/properties/email\",",
+											"              \"type\": \"string\"",
+											"            },",
+											"            \"firstName\": {",
+											"              \"$id\": \"/properties/data/properties/user/properties/firstName\",",
+											"              \"type\": \"string\"",
+											"            },",
+											"            \"lastName\": {",
+											"              \"$id\": \"/properties/data/properties/user/properties/lastName\",",
+											"              \"type\": \"string\"",
+											"            },",
+											"            \"__v\": {",
+											"              \"$id\": \"/properties/data/properties/user/properties/__v\",",
+											"              \"type\": \"integer\"",
+											"            }",
+											"          },",
+											"          \"required\": [",
+											"            \"_id\",",
+											"            \"email\",",
+											"            \"firstName\",",
+											"            \"lastName\",",
+											"            \"__v\"",
+											"          ]",
+											"        }",
+											"      },",
+											"      \"required\": [",
+											"        \"user\"",
+											"      ]",
+											"    }",
+											"  },",
+											"  \"required\": [",
+											"    \"status\",",
+											"    \"data\"",
+											"  ]",
+											"};",
+											"",
+											"tests[\"Response schema is valid\"] = tv4.validate(jsonResponse, getUserResponseSchema);"
+										]
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {},
+								"url": {
+									"raw": "{{hostname}}/api/users/{{userId}}",
+									"host": [
+										"{{hostname}}"
+									],
+									"path": [
+										"api",
+										"users",
+										"{{userId}}"
+									]
+								},
+								"description": ""
+							},
+							"response": []
+						}
+					],
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Edit user details",
+					"description": "",
+					"item": [
+						{
+							"name": "Edit user",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"pm.environment.set('nonce', Math.floor(Math.random()*100000));"
+										],
+										"id": "563fd5ef-c6fd-4c82-8f80-3368a2a5c3d1",
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"eval(globals.commonTests)();",
+											"",
+											"tests[\"Status code is 200\"] = responseCode.code === 200;",
+											"",
+											"pm.environment.set(\"userEmail\", pm.environment.get(\"nonce\"))"
+										],
+										"id": "7d9e37d7-7bb2-4dd6-b791-3fdee0fcea7d",
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"email\": \"{{nonce}}\",\n\t\"password\": \"{{nonce}}\",\n\t\"firstName\": \"{{nonce}}\",\n\t\"lastName\": \"{{nonce}}\"\n}"
+								},
+								"url": {
+									"raw": "{{hostname}}/api/users/{{userId}}",
+									"host": [
+										"{{hostname}}"
+									],
+									"path": [
+										"api",
+										"users",
+										"{{userId}}"
+									]
+								},
+								"description": ""
+							},
+							"response": []
+						}
+					],
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Delete a user",
+					"description": "",
+					"item": [
+						{
+							"name": "Delete a user",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "3d1e5ef4-59be-4be3-826f-043b0491717d",
+										"type": "text/javascript",
+										"exec": [
+											"eval(globals.commonTests)();",
+											"",
+											"tests[\"Status code is 200\"] = responseCode.code = 200;",
+											""
+										]
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {},
+								"url": {
+									"raw": "{{hostname}}/api/users/{{userId}}",
+									"host": [
+										"{{hostname}}"
+									],
+									"path": [
+										"api",
+										"users",
+										"{{userId}}"
+									]
+								},
+								"description": ""
+							},
+							"response": []
+						}
+					],
+					"_postman_isSubFolder": true
+				}
+			],
+			"auth": {
+				"type": "basic",
+				"basic": [
+					{
+						"key": "username",
+						"value": "{{userEmail}}",
+						"type": "string"
+					},
+					{
+						"key": "password",
+						"value": "password",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"id": "fa148639-077f-4685-bf29-43a6f19317aa",
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"id": "30740a6f-1565-479c-bd35-623bc6533bdc",
+						"type": "text/javascript"
+					}
+				}
+			]
+		},
+		{
+			"name": "Organisations",
+			"description": "",
+			"item": [
+				{
+					"name": "Create a new organisation",
+					"description": "",
+					"item": [
+						{
+							"name": "Add an organisation",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "a741d381-e8df-4ebf-8748-f243c2e049f5",
+										"type": "text/javascript",
+										"exec": [
+											"pm.environment.set('organisationNumber', Math.floor(Math.random()*100000));"
+										]
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "e5d7e789-af95-4e49-9121-1b734398fffe",
+										"type": "text/javascript",
+										"exec": [
+											"eval(globals.commonTests)();",
+											"",
+											"tests[\"Status code is 201\"] = responseCode.code === 201;",
+											"",
+											"const jsonResponse = JSON.parse(responseBody);",
+											"const schema = {",
+											"  \"definitions\": {},",
+											"  \"$schema\": \"http://json-schema.org/draft-06/schema#\",",
+											"  \"$id\": \"https://digitalmonitor.tk/api/\",",
+											"  \"type\": \"object\",",
+											"  \"properties\": {",
+											"    \"status\": {",
+											"      \"$id\": \"/properties/status\",",
+											"      \"type\": \"string\"",
+											"    },",
+											"    \"data\": {",
+											"      \"$id\": \"/properties/data\",",
+											"      \"type\": \"object\",",
+											"      \"properties\": {",
+											"        \"organisation\": {",
+											"          \"$id\": \"/properties/data/properties/organisation\",",
+											"          \"type\": \"object\",",
+											"          \"properties\": {",
+											"            \"__v\": {",
+											"              \"$id\": \"/properties/data/properties/organisation/properties/__v\",",
+											"              \"type\": \"integer\"",
+											"            },",
+											"            \"name\": {",
+											"              \"$id\": \"/properties/data/properties/organisation/properties/name\",",
+											"              \"type\": \"string\"",
+											"            },",
+											"            \"email\": {",
+											"              \"$id\": \"/properties/data/properties/organisation/properties/email\",",
+											"              \"type\": \"string\"",
+											"            },",
+											"            \"_id\": {",
+											"              \"$id\": \"/properties/data/properties/organisation/properties/_id\",",
+											"              \"type\": \"string\"",
+											"            },",
+											"            \"applicationIds\": {",
+											"              \"$id\": \"/properties/data/properties/organisation/properties/applications\",",
+											"              \"type\": \"array\",",
+											"              \"items\": {",
+											"                \"title\": \"Empty Object\",",
+											"                \"description\": \"Accepts anything iff it's valid JSON.\"",
+											"              }",
+											"            }",
+											"          },",
+											"          \"required\": [",
+											"            \"__v\",",
+											"            \"name\",",
+											"            \"email\",",
+											"            \"_id\",",
+											"            \"applicationIds\"",
+											"          ]",
+											"        },",
+											"        \"locations\": {",
+											"          \"$id\": \"/properties/data/properties/locations\",",
+											"          \"type\": \"array\",",
+											"          \"items\": {",
+											"            \"$id\": \"/properties/data/properties/locations/items\",",
+											"            \"type\": \"string\"",
+											"          }",
+											"        }",
+											"      },",
+											"      \"required\": [",
+											"        \"organisation\",",
+											"        \"locations\"",
+											"      ]",
+											"    }",
+											"  },",
+											"  \"required\": [",
+											"    \"status\",",
+											"    \"data\"",
+											"  ]",
+											"};",
+											"tests[\"Response schema is valid\"] = tv4.validate(jsonResponse, schema);",
+											"",
+											"pm.environment.set(\"organisationId\",jsonResponse.data.organisation._id);",
+											"pm.environment.set(\"organisationEmail\", jsonResponse.data.organisation.email);"
+										]
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"name\": \"organisation{{organisationNumber}}\",\n\t\"email\": \"organisation{{organisationNumber}}@mail.com\",\n\t\"password\": \"password\"\n}"
+								},
+								"url": {
+									"raw": "{{hostname}}/api/organisations",
+									"host": [
+										"{{hostname}}"
+									],
+									"path": [
+										"api",
+										"organisations"
+									]
+								},
+								"description": ""
+							},
+							"response": []
+						}
+					],
+					"auth": {
+						"type": "basic",
+						"basic": [
+							{
+								"key": "username",
+								"value": "{{organisationEmail}}",
+								"type": "string"
+							},
+							{
+								"key": "password",
+								"value": "password",
+								"type": "string"
+							}
+						]
+					},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Get organisation details",
+					"description": "",
+					"item": [
+						{
+							"name": "Get organisation by ID",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "9efe19c0-a3bb-49f1-a6d6-7af792121c5c",
+										"type": "text/javascript",
+										"exec": [
+											"eval(globals.commonTests)();",
+											"",
+											"tests[\"Status code is 200\"] = responseCode.code === 200;",
+											"",
+											"const jsonResponse = JSON.parse(responseBody);",
+											"const schema = {",
+											"  \"definitions\": {},",
+											"  \"$schema\": \"http://json-schema.org/draft-06/schema#\",",
+											"  \"$id\": \"https://digitalmonitor.tk/api/\",",
+											"  \"type\": \"object\",",
+											"  \"properties\": {",
+											"    \"status\": {",
+											"      \"$id\": \"/properties/status\",",
+											"      \"type\": \"string\"",
+											"    },",
+											"    \"data\": {",
+											"      \"$id\": \"/properties/data\",",
+											"      \"type\": \"object\",",
+											"      \"properties\": {",
+											"        \"organisation\": {",
+											"          \"$id\": \"/properties/data/properties/organisation\",",
+											"          \"type\": \"object\",",
+											"          \"properties\": {",
+											"            \"_id\": {",
+											"              \"$id\": \"/properties/data/properties/organisation/properties/_id\",",
+											"              \"type\": \"string\"",
+											"            },",
+											"            \"name\": {",
+											"              \"$id\": \"/properties/data/properties/organisation/properties/name\",",
+											"              \"type\": \"string\"",
+											"            },",
+											"            \"email\": {",
+											"              \"$id\": \"/properties/data/properties/organisation/properties/email\",",
+											"              \"type\": \"string\"",
+											"            },",
+											"            \"__v\": {",
+											"              \"$id\": \"/properties/data/properties/organisation/properties/__v\",",
+											"              \"type\": \"integer\"",
+											"            },",
+											"            \"applicationIds\": {",
+											"              \"$id\": \"/properties/data/properties/organisation/properties/applications\",",
+											"              \"type\": \"array\",",
+											"              \"items\": {",
+											"                \"title\": \"Empty Object\",",
+											"                \"description\": \"Accepts anything iff it's valid JSON.\"",
+											"              }",
+											"            }",
+											"          },",
+											"          \"required\": [",
+											"            \"_id\",",
+											"            \"name\",",
+											"            \"email\",",
+											"            \"__v\",",
+											"            \"applicationIds\"",
+											"          ]",
+											"        }",
+											"      },",
+											"      \"required\": [",
+											"        \"organisation\"",
+											"      ]",
+											"    }",
+											"  },",
+											"  \"required\": [",
+											"    \"status\",",
+											"    \"data\"",
+											"  ]",
+											"};",
+											"",
+											"tests[\"Response schema is valid\"] = tv4.validate(jsonResponse, schema);"
+										]
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {},
+								"url": {
+									"raw": "{{hostname}}/api/organisations/{{organisationId}}",
+									"host": [
+										"{{hostname}}"
+									],
+									"path": [
+										"api",
+										"organisations",
+										"{{organisationId}}"
+									]
+								},
+								"description": ""
+							},
+							"response": []
+						}
+					],
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Edit organisation",
+					"description": "",
+					"item": [
+						{
+							"name": "Edit organisation details",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "563fd5ef-c6fd-4c82-8f80-3368a2a5c3d1",
+										"type": "text/javascript",
+										"exec": [
+											"pm.environment.set('nonce', Math.floor(Math.random()*100000));"
+										]
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "8bfc60eb-c9ed-4f5d-a049-478f285c2f59",
+										"type": "text/javascript",
+										"exec": [
+											"eval(globals.commonTests)();",
+											"",
+											"tests[\"Status code is 200\"] = responseCode.code === 200;",
+											"",
+											"pm.environment.set(\"organisationEmail\", pm.environment.get(\"nonce\"))"
+										]
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"email\": \"{{nonce}}\",\n\t\"password\": \"{{nonce}}\",\n\t\"name\": \"{{nonce}}\"\n}"
+								},
+								"url": {
+									"raw": "{{hostname}}/api/organisations/{{organisationId}}",
+									"host": [
+										"{{hostname}}"
+									],
+									"path": [
+										"api",
+										"organisations",
+										"{{organisationId}}"
+									]
+								},
+								"description": ""
+							},
+							"response": []
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "321a9c40-9659-445f-b70d-e13d06655058",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "56f6cc35-8b8e-44cf-9943-f678a12f9327",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					],
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Delete an organisation",
+					"description": "",
+					"item": [
+						{
+							"name": "Delete organisation",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "53921155-38cf-414a-bc39-f2db2e734706",
+										"type": "text/javascript",
+										"exec": [
+											"eval(globals.commonTests)();",
+											"",
+											"tests[\"Status code is 200\"] = responseCode.code = 200;",
+											""
+										]
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {},
+								"url": {
+									"raw": "{{hostname}}/api/organisations/{{organisationId}}",
+									"host": [
+										"{{hostname}}"
+									],
+									"path": [
+										"api",
+										"organisations",
+										"{{organisationId}}"
+									]
+								},
+								"description": ""
+							},
+							"response": []
+						}
+					],
+					"_postman_isSubFolder": true
+				}
+			],
+			"auth": {
+				"type": "basic",
+				"basic": [
+					{
+						"key": "username",
+						"value": "{{organisationEmail}}",
+						"type": "string"
+					},
+					{
+						"key": "password",
+						"value": "password",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"id": "abd45ff4-0991-49d6-9e46-779f402205e6",
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"id": "47af5a8e-86af-4a5a-b7e5-ea8b95cd0a1f",
+						"type": "text/javascript"
+					}
+				}
+			]
+		},
+		{
+			"name": "Applications",
+			"description": "",
+			"item": [
+				{
+					"name": "Create a new application",
+					"description": "",
+					"item": [
+						{
+							"name": "Add an organisation",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "a741d381-e8df-4ebf-8748-f243c2e049f5",
+										"type": "text/javascript",
+										"exec": [
+											"pm.environment.set('organisationNumber', Math.floor(Math.random()*100000));"
+										]
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "e5d7e789-af95-4e49-9121-1b734398fffe",
+										"type": "text/javascript",
+										"exec": [
+											"eval(globals.commonTests)();",
+											"",
+											"tests[\"Status code is 201\"] = responseCode.code === 201;",
+											"",
+											"const jsonResponse = JSON.parse(responseBody);",
+											"const schema = {",
+											"  \"definitions\": {},",
+											"  \"$schema\": \"http://json-schema.org/draft-06/schema#\",",
+											"  \"$id\": \"https://digitalmonitor.tk/api/\",",
+											"  \"type\": \"object\",",
+											"  \"properties\": {",
+											"    \"status\": {",
+											"      \"$id\": \"/properties/status\",",
+											"      \"type\": \"string\"",
+											"    },",
+											"    \"data\": {",
+											"      \"$id\": \"/properties/data\",",
+											"      \"type\": \"object\",",
+											"      \"properties\": {",
+											"        \"organisation\": {",
+											"          \"$id\": \"/properties/data/properties/organisation\",",
+											"          \"type\": \"object\",",
+											"          \"properties\": {",
+											"            \"__v\": {",
+											"              \"$id\": \"/properties/data/properties/organisation/properties/__v\",",
+											"              \"type\": \"integer\"",
+											"            },",
+											"            \"name\": {",
+											"              \"$id\": \"/properties/data/properties/organisation/properties/name\",",
+											"              \"type\": \"string\"",
+											"            },",
+											"            \"email\": {",
+											"              \"$id\": \"/properties/data/properties/organisation/properties/email\",",
+											"              \"type\": \"string\"",
+											"            },",
+											"            \"_id\": {",
+											"              \"$id\": \"/properties/data/properties/organisation/properties/_id\",",
+											"              \"type\": \"string\"",
+											"            },",
+											"            \"applicationIds\": {",
+											"              \"$id\": \"/properties/data/properties/organisation/properties/applications\",",
+											"              \"type\": \"array\",",
+											"              \"items\": {",
+											"                \"title\": \"Empty Object\",",
+											"                \"description\": \"Accepts anything iff it's valid JSON.\"",
+											"              }",
+											"            }",
+											"          },",
+											"          \"required\": [",
+											"            \"__v\",",
+											"            \"name\",",
+											"            \"email\",",
+											"            \"_id\",",
+											"            \"applicationIds\"",
+											"          ]",
+											"        },",
+											"        \"locations\": {",
+											"          \"$id\": \"/properties/data/properties/locations\",",
+											"          \"type\": \"array\",",
+											"          \"items\": {",
+											"            \"$id\": \"/properties/data/properties/locations/items\",",
+											"            \"type\": \"string\"",
+											"          }",
+											"        }",
+											"      },",
+											"      \"required\": [",
+											"        \"organisation\",",
+											"        \"locations\"",
+											"      ]",
+											"    }",
+											"  },",
+											"  \"required\": [",
+											"    \"status\",",
+											"    \"data\"",
+											"  ]",
+											"};",
+											"tests[\"Response schema is valid\"] = tv4.validate(jsonResponse, schema);",
+											"",
+											"pm.environment.set(\"organisationId\",jsonResponse.data.organisation._id);",
+											"pm.environment.set(\"organisationEmail\", jsonResponse.data.organisation.email);"
+										]
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"name\": \"organisation{{organisationNumber}}\",\n\t\"email\": \"organisation{{organisationNumber}}@mail.com\",\n\t\"password\": \"password\"\n}"
+								},
+								"url": {
+									"raw": "{{hostname}}/api/organisations",
+									"host": [
+										"{{hostname}}"
+									],
+									"path": [
+										"api",
+										"organisations"
+									]
+								},
+								"description": ""
+							},
+							"response": []
+						},
+						{
+							"name": "Add an organisation application",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "ccf9fb65-0007-40a6-8e29-12e1b5906075",
+										"type": "text/javascript",
+										"exec": [
+											"pm.environment.set('applicationNumber', Math.floor(Math.random()*100000));"
+										]
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "a8486a74-563c-47f7-a307-c0a5321462a0",
+										"type": "text/javascript",
+										"exec": [
+											"const schema = {",
+											"  \"definitions\": {},",
+											"  \"$schema\": \"http://json-schema.org/draft-06/schema#\",",
+											"  \"$id\": \"https://digitalmonitor.tk/api/\",",
+											"  \"type\": \"object\",",
+											"  \"properties\": {",
+											"    \"status\": {",
+											"      \"$id\": \"/properties/status\",",
+											"      \"type\": \"string\"",
+											"    },",
+											"    \"data\": {",
+											"      \"$id\": \"/properties/data\",",
+											"      \"type\": \"object\",",
+											"      \"properties\": {",
+											"        \"application\": {",
+											"          \"$id\": \"/properties/data/properties/application\",",
+											"          \"type\": \"object\",",
+											"          \"properties\": {",
+											"            \"__v\": {",
+											"              \"$id\": \"/properties/data/properties/application/properties/__v\",",
+											"              \"type\": \"integer\"",
+											"            },",
+											"            \"name\": {",
+											"              \"$id\": \"/properties/data/properties/application/properties/name\",",
+											"              \"type\": \"string\"",
+											"            },",
+											"            \"_id\": {",
+											"              \"$id\": \"/properties/data/properties/application/properties/_id\",",
+											"              \"type\": \"string\"",
+											"            },",
+											"            \"clientIds\": {",
+											"              \"$id\": \"/properties/data/properties/application/properties/clients\",",
+											"              \"type\": \"array\",",
+											"              \"items\": {",
+											"                \"title\": \"Empty Object\",",
+											"                \"description\": \"Accepts anything iff it's valid JSON.\"",
+											"              }",
+											"            }",
+											"          },",
+											"          \"required\": [",
+											"            \"__v\",",
+											"            \"name\",",
+											"            \"_id\",",
+											"            \"clientIds\"",
+											"          ]",
+											"        },",
+											"        \"locations\": {",
+											"          \"$id\": \"/properties/data/properties/locations\",",
+											"          \"type\": \"array\",",
+											"          \"items\": {",
+											"            \"$id\": \"/properties/data/properties/locations/items\",",
+											"            \"type\": \"string\"",
+											"          }",
+											"        }",
+											"      },",
+											"      \"required\": [",
+											"        \"application\",",
+											"        \"locations\"",
+											"      ]",
+											"    }",
+											"  },",
+											"  \"required\": [",
+											"    \"status\",",
+											"    \"data\"",
+											"  ]",
+											"};",
+											"",
+											"const responseJson = JSON.parse(responseBody);",
+											"",
+											"eval(globals.commonTests)();",
+											"",
+											"tests[\"Status code is 201\"] = responseCode.code === 201;",
+											"tests[\"Response schema is valid\"] = tv4.validate(responseJson, schema);",
+											"",
+											"pm.environment.set(\"applicationId\", responseJson.data.application._id);",
+											""
+										]
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"name\": \"application{{applicationNumber}}\"\n}"
+								},
+								"url": {
+									"raw": "{{hostname}}/api/organisations/{{organisationId}}/applications/",
+									"host": [
+										"{{hostname}}"
+									],
+									"path": [
+										"api",
+										"organisations",
+										"{{organisationId}}",
+										"applications",
+										""
+									]
+								},
+								"description": ""
+							},
+							"response": []
+						}
+					],
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Get application details",
+					"description": "",
+					"item": [
+						{
+							"name": "Get organisation application by Id ",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "6d82a693-cee9-45a1-beae-5c9dd3a22ef2",
+										"type": "text/javascript",
+										"exec": [
+											"eval(globals.commonTests)();",
+											"",
+											"const responseJson = JSON.parse(responseBody);",
+											"",
+											"const schema = {",
+											"  \"definitions\": {},",
+											"  \"$schema\": \"http://json-schema.org/draft-06/schema#\",",
+											"  \"$id\": \"https://digitalmonitor.tk/api/\",",
+											"  \"type\": \"object\",",
+											"  \"properties\": {",
+											"    \"status\": {",
+											"      \"$id\": \"/properties/status\",",
+											"      \"type\": \"string\"",
+											"    },",
+											"    \"data\": {",
+											"      \"$id\": \"/properties/data\",",
+											"      \"type\": \"object\",",
+											"      \"properties\": {",
+											"        \"application\": {",
+											"          \"$id\": \"/properties/data/properties/application\",",
+											"          \"type\": \"object\",",
+											"          \"properties\": {",
+											"            \"_id\": {",
+											"              \"$id\": \"/properties/data/properties/application/properties/_id\",",
+											"              \"type\": \"string\"",
+											"            },",
+											"            \"name\": {",
+											"              \"$id\": \"/properties/data/properties/application/properties/name\",",
+											"              \"type\": \"string\"",
+											"            },",
+											"            \"__v\": {",
+											"              \"$id\": \"/properties/data/properties/application/properties/__v\",",
+											"              \"type\": \"integer\"",
+											"            },",
+											"            \"clientIds\": {",
+											"              \"$id\": \"/properties/data/properties/application/properties/clients\",",
+											"              \"type\": \"array\",",
+											"              \"items\": {",
+											"                \"title\": \"Empty Object\",",
+											"                \"description\": \"Accepts anything iff it's valid JSON.\"",
+											"              }",
+											"            }",
+											"          },",
+											"          \"required\": [",
+											"            \"_id\",",
+											"            \"name\",",
+											"            \"__v\",",
+											"            \"clientIds\"",
+											"          ]",
+											"        }",
+											"      },",
+											"      \"required\": [",
+											"        \"application\"",
+											"      ]",
+											"    }",
+											"  },",
+											"  \"required\": [",
+											"    \"status\",",
+											"    \"data\"",
+											"  ]",
+											"};",
+											"",
+											"tests[\"Status code is 200\"] = responseCode.code === 200;",
+											"tests[\"Response schema is valid\"] = tv4.validate(responseJson, schema);"
+										]
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {},
+								"url": {
+									"raw": "{{hostname}}/api/organisations/{{organisationId}}/applications/{{applicationId}}",
+									"host": [
+										"{{hostname}}"
+									],
+									"path": [
+										"api",
+										"organisations",
+										"{{organisationId}}",
+										"applications",
+										"{{applicationId}}"
+									]
+								},
+								"description": ""
+							},
+							"response": []
+						}
+					],
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Edit application",
+					"description": "",
+					"item": [
+						{
+							"name": "Edit organisation application",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "563fd5ef-c6fd-4c82-8f80-3368a2a5c3d1",
+										"type": "text/javascript",
+										"exec": [
+											"pm.environment.set('nonce', Math.floor(Math.random()*100000));"
+										]
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "90af0c7e-ee37-464e-a70f-5c6d88dff4e7",
+										"type": "text/javascript",
+										"exec": [
+											"eval(globals.commonTests)();",
+											"",
+											"tests[\"Status code is 200\"] = responseCode.code === 200;",
+											""
+										]
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"name\": \"{{nonce}}\"\n}"
+								},
+								"url": {
+									"raw": "{{hostname}}/api/organisations/{{organisationId}}/applications/{{applicationId}}",
+									"host": [
+										"{{hostname}}"
+									],
+									"path": [
+										"api",
+										"organisations",
+										"{{organisationId}}",
+										"applications",
+										"{{applicationId}}"
+									]
+								},
+								"description": ""
+							},
+							"response": []
+						}
+					],
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Delete an application",
+					"description": "",
+					"item": [
+						{
+							"name": "Delete organisation application",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "53921155-38cf-414a-bc39-f2db2e734706",
+										"type": "text/javascript",
+										"exec": [
+											"eval(globals.commonTests)();",
+											"",
+											"tests[\"Status code is 200\"] = responseCode.code = 200;",
+											""
+										]
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {},
+								"url": {
+									"raw": "{{hostname}}/api/organisations/{{organisationId}}/applications/{{applicationId}}",
+									"host": [
+										"{{hostname}}"
+									],
+									"path": [
+										"api",
+										"organisations",
+										"{{organisationId}}",
+										"applications",
+										"{{applicationId}}"
+									]
+								},
+								"description": ""
+							},
+							"response": []
+						},
+						{
+							"name": "Delete organisation",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "53921155-38cf-414a-bc39-f2db2e734706",
+										"type": "text/javascript",
+										"exec": [
+											"eval(globals.commonTests)();",
+											"",
+											"tests[\"Status code is 200\"] = responseCode.code = 200;",
+											""
+										]
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {},
+								"url": {
+									"raw": "{{hostname}}/api/organisations/{{organisationId}}",
+									"host": [
+										"{{hostname}}"
+									],
+									"path": [
+										"api",
+										"organisations",
+										"{{organisationId}}"
+									]
+								},
+								"description": ""
+							},
+							"response": []
+						}
+					],
+					"_postman_isSubFolder": true
+				}
+			],
+			"auth": {
+				"type": "basic",
+				"basic": [
+					{
+						"key": "username",
+						"value": "{{organisationEmail}}",
+						"type": "string"
+					},
+					{
+						"key": "password",
+						"value": "password",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "3fdaf9cc-dc2a-45f5-8304-a896cb5afe3f",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "3235d022-abf6-42bb-809a-03d36859e3a4",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Clients",
+			"description": "",
+			"item": [
+				{
+					"name": "Create a new application client",
+					"description": "",
+					"item": [
+						{
+							"name": "Add an organisation",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "a741d381-e8df-4ebf-8748-f243c2e049f5",
+										"type": "text/javascript",
+										"exec": [
+											"pm.environment.set('organisationNumber', Math.floor(Math.random()*100000));"
+										]
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "e5d7e789-af95-4e49-9121-1b734398fffe",
+										"type": "text/javascript",
+										"exec": [
+											"eval(globals.commonTests)();",
+											"",
+											"tests[\"Status code is 201\"] = responseCode.code === 201;",
+											"",
+											"const jsonResponse = JSON.parse(responseBody);",
+											"const schema = {",
+											"  \"definitions\": {},",
+											"  \"$schema\": \"http://json-schema.org/draft-06/schema#\",",
+											"  \"$id\": \"https://digitalmonitor.tk/api/\",",
+											"  \"type\": \"object\",",
+											"  \"properties\": {",
+											"    \"status\": {",
+											"      \"$id\": \"/properties/status\",",
+											"      \"type\": \"string\"",
+											"    },",
+											"    \"data\": {",
+											"      \"$id\": \"/properties/data\",",
+											"      \"type\": \"object\",",
+											"      \"properties\": {",
+											"        \"organisation\": {",
+											"          \"$id\": \"/properties/data/properties/organisation\",",
+											"          \"type\": \"object\",",
+											"          \"properties\": {",
+											"            \"__v\": {",
+											"              \"$id\": \"/properties/data/properties/organisation/properties/__v\",",
+											"              \"type\": \"integer\"",
+											"            },",
+											"            \"name\": {",
+											"              \"$id\": \"/properties/data/properties/organisation/properties/name\",",
+											"              \"type\": \"string\"",
+											"            },",
+											"            \"email\": {",
+											"              \"$id\": \"/properties/data/properties/organisation/properties/email\",",
+											"              \"type\": \"string\"",
+											"            },",
+											"            \"_id\": {",
+											"              \"$id\": \"/properties/data/properties/organisation/properties/_id\",",
+											"              \"type\": \"string\"",
+											"            },",
+											"            \"applicationIds\": {",
+											"              \"$id\": \"/properties/data/properties/organisation/properties/applications\",",
+											"              \"type\": \"array\",",
+											"              \"items\": {",
+											"                \"title\": \"Empty Object\",",
+											"                \"description\": \"Accepts anything iff it's valid JSON.\"",
+											"              }",
+											"            }",
+											"          },",
+											"          \"required\": [",
+											"            \"__v\",",
+											"            \"name\",",
+											"            \"email\",",
+											"            \"_id\",",
+											"            \"applicationIds\"",
+											"          ]",
+											"        },",
+											"        \"locations\": {",
+											"          \"$id\": \"/properties/data/properties/locations\",",
+											"          \"type\": \"array\",",
+											"          \"items\": {",
+											"            \"$id\": \"/properties/data/properties/locations/items\",",
+											"            \"type\": \"string\"",
+											"          }",
+											"        }",
+											"      },",
+											"      \"required\": [",
+											"        \"organisation\",",
+											"        \"locations\"",
+											"      ]",
+											"    }",
+											"  },",
+											"  \"required\": [",
+											"    \"status\",",
+											"    \"data\"",
+											"  ]",
+											"};",
+											"tests[\"Response schema is valid\"] = tv4.validate(jsonResponse, schema);",
+											"",
+											"pm.environment.set(\"organisationId\",jsonResponse.data.organisation._id);",
+											"pm.environment.set(\"organisationEmail\", jsonResponse.data.organisation.email);"
+										]
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"name\": \"organisation{{organisationNumber}}\",\n\t\"email\": \"organisation{{organisationNumber}}@mail.com\",\n\t\"password\": \"password\"\n}"
+								},
+								"url": {
+									"raw": "{{hostname}}/api/organisations",
+									"host": [
+										"{{hostname}}"
+									],
+									"path": [
+										"api",
+										"organisations"
+									]
+								},
+								"description": ""
+							},
+							"response": []
+						},
+						{
+							"name": "Add an organisation application",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "ccf9fb65-0007-40a6-8e29-12e1b5906075",
+										"type": "text/javascript",
+										"exec": [
+											"pm.environment.set('applicationNumber', Math.floor(Math.random()*100000));"
+										]
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "a8486a74-563c-47f7-a307-c0a5321462a0",
+										"type": "text/javascript",
+										"exec": [
+											"const schema = {",
+											"  \"definitions\": {},",
+											"  \"$schema\": \"http://json-schema.org/draft-06/schema#\",",
+											"  \"$id\": \"https://digitalmonitor.tk/api/\",",
+											"  \"type\": \"object\",",
+											"  \"properties\": {",
+											"    \"status\": {",
+											"      \"$id\": \"/properties/status\",",
+											"      \"type\": \"string\"",
+											"    },",
+											"    \"data\": {",
+											"      \"$id\": \"/properties/data\",",
+											"      \"type\": \"object\",",
+											"      \"properties\": {",
+											"        \"application\": {",
+											"          \"$id\": \"/properties/data/properties/application\",",
+											"          \"type\": \"object\",",
+											"          \"properties\": {",
+											"            \"__v\": {",
+											"              \"$id\": \"/properties/data/properties/application/properties/__v\",",
+											"              \"type\": \"integer\"",
+											"            },",
+											"            \"name\": {",
+											"              \"$id\": \"/properties/data/properties/application/properties/name\",",
+											"              \"type\": \"string\"",
+											"            },",
+											"            \"_id\": {",
+											"              \"$id\": \"/properties/data/properties/application/properties/_id\",",
+											"              \"type\": \"string\"",
+											"            },",
+											"            \"clientIds\": {",
+											"              \"$id\": \"/properties/data/properties/application/properties/clients\",",
+											"              \"type\": \"array\",",
+											"              \"items\": {",
+											"                \"title\": \"Empty Object\",",
+											"                \"description\": \"Accepts anything iff it's valid JSON.\"",
+											"              }",
+											"            }",
+											"          },",
+											"          \"required\": [",
+											"            \"__v\",",
+											"            \"name\",",
+											"            \"_id\",",
+											"            \"clientIds\"",
+											"          ]",
+											"        },",
+											"        \"locations\": {",
+											"          \"$id\": \"/properties/data/properties/locations\",",
+											"          \"type\": \"array\",",
+											"          \"items\": {",
+											"            \"$id\": \"/properties/data/properties/locations/items\",",
+											"            \"type\": \"string\"",
+											"          }",
+											"        }",
+											"      },",
+											"      \"required\": [",
+											"        \"application\",",
+											"        \"locations\"",
+											"      ]",
+											"    }",
+											"  },",
+											"  \"required\": [",
+											"    \"status\",",
+											"    \"data\"",
+											"  ]",
+											"};",
+											"",
+											"const responseJson = JSON.parse(responseBody);",
+											"",
+											"eval(globals.commonTests)();",
+											"",
+											"tests[\"Status code is 201\"] = responseCode.code === 201;",
+											"tests[\"Response schema is valid\"] = tv4.validate(responseJson, schema);",
+											"",
+											"pm.environment.set(\"applicationId\", responseJson.data.application._id);",
+											""
+										]
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"name\": \"application{{applicationNumber}}\"\n}"
+								},
+								"url": {
+									"raw": "{{hostname}}/api/organisations/{{organisationId}}/applications/",
+									"host": [
+										"{{hostname}}"
+									],
+									"path": [
+										"api",
+										"organisations",
+										"{{organisationId}}",
+										"applications",
+										""
+									]
+								},
+								"description": ""
+							},
+							"response": []
+						},
+						{
+							"name": "Add an application client",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "5e36ecfb-d986-435f-be41-2becbe9fa272",
+										"type": "text/javascript",
+										"exec": [
+											"pm.environment.set('clientNumber', Math.floor(Math.random()*100000));"
+										]
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "513b7e67-58b9-47fa-b55f-b230a9d1d627",
+										"type": "text/javascript",
+										"exec": [
+											"eval(globals.commonTests)();",
+											"",
+											"tests[\"Status code is 201\"] = responseCode.code === 201;",
+											"",
+											"const jsonResponse = JSON.parse(responseBody);",
+											"const schema = {",
+											"  \"definitions\": {},",
+											"  \"$schema\": \"http://json-schema.org/draft-06/schema#\",",
+											"  \"$id\": \"http://example.com/example.json\",",
+											"  \"type\": \"object\",",
+											"  \"properties\": {",
+											"    \"status\": {",
+											"      \"$id\": \"/properties/status\",",
+											"      \"type\": \"string\"",
+											"    },",
+											"    \"data\": {",
+											"      \"$id\": \"/properties/data\",",
+											"      \"type\": \"object\",",
+											"      \"properties\": {",
+											"        \"client\": {",
+											"          \"$id\": \"/properties/data/properties/client\",",
+											"          \"type\": \"object\",",
+											"          \"properties\": {",
+											"            \"__v\": {",
+											"              \"$id\": \"/properties/data/properties/client/properties/__v\",",
+											"              \"type\": \"integer\"",
+											"            },",
+											"            \"name\": {",
+											"              \"$id\": \"/properties/data/properties/client/properties/name\",",
+											"              \"type\": \"string\"",
+											"            },",
+											"            \"id\": {",
+											"              \"$id\": \"/properties/data/properties/client/properties/id\",",
+											"              \"type\": \"string\"",
+											"            },",
+											"            \"secret\": {",
+											"              \"$id\": \"/properties/data/properties/client/properties/secret\",",
+											"              \"type\": \"string\"",
+											"            },",
+											"            \"applicationId\": {",
+											"              \"$id\": \"/properties/data/properties/client/properties/applicationId\",",
+											"              \"type\": \"string\"",
+											"            },",
+											"            \"redirectUri\": {",
+											"              \"$id\": \"/properties/data/properties/client/properties/redirectUri\",",
+											"              \"type\": \"string\"",
+											"            },",
+											"            \"_id\": {",
+											"              \"$id\": \"/properties/data/properties/client/properties/_id\",",
+											"              \"type\": \"string\"",
+											"            }",
+											"          },",
+											"          \"required\": [",
+											"            \"__v\",",
+											"            \"name\",",
+											"            \"id\",",
+											"            \"secret\",",
+											"            \"applicationId\",",
+											"            \"redirectUri\",",
+											"            \"_id\"",
+											"          ]",
+											"        },",
+											"        \"locations\": {",
+											"          \"$id\": \"/properties/data/properties/locations\",",
+											"          \"type\": \"array\",",
+											"          \"items\": {",
+											"            \"$id\": \"/properties/data/properties/locations/items\",",
+											"            \"type\": \"string\"",
+											"          }",
+											"        }",
+											"      },",
+											"      \"required\": [",
+											"        \"client\",",
+											"        \"locations\"",
+											"      ]",
+											"    }",
+											"  },",
+											"  \"required\": [",
+											"    \"status\",",
+											"    \"data\"",
+											"  ]",
+											"};",
+											"tests[\"Response schema is valid\"] = tv4.validate(jsonResponse, schema);",
+											"",
+											"pm.environment.set(\"clientId\",jsonResponse.data.client._id);",
+											"pm.environment.set(\"oauthClientId\", jsonResponse.data.client.id);",
+											"pm.environment.set(\"oauthClientSecret\", \"client\" + environment.clientNumber);"
+										]
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"name\": \"client{{clientNumber}}\",\n    \"id\": \"client{{clientNumber}}\",\n    \"secret\": \"client{{clientNumber}}\", \n    \"redirectUri\": \"{{hostname}}\"\n}"
+								},
+								"url": {
+									"raw": "{{hostname}}/api/organisations/{{organisationId}}/applications/{{applicationId}}/clients",
+									"host": [
+										"{{hostname}}"
+									],
+									"path": [
+										"api",
+										"organisations",
+										"{{organisationId}}",
+										"applications",
+										"{{applicationId}}",
+										"clients"
+									]
+								},
+								"description": ""
+							},
+							"response": []
+						}
+					],
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Get application client details",
+					"description": "",
+					"item": [
+						{
+							"name": "Get application client by ID",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "fd05fbff-7826-4184-82fc-320c1b5c4e27",
+										"type": "text/javascript",
+										"exec": [
+											"eval(globals.commonTests)();",
+											"",
+											"const responseJson = JSON.parse(responseBody);",
+											"",
+											"const schema = {",
+											"  \"definitions\": {},",
+											"  \"$schema\": \"http://json-schema.org/draft-06/schema#\",",
+											"  \"$id\": \"http://example.com/example.json\",",
+											"  \"type\": \"object\",",
+											"  \"properties\": {",
+											"    \"status\": {",
+											"      \"$id\": \"/properties/status\",",
+											"      \"type\": \"string\"",
+											"    },",
+											"    \"data\": {",
+											"      \"$id\": \"/properties/data\",",
+											"      \"type\": \"object\",",
+											"      \"properties\": {",
+											"        \"client\": {",
+											"          \"$id\": \"/properties/data/properties/client\",",
+											"          \"type\": \"object\",",
+											"          \"properties\": {",
+											"            \"_id\": {",
+											"              \"$id\": \"/properties/data/properties/client/properties/_id\",",
+											"              \"type\": \"string\"",
+											"            },",
+											"            \"name\": {",
+											"              \"$id\": \"/properties/data/properties/client/properties/name\",",
+											"              \"type\": \"string\"",
+											"            },",
+											"            \"id\": {",
+											"              \"$id\": \"/properties/data/properties/client/properties/id\",",
+											"              \"type\": \"string\"",
+											"            },",
+											"            \"applicationId\": {",
+											"              \"$id\": \"/properties/data/properties/client/properties/applicationId\",",
+											"              \"type\": \"string\"",
+											"            },",
+											"            \"redirectUri\": {",
+											"              \"$id\": \"/properties/data/properties/client/properties/redirectUri\",",
+											"              \"type\": \"string\"",
+											"            },",
+											"            \"__v\": {",
+											"              \"$id\": \"/properties/data/properties/client/properties/__v\",",
+											"              \"type\": \"integer\"",
+											"            }",
+											"          },",
+											"          \"required\": [",
+											"            \"_id\",",
+											"            \"name\",",
+											"            \"id\",",
+											"            \"applicationId\",",
+											"            \"redirectUri\",",
+											"            \"__v\"",
+											"          ]",
+											"        }",
+											"      },",
+											"      \"required\": [",
+											"        \"client\"",
+											"      ]",
+											"    }",
+											"  },",
+											"  \"required\": [",
+											"    \"status\",",
+											"    \"data\"",
+											"  ]",
+											"};",
+											"",
+											"tests[\"Status code is 200\"] = responseCode.code === 200;",
+											"tests[\"Response schema is valid\"] = tv4.validate(responseJson, schema);"
+										]
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {},
+								"url": {
+									"raw": "{{hostname}}/api/organisations/{{organisationId}}/applications/{{applicationId}}/clients/{{clientId}}",
+									"host": [
+										"{{hostname}}"
+									],
+									"path": [
+										"api",
+										"organisations",
+										"{{organisationId}}",
+										"applications",
+										"{{applicationId}}",
+										"clients",
+										"{{clientId}}"
+									]
+								},
+								"description": ""
+							},
+							"response": []
+						}
+					],
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Edit client",
+					"description": "",
+					"item": [
+						{
+							"name": "Edit application client",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "563fd5ef-c6fd-4c82-8f80-3368a2a5c3d1",
+										"type": "text/javascript",
+										"exec": [
+											"pm.environment.set('nonce', Math.floor(Math.random()*100000));"
+										]
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "1a5d6521-0375-4d27-9d08-4b3b8b2827d1",
+										"type": "text/javascript",
+										"exec": [
+											"eval(globals.commonTests)();",
+											"",
+											"tests[\"Status code is 200\"] = responseCode.code === 200;",
+											"",
+											"pm.environment.set(\"oauthClientId\", environment.nonce);",
+											"pm.environment.set(\"oauthClientSecret\", \"client\" + environment.nonce);"
+										]
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"name\": \"{{nonce}}\",\n    \"id\": \"{{nonce}}\",\n    \"secret\": \"{{nonce}}\", \n    \"redirectUri\": \"{{nonce}}\"\n}"
+								},
+								"url": {
+									"raw": "{{hostname}}/api/organisations/{{organisationId}}/applications/{{applicationId}}/clients/{{clientId}}",
+									"host": [
+										"{{hostname}}"
+									],
+									"path": [
+										"api",
+										"organisations",
+										"{{organisationId}}",
+										"applications",
+										"{{applicationId}}",
+										"clients",
+										"{{clientId}}"
+									]
+								},
+								"description": ""
+							},
+							"response": []
+						}
+					],
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Delete a client",
+					"description": "",
+					"item": [
+						{
+							"name": "Delete application client",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "53921155-38cf-414a-bc39-f2db2e734706",
+										"type": "text/javascript",
+										"exec": [
+											"eval(globals.commonTests)();",
+											"",
+											"tests[\"Status code is 200\"] = responseCode.code = 200;",
+											""
+										]
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {},
+								"url": {
+									"raw": "{{hostname}}/api/organisations/{{organisationId}}/applications/{{applicationId}}/clients/{{clientId}}",
+									"host": [
+										"{{hostname}}"
+									],
+									"path": [
+										"api",
+										"organisations",
+										"{{organisationId}}",
+										"applications",
+										"{{applicationId}}",
+										"clients",
+										"{{clientId}}"
+									]
+								},
+								"description": ""
+							},
+							"response": []
+						},
+						{
+							"name": "Delete organisation application",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "53921155-38cf-414a-bc39-f2db2e734706",
+										"type": "text/javascript",
+										"exec": [
+											"eval(globals.commonTests)();",
+											"",
+											"tests[\"Status code is 200\"] = responseCode.code = 200;",
+											""
+										]
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {},
+								"url": {
+									"raw": "{{hostname}}/api/organisations/{{organisationId}}/applications/{{applicationId}}",
+									"host": [
+										"{{hostname}}"
+									],
+									"path": [
+										"api",
+										"organisations",
+										"{{organisationId}}",
+										"applications",
+										"{{applicationId}}"
+									]
+								},
+								"description": ""
+							},
+							"response": []
+						},
+						{
+							"name": "Delete organisation",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "53921155-38cf-414a-bc39-f2db2e734706",
+										"type": "text/javascript",
+										"exec": [
+											"eval(globals.commonTests)();",
+											"",
+											"tests[\"Status code is 200\"] = responseCode.code = 200;",
+											""
+										]
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {},
+								"url": {
+									"raw": "{{hostname}}/api/organisations/{{organisationId}}",
+									"host": [
+										"{{hostname}}"
+									],
+									"path": [
+										"api",
+										"organisations",
+										"{{organisationId}}"
+									]
+								},
+								"description": ""
+							},
+							"response": []
+						}
+					],
+					"_postman_isSubFolder": true
+				}
+			],
+			"auth": {
+				"type": "basic",
+				"basic": [
+					{
+						"key": "username",
+						"value": "{{organisationEmail}}",
+						"type": "string"
+					},
+					{
+						"key": "password",
+						"value": "password",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "43c8141b-c720-4873-8449-af91a3827a4f",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "132279c2-ca84-4cbe-aa06-3250bc26fc90",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		}
+	]
+}
