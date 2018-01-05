@@ -32,7 +32,7 @@ router.route('/:applicationId')
   /**
    * Delete an application by ID owned by the currently authenticated and authorised organisation
    */
-  .post(authorisation.organisationOwnsApplication, applicationController.deleteOrganisationApplication)
+  .delete(authorisation.organisationOwnsApplication, applicationController.deleteOrganisationApplication)
   /**
    * Edit an application by ID owned by the currently authenticated and authorised organisation
    */
