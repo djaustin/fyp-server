@@ -40,7 +40,11 @@ router.route('/:organisationId')
   /**
    * Delete an organisation by ID. Must be authenticated and authorized as that organisation
    */
-  .delete(authentication.isOrganisationAuthenticated, orgIdMatchesAuthenticatedOrg, organisationController.deleteOrganisation);
+  .delete(authentication.isOrganisationAuthenticated, orgIdMatchesAuthenticatedOrg, organisationController.deleteOrganisation)
+  /**
+   * Edit an organisation's details by ID. Must be authenticated and authorized as that organisation
+   */
+  .patch(authentication.isOrganisationAuthenticated, orgIdMatchesAuthenticatedOrg, organisationController.editOrganisation);
 
 
 module.exports = router;

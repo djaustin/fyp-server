@@ -13,7 +13,7 @@ exports.getApplicationClients = async function(req, res){
     // Get application instance first
     const application = await Application.findOne({_id: req.params.applicationId});
     // Get clients from the application
-    const clients = await Client.find({_id : { $in: application.clients} }, '_id name id');
+    const clients = await Client.find({_id : { $in: application.clientIds} }, '_id name id');
     res.jsend.success({clients: clients});
   } catch(err){
     logger.error(err);
@@ -40,7 +40,7 @@ exports.newApplicationClient = async function(req, res){
     // Retrieve the application we are attaching this to
     const application = await Application.findOne({_id: req.params.applicationId});
     // Add the client _id field to the application document
-    application.clients.push(client._id);
+    application.clientIds.push(client._id);
     // Try to save the application object
     await application.save();
     res.status(201);
@@ -74,10 +74,26 @@ exports.getApplicationClient = async function(req, res){
  * @param req Request object containing the clientId in req.params
  * @param res Response object with which to send client feedback
  */
+ //TODO: Consider desired behaviour if this is deleted. Should usage logs also go? Maybe just flag as deleted so it still exists in the system for posterity
 exports.deleteApplicationClient = async function(req, res){
   try{
     await Client.remove({_id: req.params.clientId});
     res.jsend.success(null);
+  } catch(err){
+    res.jsend.error(err);
+  }
+}
+
+/**
+ * Edit an application client by ID
+ * @param req {Object} request object containing the clientId in req.params and the new client data in req.body
+ * @param res {Object} response object with which results will be sent to the client making the request
+ */
+// TODO: Which fields should be allowed to change?
+exports.editApplicationClient = async function(req, res){
+  try{
+    await Client.update({_id: req.params.clientId}, {$set: req.body});
+    res.jsend.success(null)
   } catch(err){
     res.jsend.error(err);
   }

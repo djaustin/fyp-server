@@ -28,6 +28,10 @@ router.route('/:clientId')
   /**
    * Delete a specific client by ID from the specified application owned by the currently authenticated and authorised organisation
    */
-  .delete(clientController.deleteApplicationClient);
+  .delete(clientController.deleteApplicationClient)
+  /**
+   * Edit a specific client by ID from the specified application owned by the currently authenticated and authorised organisation
+   */
+  .patch(clientController.editApplicationClient);
 
 module.exports = router;

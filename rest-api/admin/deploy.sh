@@ -33,3 +33,5 @@ mkdir node_modules
 ln -s ../app node_modules/app
 docker-compose up -d --build
 ENDSSH
+
+newman run tests/postman/digital-monitor-tests.postman_collection.json -e tests/postman/aws.postman_environment.json

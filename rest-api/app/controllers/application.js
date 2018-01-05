@@ -11,12 +11,12 @@ const Application = require('app/models/application');
   @param res {Object} respnse object with which to send client feedback
  */
 exports.postApplication = async function(req, res){
-  const organisation = req.user;
+  const organisation = req.organisation;
 
   // Create a new application document from the model. Initialise with provided name and empty client list
   const application = new Application({
     name: req.body.name,
-    clients: []
+    clientIds: []
   });
 
   // 'await' operations in this block are asynchronous. This language structure prevents deep nested callback functions
@@ -24,7 +24,7 @@ exports.postApplication = async function(req, res){
     // Save the application to the database
     await application.save();
     // Add the application id to the organisation's application list
-    organisation.applications.push(application._id);
+    organisation.applicationIds.push(application._id);
     // Save the organisation
     await organisation.save();
     // Status 201 - Created
@@ -47,10 +47,10 @@ exports.postApplication = async function(req, res){
  * @param res {Object} response object with which to send client feedback.
  */
 exports.getOrganisationApplications = async function(req, res){
-  const organisation = req.user;
+  const organisation = req.organisation;
   try{
     // Find applications
-    const applications = await Application.find({ _id : { $in: organisation.applications } });
+    const applications = await Application.find({ _id : { $in: organisation.applicationIds } });
     res.jsend.success({applications: applications});
   } catch(err){
     res.jsend.error(err);
@@ -77,11 +77,26 @@ exports.getOrganisationApplication = async function(req, res){
  * @param res Response parameter with which to send result to client
  */
 exports.deleteOrganisationApplication = async function(req, res){
-  const organisation = req.user;
   try{
     await Application.remove({_id: req.params.applicationId})
     res.jsend.success(null);
-  } catch (err){
+  } catch(err){
     res.jsend.error(err);
   }
 }
+
+/**
+ * Edit an organisation application by id
+ * @param req {Object} request object containing the applicationId of the application to be altered in req.params.applicationId and the data to change in req.body
+ * @param res {Object} response object with which to send results to client
+ */
+ exports.editOrganisationApplication = async function(req, res){
+   const detailsToUpdate = {}
+   if(req.body.name) detailsToUpdate.name = req.body.name;
+   try{
+     await Application.update({_id: req.params.applicationId}, {$set: detailsToUpdate})
+     res.jsend.success(null);
+   } catch(err){
+     res.jsend.error(err);
+   }
+ }
