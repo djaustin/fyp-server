@@ -4,9 +4,10 @@ const UsageLog = require('app/models/usage-log');
 /**
  * Add a new usage log for the user and client authenticated by an access token.
  * @param req {Object} request object containing the userId and client object in req.params.userId and req.client
- * @param res {Object} response object with which to send client feedback
+ * @param res {Object} Response parameter with which to send result to client
+ * @param next {Object} next piece of middleware to be run after this one. Used to forward errors to error
  */
-exports.newUsageLog = async function(req, res){
+exports.newUsageLog = async function(req, res, next){
   //TODO: Find a way to allow user to report usage without a client application
   const log = new UsageLog({
     userId: req.params.userId,
@@ -24,37 +25,36 @@ exports.newUsageLog = async function(req, res){
       locations: [`https://digitalmonitor.tk/api/users/${req.params.userId}/logs/${log._id}`]
     });
   } catch(err){
-    logger.error(err);
-    res.jsend.error(err);
+    next(err);
   }
 }
 
 /**
  * Get all usage logs for a given authenticated and authorized user by userId
  * @param req {Object} request object containing the userId in req.params
- * @param res {Object} response object with which to send result
+ * @param res {Object} Response parameter with which to send result to client
+ * @param next {Object} next piece of middleware to be run after this one. Used to forward errors to error
  */
-exports.getUserLogs = async function(req, res){
+exports.getUserLogs = async function(req, res, next){
   try{
     const logs = await UsageLog.find({userId: req.params.userId});
     res.jsend.success({logs: logs});
   } catch(err){
-    logger.error(err);
-    res.jsend.error(err);
+    next(err);
   }
 }
 
 /**
  * Get an individual usage log of a user by usageLogId
  * @param req {Object} request object containing the usageLogId in req.params
- * @param res {Object} response object with which to send result
+ * @param res {Object} Response parameter with which to send result to client
+ * @param next {Object} next piece of middleware to be run after this one. Used to forward errors to error
  */
-exports.getUserLog = async function(req, res){
+exports.getUserLog = async function(req, res, next){
   try{
     const log = await UsageLog.findOne({_id: req.params.usageLogId});
     res.jsend.success(log);
   } catch(err){
-    logger.error(err);
-    res.jsend.error(err);
+    next(err);
   }
 }

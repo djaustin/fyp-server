@@ -20,6 +20,7 @@ rm server.tar.gz
   # 6. Create symlink necessary for creating the docker image correctly
   # 7. Build and start the docker system
 ssh -i ~/.ssh/my-ec2-key-pair.pem ubuntu@35.177.187.171 << 'ENDSSH'
+export NODE_ENV=development
 mkdir server
 cd server
 mkdir logs

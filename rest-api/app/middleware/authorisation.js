@@ -15,7 +15,9 @@ exports.authenticatedUserOwnsResource = function(paramIdName){
     const requestId = req.params[paramIdName];
 
     if(authenticatedId != requestId){
-      respondUserNotAuthorised(res);
+      const error = new Error('Authenticated user is not authorized for that operation.');
+      error.status = 403;
+      next(error);
     } else {
       next();
     }
@@ -27,13 +29,10 @@ exports.organisationOwnsApplication = function(req, res, next){
 
   // ObjectIDs are not stored as strings in the document. We must call the equals function on each application
   if(!organisation.applicationIds.some((applicationId) => applicationId.equals(req.params.applicationId))){
-    respondUserNotAuthorised(res);
+    const error = new Error('Authenticated user is not authorized for that operation.');
+    error.status = 403;
+    next(error);
   } else {
     next();
   }
-}
-
-function respondUserNotAuthorised(res){
-  res.status(403);
-  res.json({message: 'Authenticated user is not authorized for that operation.'});
 }

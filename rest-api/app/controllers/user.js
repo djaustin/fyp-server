@@ -5,8 +5,10 @@ const logger = require('app/utils/logger');
 /**
  * Add a new user to the database with the details provided
  * @param req Request object that holds the user details in req.body
+ * @param res {Object} Response parameter with which to send result to client
+ * @param next {Object} next piece of middleware to be run after this one. Used to forward errors to error
  */
-exports.newUser = async function(req, res){
+exports.newUser = async function(req, res, next){
   // Generate a new user document using the model
   const user = new User({
     email: req.body.email,
@@ -26,47 +28,48 @@ exports.newUser = async function(req, res){
       locations: [`https://digitalmonitor.tk/api/users/${user._id}`]
     });
   } catch(err){
-    // Send error back to client
-    // NOTE: Consider changing this behaviour for security. IT RETURNS THE PASSWORD OF THE USER YOU TRIED TO CREATE
-    res.jsend.error(err);
+    next(err);
   }
 };
 
 /**
  * Get a single user from the database by id
  * @param req Request object containing the userId of the user to retrieve. This should be in req.params
+ * @param res {Object} Response parameter with which to send result to client
+ * @param next {Object} next piece of middleware to be run after this one. Used to forward errors to error
  */
  //NOTE: Is this even needed? Need to be careful about authentication if this is kept
-exports.getUser = async function(req, res){
+exports.getUser = async function(req, res, next){
   try{
     const user = await User.findOne({_id: req.params.userId}, {password: 0});
     res.jsend.success({user: user});
   } catch(err){
-    res.jsend.error(err);
+    next(err);
   }
 }
 
 /**
  * Delete a user from the database by id
  * @param req {Object} Request object containing the userId of the user to delete in req.params
- * @param res {Object} Response object with which the results can be sent to the client
+ * @param res {Object} Response parameter with which to send result to client
+ * @param next {Object} next piece of middleware to be run after this one. Used to forward errors to error
  */
-exports.deleteUser = async function(req, res){
+exports.deleteUser = async function(req, res, next){
   try{
     await User.remove({_id: req.params.userId});
     res.jsend.success(null);
   } catch(err){
-    logger.error(err);
-    res.jsend.error(err);
+    next(err);
   }
 }
 
 /**
  * Edit user details of an authenticated and authorized user
  * @param req {Object} Request object containing the userId of the user to edit (req.params.userId) and the new details to save (req.body)
- * @param res {Object} Response object with which the results can be sent to the client
+ * @param res {Object} Response parameter with which to send result to client
+ * @param next {Object} next piece of middleware to be run after this one. Used to forward errors to error
  */
-exports.editUser = async function(req, res){
+exports.editUser = async function(req, res, next){
   try{
     const detailsToUpdate = {}
     if(req.body.email) detailsToUpdate.email = req.body.email;
@@ -75,16 +78,16 @@ exports.editUser = async function(req, res){
     await User.update({_id: req.params.userId}, {$set: detailsToUpdate});
     res.jsend.success(null);
   } catch(err){
-    res.jsend.error(err);
+    next(err);
   }
 }
 
 //TEMP: Only here for testing
-exports.allUsers = async function(req, res){
+exports.allUsers = async function(req, res, next){
   try{
     const users = await User.find();
     res.jsend.success({users: users});
   } catch(err){
-    res.jsend.error(err);
+    next(err);
   }
 };

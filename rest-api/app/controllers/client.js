@@ -6,8 +6,10 @@ const logger = require('app/utils/logger');
 /**
  * Gets all clients connected to the application provided.
  * @param req Request paramater that contains the application id in req.params.applicationId
+ * @param res {Object} Response parameter with which to send result to client
+ * @param next {Object} next piece of middleware to be run after this one. Used to forward errors to error
  */
-exports.getApplicationClients = async function(req, res){
+exports.getApplicationClients = async function(req, res, next){
   // TODO: Perhaps consider adding middleware to fetch the application from the db so it doesn't have to be done in all the children requests
   try{
     // Get application instance first
@@ -16,16 +18,17 @@ exports.getApplicationClients = async function(req, res){
     const clients = await Client.find({_id : { $in: application.clientIds} }, '_id name id');
     res.jsend.success({clients: clients});
   } catch(err){
-    logger.error(err);
-    res.jsend.error(err);
+    next(err);
   }
 }
 
 /**
  * Add a new application client to the database using the applicationId in the request URL and the client details in the request body
  * @param req Request parameter containing the applicationId (req.params) and the client details (req.body)
+ * @param res {Object} Response parameter with which to send result to client
+ * @param next {Object} next piece of middleware to be run after this one. Used to forward errors to error
  */
-exports.newApplicationClient = async function(req, res){
+exports.newApplicationClient = async function(req, res, next){
   // Create new in-memory client
   const client = new Client({
     name: req.body.name,
@@ -49,52 +52,53 @@ exports.newApplicationClient = async function(req, res){
       locations: [`https://digitalmonitor.tk/api/organisations/${req.params.organisationId}/applications/${req.params.applicationId}/clients/${client._id}`]
     });
   } catch (err){
-    logger.error(err);
-    res.status(500);
-    res.jsend.error(err);
+    next(err);
   }
 }
 
 /**
  * Get an application client by client Id
  * @param req Request object containing the clientId in rew.params
+ * @param res {Object} Response parameter with which to send result to client
+ * @param next {Object} next piece of middleware to be run after this one. Used to forward errors to error
  */
-exports.getApplicationClient = async function(req, res){
+exports.getApplicationClient = async function(req, res, next){
   try{
     const client = await Client.findOne({_id: req.params.clientId}, {secret: 0});
     res.jsend.success({client: client});
   } catch(err){
-    logger.error(err);
-    res.send(err);
+    next(err);
   }
 }
 
 /**
  * Delete an application client by ID.
  * @param req Request object containing the clientId in req.params
- * @param res Response object with which to send client feedback
+ * @param res {Object} Response parameter with which to send result to client
+ * @param next {Object} next piece of middleware to be run after this one. Used to forward errors to error
  */
  //TODO: Consider desired behaviour if this is deleted. Should usage logs also go? Maybe just flag as deleted so it still exists in the system for posterity
-exports.deleteApplicationClient = async function(req, res){
+exports.deleteApplicationClient = async function(req, res, next){
   try{
     await Client.remove({_id: req.params.clientId});
     res.jsend.success(null);
   } catch(err){
-    res.jsend.error(err);
+    next(err);
   }
 }
 
 /**
  * Edit an application client by ID
  * @param req {Object} request object containing the clientId in req.params and the new client data in req.body
- * @param res {Object} response object with which results will be sent to the client making the request
+ * @param res {Object} Response parameter with which to send result to client
+ * @param next {Object} next piece of middleware to be run after this one. Used to forward errors to error
  */
 // TODO: Which fields should be allowed to change?
-exports.editApplicationClient = async function(req, res){
+exports.editApplicationClient = async function(req, res, next){
   try{
     await Client.update({_id: req.params.clientId}, {$set: req.body});
     res.jsend.success(null)
   } catch(err){
-    res.jsend.error(err);
+    next(err);
   }
 }

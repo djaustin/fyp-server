@@ -9,8 +9,9 @@ const Application = require('app/models/application');
   Add a new application to the database under the given authenticated and authorized organisation
   @param req {Object} request object containing the authenticated organisation in req.user
   @param res {Object} respnse object with which to send client feedback
+  @param next {Object} next piece of middleware to be run after this one. Used to forward errors to error
  */
-exports.postApplication = async function(req, res){
+exports.postApplication = async function(req, res, next){
   const organisation = req.organisation;
 
   // Create a new application document from the model. Initialise with provided name and empty client list
@@ -35,8 +36,7 @@ exports.postApplication = async function(req, res){
       locations: [`https://digitalmonitor.tk/api/organisations/${req.params.organisationId}/applications/${application._id}`]
     });
   } catch(err){
-    // TODO: Improve error handling.
-    res.jsend.error(err);
+    next(err);
   }
 };
 
@@ -45,15 +45,16 @@ exports.postApplication = async function(req, res){
  * Get all applications for a given organisation.
  * @param req {Object} request object containing the organisation object in req.user
  * @param res {Object} response object with which to send client feedback.
+ * @param next {Object} next piece of middleware to be run after this one. Used to forward errors to error
  */
-exports.getOrganisationApplications = async function(req, res){
+exports.getOrganisationApplications = async function(req, res, next){
   const organisation = req.organisation;
   try{
     // Find applications
     const applications = await Application.find({ _id : { $in: organisation.applicationIds } });
     res.jsend.success({applications: applications});
   } catch(err){
-    res.jsend.error(err);
+    next(err);
   }
 };
 
@@ -61,13 +62,14 @@ exports.getOrganisationApplications = async function(req, res){
  * Retrieve a single application belonging to the authenticated organisation by ID.
  * @param req {Object} request object containing the applicationId in req.params
  * @param res {Object} response object with which to send client feedback
+ * @param next {Object} next piece of middleware to be run after this one. Used to forward errors to error
  */
-exports.getOrganisationApplication = async function(req, res){
+exports.getOrganisationApplication = async function(req, res, next){
   try{
     const application = await Application.findOne({_id: req.params.applicationId});
     res.jsend.success({application: application});
   } catch(err){
-    res.jsend.error(err);
+    next(err);
   }
 }
 
@@ -75,13 +77,14 @@ exports.getOrganisationApplication = async function(req, res){
  * Delete an organisation application by id.
  * @param req Request parameter containing the applicationId in req.parameters
  * @param res Response parameter with which to send result to client
+ * @param next {Object} next piece of middleware to be run after this one. Used to forward errors to error
  */
-exports.deleteOrganisationApplication = async function(req, res){
+exports.deleteOrganisationApplication = async function(req, res, next){
   try{
     await Application.remove({_id: req.params.applicationId})
     res.jsend.success(null);
   } catch(err){
-    res.jsend.error(err);
+    next(err);
   }
 }
 
@@ -89,14 +92,15 @@ exports.deleteOrganisationApplication = async function(req, res){
  * Edit an organisation application by id
  * @param req {Object} request object containing the applicationId of the application to be altered in req.params.applicationId and the data to change in req.body
  * @param res {Object} response object with which to send results to client
+ * @param next {Object} next piece of middleware to be run after this one. Used to forward errors to error
  */
- exports.editOrganisationApplication = async function(req, res){
+ exports.editOrganisationApplication = async function(req, res, next){
    const detailsToUpdate = {}
    if(req.body.name) detailsToUpdate.name = req.body.name;
    try{
      await Application.update({_id: req.params.applicationId}, {$set: detailsToUpdate})
      res.jsend.success(null);
    } catch(err){
-     res.jsend.error(err);
+     next(err);
    }
  }

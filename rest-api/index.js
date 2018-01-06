@@ -94,8 +94,46 @@ app.get('/login', function(req, res) {
 
 app.post('/login', passport.authenticate('local', { successReturnToOrRedirect: '/', failureRedirect: '/login' }));
 
-
 app.use('/', router);
+
+/**
+ * Error handling from express js scaffolding
+ */
+
+// catch 404 and forward to error handler. If none of the above routes have been hit, it must be a 404
+app.use(function(req, res, next) {
+  var err = new Error('Not Found');
+  err.status = 404;
+  next(err);
+});
+
+// development error handler
+// will print stacktrace
+// app.get('env') gets the environment variable 'NODE_ENV'
+if (app.get('env') === 'development') {
+  app.use(function(err, req, res, next) {
+    res.status(err.status || 500);
+    res.jsend.error({
+      message: err.message,
+      error: err
+    });
+    logger.error(err);
+  });
+} else {
+  // production error handler
+  // no stacktraces leaked to user
+  app.use(function(err, req, res, next) {
+    res.status(err.status || 500);
+    res.jsend.error({
+      message: err.message,
+      error: {}
+    });
+    logger.error(err);
+  });
+}
+
+
+
 
 app.listen(80);
 logger.info('Listening on port 80');
