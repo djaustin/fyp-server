@@ -37,6 +37,7 @@ const apiRouter = require('app/routes/api')
  */
 
 // TODO: Use authenticated login
+mongoose.Promise = global.Promise;
 mongoose.connect('mongodb://db/digitalmonitor', {useMongoClient: true});
 
 // Initialise an express application
@@ -50,8 +51,9 @@ app.set('views', './app/views');
 app.use(jsend.middleware);
 
 // Use the 'dev' template of logging for all requests to the app
-app.use(morgan('dev'));
-
+if(process.env.NODE_ENV !== 'test'){
+  app.use(morgan('dev'));
+}
 // Parse url enocded parameters from requests and place in req.params for all requests
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
@@ -113,10 +115,14 @@ app.use(function(req, res, next) {
 if (app.get('env') === 'development') {
   app.use(function(err, req, res, next) {
     res.status(err.status || 500);
-    res.jsend.error({
-      message: err.message,
-      error: err
-    });
+    if(res.status >= 400 && res.status < 500){
+      res.jsend.fail(err);
+    } else {
+      res.jsend.error({
+        message: err.message,
+        data: err
+      });
+    }
     logger.error(err);
   });
 } else {
@@ -124,10 +130,15 @@ if (app.get('env') === 'development') {
   // no stacktraces leaked to user
   app.use(function(err, req, res, next) {
     res.status(err.status || 500);
-    res.jsend.error({
-      message: err.message,
-      error: {}
-    });
+    // Client error status block
+    if(res.statusCode >= 400 && res.statusCode < 500){
+      res.jsend.fail(err);
+    } else {
+      res.jsend.error({
+        message: err.message,
+        data: null
+      });
+    }
     logger.error(err);
   });
 }
@@ -137,3 +148,6 @@ if (app.get('env') === 'development') {
 
 app.listen(80);
 logger.info('Listening on port 80');
+
+// Export app when module is imported for use with test framework
+module.exports = app;

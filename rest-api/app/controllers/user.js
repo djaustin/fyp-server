@@ -28,6 +28,7 @@ exports.newUser = async function(req, res, next){
       locations: [`https://digitalmonitor.tk/api/users/${user._id}`]
     });
   } catch(err){
+    err.status = 400;
     next(err);
   }
 };

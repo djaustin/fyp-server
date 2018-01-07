@@ -16,12 +16,6 @@ if (!fs.existsSync(logDir)) {
 // Create the logger
 const logger = new (winston.Logger)({
   transports: [
-    // Console output - colorised
-    new (winston.transports.Console)({
-      timestamp: true,
-      colorize: true,
-      level: 'debug'
-    }),
     new (winston.transports.File)({
       timestamp: true,
       filename: `${logDir}/server.log`,
@@ -29,5 +23,15 @@ const logger = new (winston.Logger)({
     })
   ]
 });
+
+if(process.env.NODE_ENV !== 'test'){
+  // Console output - colorised
+  logger.add(winston.transports.Console, {
+    timestamp: true,
+    colorize: true,
+    level: 'debug'
+  });
+}
+
 
 module.exports = logger;

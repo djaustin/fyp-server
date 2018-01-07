@@ -6,10 +6,10 @@ services:
     volumes:
       - ./config/nginx/local/conf.d:/etc/nginx/conf.d
       - ./images:/usr/share/nginx/html:ro
-    depends_on:
-      - web
     ports:
       - '80:80'
+    depends_on:
+      - web
   db:
     image: mongo
     # volumes:
@@ -17,6 +17,7 @@ services:
   web:
     build: .
     image: daustin/monitor-api
+    command: "npm test"
     volumes:
       - ./config/config.json:/var/www/api/config/config.json:ro
       - ./logs:/var/www/api/logs

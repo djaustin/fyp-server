@@ -7,6 +7,8 @@ services:
       - /etc/letsencrypt:/etc/nginx/ssl
       - ./config/nginx/remote/conf.d:/etc/nginx/conf.d
       - ./images:/usr/share/nginx/html:ro
+    depends_on:
+      - web
     ports:
       - '80:80'
       - '443:443'
@@ -20,6 +22,8 @@ services:
     volumes:
       - ./config/config.json:/var/www/api/config/config.json:ro
       - ./logs:/var/www/api/logs
+    depends_on:
+      - db
 
 volumes:
   dbdata:
