@@ -36,6 +36,26 @@ describe('Users', () => {
   });
 
   describe('/POST users', () => {
+
+    it('should should allow a post with correct details', async () => {
+      let requestData = {
+        firstName: 'userFirstName',
+        lastName: 'userLastName',
+        password: 'password',
+        email: 'user@mail.com'
+      }
+      const res = await chai.request(server).post('/api/users').send(requestData);
+      res.should.have.status(201);
+      res.should.be.json;
+      res.body.should.be.an('object');
+      res.body.should.have.property('status').which.equals('success');
+      res.body.should.have.property('data').which.is.an('object');
+      res.body.data.should.have.property('user').which.is.an('object');
+      res.body.data.user.should.have.property('_id');
+      res.body.data.should.have.property('locations').which.is.an('array');
+      res.body.data.locations.should.have.lengthOf.above(0);
+    });
+
     it('should not POST a user without an email', async () => {
       let requestData = {
         firstName: 'userFirstName',
