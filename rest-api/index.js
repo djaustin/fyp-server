@@ -115,7 +115,11 @@ app.use(function(req, res, next) {
 if (app.get('env') === 'development') {
   app.use(function(err, req, res, next) {
     res.status(err.status || 500);
-    if(res.status >= 400 && res.status < 500){
+    if(res.statusCode === 401){
+      res.jsend.fail({'authentication': err.message});
+    } else if (res.statusCode === 403) {
+      res.jsend.fail({'authorisation': err.message});
+    } else if(res.statusCode >= 400 && res.statusCode < 500){
       res.jsend.fail(err);
     } else {
       res.jsend.error({
@@ -131,7 +135,12 @@ if (app.get('env') === 'development') {
   app.use(function(err, req, res, next) {
     res.status(err.status || 500);
     // Client error status block
-    if(res.statusCode >= 400 && res.statusCode < 500){
+    if(res.statusCode === 401){
+      res.jsend.fail({'authentication': err.message});
+    } else if (res.statusCode === 403) {
+      res.jsend.fail({'authorisation': err.message});
+    }
+    else if(res.statusCode >= 400 && res.statusCode < 500){
       res.jsend.fail(err);
     } else {
       res.jsend.error({

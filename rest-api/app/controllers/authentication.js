@@ -123,7 +123,7 @@ passport.use(new LocalStrategy(async function(email, password, callback){
 
 
 // Export authentication for easier use when module is imported
-exports.isUserAuthenticated = passport.authenticate('user-basic', {session: false});
-exports.isOrganisationAuthenticated = passport.authenticate('organisation-basic', {session: false});
-exports.isClientAuthenticated = passport.authenticate('client-basic', {session: false});
-exports.isBearerAuthenticated = passport.authenticate('bearer', {session: false})
+exports.isUserAuthenticated = passport.authenticate('user-basic', {session: false, failWithError: true});
+exports.isOrganisationAuthenticated = passport.authenticate('organisation-basic', {session: false, failWithError: true});
+exports.isClientAuthenticated = passport.authenticate('client-basic', {session: false, failWithError: true});
+exports.isBearerAuthenticated = passport.authenticate('bearer', {session: false, failWithError: true})
