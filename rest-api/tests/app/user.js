@@ -90,7 +90,7 @@ describe('Users', () => {
     it('should not delete the user if not authenticated', async () => {
       try{
         await chai.request(server).delete('/api/users/' + testUsers[0]._id);
-        throw new Error("Expected error 403");
+        throw new Error("Expected error 401");
       } catch(err){
         err.response.should.have.status(401);
         err.response.should.be.json;
@@ -127,34 +127,34 @@ describe('Users', () => {
       userAfterUpdate.should.have.property('firstName').which.equals(userBeforeUpdate.firstName);
       userAfterUpdate.should.have.property('lastName').which.equals(userBeforeUpdate.lastName);
     });
-  //
-  //   it('should not delete the user if not authenticated', async () => {
-  //     try{
-  //       await chai.request(server).delete('/api/users/' + testUsers[0]._id);
-  //       throw new Error("Expected error 403");
-  //     } catch(err){
-  //       err.response.should.have.status(401);
-  //       err.response.should.be.json;
-  //       err.response.body.should.be.an('object');
-  //       err.response.body.should.have.property('status').which.equals('fail');
-  //       err.response.body.should.have.property('data').which.is.an('object');
-  //       err.response.body.data.should.have.property('authentication').which.is.a('string');
-  //     }
-  //   });
-  //
-  //   it('should not delete the user if authenticated as a different user', async () => {
-  //     try{
-  //       await chai.request(server).delete('/api/users/' + testUsers[1]._id).auth(testUsers[0].email, 'password');
-  //       throw new Error("Expected error 403");
-  //     } catch(err){
-  //       err.response.should.have.status(403);
-  //       err.response.should.be.json;
-  //       err.response.body.should.be.an('object');
-  //       err.response.body.should.have.property('status').which.equals('fail');
-  //       err.response.body.should.have.property('data').which.is.an('object');
-  //       err.response.body.data.should.have.property('authorisation').which.is.a('string');
-  //     }
-  //   });
+
+    it('should not patch the user if not authenticated', async () => {
+      try{
+        await chai.request(server).patch('/api/users/' + testUsers[0]._id);
+        throw new Error("Expected error 401");
+      } catch(err){
+        err.response.should.have.status(401);
+        err.response.should.be.json;
+        err.response.body.should.be.an('object');
+        err.response.body.should.have.property('status').which.equals('fail');
+        err.response.body.should.have.property('data').which.is.an('object');
+        err.response.body.data.should.have.property('authentication').which.is.a('string');
+      }
+    });
+
+    it('should not patch the user if authenticated as a different user', async () => {
+      try{
+        await chai.request(server).delete('/api/users/' + testUsers[1]._id).auth(testUsers[0].email, 'password');
+        throw new Error("Expected error 403");
+      } catch(err){
+        err.response.should.have.status(403);
+        err.response.should.be.json;
+        err.response.body.should.be.an('object');
+        err.response.body.should.have.property('status').which.equals('fail');
+        err.response.body.should.have.property('data').which.is.an('object');
+        err.response.body.data.should.have.property('authorisation').which.is.a('string');
+      }
+    });
   });
 
   describe('POST /api/users', () => {

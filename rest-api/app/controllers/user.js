@@ -4,7 +4,7 @@ const logger = require('app/utils/logger');
 
 /**
  * Add a new user to the database with the details provided
- * @param req Request object that holds the user details in req.body
+ * @param req {Object} Request object that holds the user details in req.body
  * @param res {Object} Response parameter with which to send result to client
  * @param next {Object} next piece of middleware to be run after this one. Used to forward errors to error
  */
@@ -35,7 +35,7 @@ exports.newUser = async function(req, res, next){
 
 /**
  * Get a single user from the database by id
- * @param req Request object containing the userId of the user to retrieve. This should be in req.params
+ * @param req {Object} Request object containing the userId of the user to retrieve. This should be in req.params
  * @param res {Object} Response parameter with which to send result to client
  * @param next {Object} next piece of middleware to be run after this one. Used to forward errors to error
  */
