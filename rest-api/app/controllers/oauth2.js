@@ -53,6 +53,59 @@ server.grant(oauth2orize.grant.code(async function(client, redirectUri, user, au
 
 }));
 
+// Add 'Resource Owner Credentials' exchange type to allow exchange of access token for an authenticated client and user credentials
+server.exchange(oauth2orize.exchange.password(async function(client, email, password, callback) {
+  try{
+    // Try to find user with given email
+    const user = await User.findOne({email: email});
+    // If no user matches, reject exchange
+    if(!user) return callback(null, false);
+    console.log('User found, verifying password:', password);
+    // Verify the provided password agains the one in the database
+    const match = await user.verifyPassword(password);
+    // If the passwords do not match then reject exchange
+    if(!match) return callback(null, false);
+
+    // Create a new access token
+    const token = new Token({
+      value: uid(256),
+      clientId: client._id,
+      userId: user._id
+    });
+
+    // Save token to database.
+    await token.save();
+
+    // Return access token to the callback
+    callback(null, token.value);
+  } catch (err){
+    logger.error(err);
+    callback(err);
+  }
+}));
+
+// Add 'Client Credentials' exchange type to allow exchange of access token for an authenticated client. This does not allow the client to access any user details as no user is attached to the token 
+server.exchange(oauth2orize.exchange.clientCredentials(async function(client, callback) {
+  try{
+
+    // Create a new access token
+    const token = new Token({
+      value: uid(256),
+      clientId: client._id,
+      userId: null
+    });
+
+    // Save token to database.
+    await token.save();
+
+    // Return access token to the callback
+    callback(null, token.value);
+  } catch (err){
+    logger.error(err);
+    callback(err);
+  }
+}));
+
 // TODO: Check these values for null
 server.exchange(oauth2orize.exchange.code(async function(client, code, redirectUri, callback){
   try{
@@ -121,6 +174,5 @@ exports.decision = [
 // Endpoint to handle the request made by the application client after they have been granted an authorization code by the user.
 exports.token = [
   // Will initiate a call to server.exchange()
-  server.token(),
-  server.errorHandler()
+  server.token()
 ];

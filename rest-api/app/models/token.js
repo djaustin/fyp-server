@@ -12,7 +12,6 @@ const TokenSchema = new mongoose.Schema({
   },
   userId: {
     type: String,
-    required: true
   },
   clientId: {
     type: String,

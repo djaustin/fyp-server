@@ -31,6 +31,8 @@ const logger = require('app/utils/logger');
 // This avoids excessive use of '../../' in other files as all files can be addressed from app directory
 const apiRouter = require('app/routes/api')
 
+const indexRouter = require('app/routes/index');
+
 
 /*
  * APPLICATION CONFIGURATION
@@ -83,18 +85,8 @@ app.use(passport.session());
 
 const router = express.Router();
 
-// Controller for route '<hostname>/'
-router.get('/', function(req, res){
-  res.render('index');
-});
-
 router.use('/api', apiRouter);
-
-app.get('/login', function(req, res) {
-  res.render('login');
-});
-
-app.post('/login', passport.authenticate('local', { successReturnToOrRedirect: '/', failureRedirect: '/login' }));
+router.use('/', indexRouter);
 
 app.use('/', router);
 
