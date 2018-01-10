@@ -38,12 +38,12 @@ router.route('/')
   /**
    * Add a new user.
    */
-  .post(userController.newUser);
+  .post(authentication.isClientBearerAuthenticated, userController.newUser);
 
 /**
  * Mount the nested router onto this endpoint. Only accessible via OAuth2 token
  */
-router.use('/:userId/usage-logs', authentication.isBearerAuthenticated, userIdMatchesAuthenticatedUser, usageLogRouter);
+router.use('/:userId/usage-logs', authentication.isUserAuthenticated, userIdMatchesAuthenticatedUser, usageLogRouter);
 
 
 module.exports = router;

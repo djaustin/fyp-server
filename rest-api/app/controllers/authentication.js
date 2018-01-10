@@ -7,29 +7,7 @@ const logger = require('app/utils/logger');
 const User = require('app/models/user');
 const Organisation = require('app/models/organisation');
 const Client = require('app/models/client');
-const Token = require('app/models/token');
-
-/**
- * Generate an authentication strategy to be used by passport on requests.
- * This middleware authenticates a 'User' by checking the provided email and password against the database documents.
- * 'user-basic' is the name of the authentication strategy we are generating
- */
-passport.use('user-basic', new BasicStrategy(
-  async function(email, password, callback){
-    try{
-      const user = await User.findOne({email: email});
-      if (!user) return callback(null, false);
-      const match = await user.verifyPassword(password);
-      if(match){
-        return callback(null, user);
-      } else {
-        return callback(null, false);
-      }
-    } catch(err){
-      return callback(err);
-    }
-  }
-));
+const Token = require('app/models/accessToken');
 
 passport.use('organisation-basic', new BasicStrategy({passReqToCallback: true},
   async function(req, email, password, callback){
@@ -77,7 +55,7 @@ passport.use('client-basic', new BasicStrategy(
 ));
 
 // Allow authentication of requests made by applications on behalf of users
-passport.use(new BearerStrategy({passReqToCallback: true},
+passport.use('user-bearer', new BearerStrategy({passReqToCallback: true},
   async function(req, accessToken, callback){
     try{
       // Find a token with a value matching the one provided
@@ -106,6 +84,33 @@ passport.use(new BearerStrategy({passReqToCallback: true},
   }
 ));
 
+// Allow authentication of requests made by client with no user authorization (eg. register a new user or organisation);
+passport.use('client-bearer', new BearerStrategy({passReqToCallback: true},
+  async function(req, accessToken, callback){
+    try{
+      // Find a token with a value matching the one provided
+      const token = await Token.findOne({value: accessToken});
+      // Reject auth if token not found
+      if(!token) return callback(null, false);
+
+      // Get the user and client objects from their respective IDs in parallel
+      const client = await Client.findOne({_id: token.clientId});
+
+      // Reject auth if no user or no client found
+      if(!client) return callback(null, false);
+
+      // Add authenticated client to the request object
+      req.client = client;
+      // Allow all scopes. TODO: Is this actually going to be used
+      return callback(null, client, {scope: '*'});
+
+    } catch(err){
+      logger.error(err);
+      callback(err);
+    }
+  }
+));
+
 passport.use(new LocalStrategy(async function(email, password, callback){
   try{
     const user = await User.findOne({email: email});
@@ -123,7 +128,7 @@ passport.use(new LocalStrategy(async function(email, password, callback){
 
 
 // Export authentication for easier use when module is imported
-exports.isUserAuthenticated = passport.authenticate('user-basic', {session: false, failWithError: true});
+exports.isUserAuthenticated = passport.authenticate('user-bearer', {session: false, failWithError: true});
 exports.isOrganisationAuthenticated = passport.authenticate('organisation-basic', {session: false, failWithError: true});
-exports.isClientAuthenticated = passport.authenticate('client-basic', {session: false, failWithError: true});
-exports.isBearerAuthenticated = passport.authenticate('bearer', {session: false, failWithError: true})
+exports.isClientSecretAuthenticated = passport.authenticate('client-basic', {session: false, failWithError: true});
+exports.isClientBearerAuthenticated = passport.authenticate('client-bearer', {session: false, failWithError: true});

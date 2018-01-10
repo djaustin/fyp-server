@@ -26,7 +26,7 @@ router.route('/')
   /**
    * Add a new organisation to the application.
    */
-  .post(organisationController.newOrganisation)
+  .post(authentication.isClientBearerAuthenticated, organisationController.newOrganisation)
   //TODO: Remove this in prod probably
   // GET ALL ORGANISATIONS IN DATABASE
   .get(authentication.isOrganisationAuthenticated, organisationController.allOrganisations);

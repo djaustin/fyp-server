@@ -4,7 +4,7 @@
  */
 const mongoose = require('mongoose');
 
-const TokenSchema = new mongoose.Schema({
+const AccessTokenSchema = new mongoose.Schema({
   // TODO: Consider hashing this
   value: {
     type: String,
@@ -16,7 +16,14 @@ const TokenSchema = new mongoose.Schema({
   clientId: {
     type: String,
     required: true
+  },
+  expiresAt: {
+    type: Date,
+    required: true
   }
 });
 
-module.exports = mongoose.model('Token', TokenSchema);
+// Ensure that Tokens expire after their expiresAt field
+AccessTokenSchema.index({expiresAt: 1}, {expireAfterSeconds: 0});
+
+module.exports = mongoose.model('AccessToken', AccessTokenSchema);

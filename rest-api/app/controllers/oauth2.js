@@ -5,12 +5,68 @@ const logger = require('app/utils/logger');
 
 const User = require('app/models/user');
 const Client = require('app/models/client');
-const Token = require('app/models/token');
+const AccessToken = require('app/models/accessToken');
 const Code = require('app/models/code');
-
+const RefreshToken = require('app/models/refreshToken');
+const config = require('../../config/config');
 
 // This instance exposes config options and middleware that will be used in routes
 const server = oauth2orize.createServer();
+
+// TTL of the access tokens provided by this server in seconds
+const accessTokenLifetime = config.accessTokenLifetime;
+
+// TODO: Add expiry times to access tokens and change response on current exchanges
+
+/**
+ * Generates an access token and refresh token
+ * @param clientId {String} ID of client owning the tokens
+ * @param userId {String} ID of user owning the tokens
+ * @param generateRefreshToken {Boolean} Whether or not to generate a refresh token alongside an access token. True by default
+ */
+async function generateTokens(clientId, userId, generateRefreshToken = true){
+
+  const expiryDate = new Date();
+  expiryDate.setTime(expiryDate.getTime() + accessTokenLifetime * 1000);
+
+  try{
+
+    const accessToken = new AccessToken({
+      value: uid(256),
+      clientId: clientId,
+      userId: userId,
+      expiresAt: expiryDate
+    });
+
+    if(generateRefreshToken){
+
+      const refreshToken = new RefreshToken({
+        value: uid(256),
+        clientId: clientId,
+        userId: userId
+      });
+
+      await Promise.all([refreshToken.save(), accessToken.save()]);
+
+      return {
+        accessToken: accessToken,
+        refreshToken: refreshToken
+      };
+
+    } else {
+
+      await accessToken.save();
+
+      return {accessToken: accessToken};
+
+    }
+  } catch (err){
+
+    throw err;
+
+  }
+}
+
 
 // Obtaining the user's authorization involves multiple request/response pairs.
 // During this time, an OAuth 2.0 transaction will be serialized to the session.
@@ -66,40 +122,24 @@ server.exchange(oauth2orize.exchange.password(async function(client, email, pass
     // If the passwords do not match then reject exchange
     if(!match) return callback(null, false);
 
-    // Create a new access token
-    const token = new Token({
-      value: uid(256),
-      clientId: client._id,
-      userId: user._id
-    });
-
-    // Save token to database.
-    await token.save();
+    const tokens = await generateTokens(client._id, user._id);
 
     // Return access token to the callback
-    callback(null, token.value);
+    callback(null, tokens.accessToken.value, tokens.refreshToken.value, {expires_in: accessTokenLifetime});
   } catch (err){
     logger.error(err);
     callback(err);
   }
 }));
 
-// Add 'Client Credentials' exchange type to allow exchange of access token for an authenticated client. This does not allow the client to access any user details as no user is attached to the token 
+// Add 'Client Credentials' exchange type to allow exchange of access token for an authenticated client. This does not allow the client to access any user details as no user is attached to the token
 server.exchange(oauth2orize.exchange.clientCredentials(async function(client, callback) {
   try{
 
-    // Create a new access token
-    const token = new Token({
-      value: uid(256),
-      clientId: client._id,
-      userId: null
-    });
+    const tokens = await generateTokens(client._id, null);
 
-    // Save token to database.
-    await token.save();
-
-    // Return access token to the callback
-    callback(null, token.value);
+    // Return access accessToken to the callback
+    callback(null, tokens.accessToken.value, tokens.refreshToken.value, {expires_in: accessTokenLifetime});
   } catch (err){
     logger.error(err);
     callback(err);
@@ -124,19 +164,23 @@ server.exchange(oauth2orize.exchange.code(async function(client, code, redirectU
     // Remove authCode now that it is used
     await authCode.remove();
 
-    // Create a new access token
-    const token = new Token({
-      value: uid(256),
-      clientId: authCode.clientId,
-      userId: authCode.userId
-    });
+    const tokens = await generateTokens(authCode.clientId, authCode.userId);
 
-    // Save token to database.
-    await token.save();
+    // Return access accessToken to the callback
+    callback(null, tokens.accessToken.value, tokens.refreshToken.value, {expires_in: accessTokenLifetime});
 
-    // Return access token to the callback
-    callback(null, token.value);
+  } catch(err){
+    logger.error(err);
+    callback(err);
+  }
+}));
 
+server.exchange(oauth2orize.exchange.refreshToken(async function(client, refreshAccessToken, callback){
+  try{
+    const refreshToken = await RefreshToken.find({value: refreshAccessToken, clientId: client._id});
+    if(!refreshToken) return callback(refreshToken);
+    const tokens = await generateTokens(refreshToken.clientId, refreshToken.userId, false);
+    callback(null, tokens.accessToken.value, refreshToken.value, {expires_in: accessTokenLifetime});
   } catch(err){
     logger.error(err);
     callback(err);

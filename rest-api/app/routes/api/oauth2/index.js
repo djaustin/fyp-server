@@ -19,6 +19,6 @@ const tokenRouter = require('app/routes/api/oauth2/token');
 router.use('/authorize', ensureLoggedIn('/login'), authorizeRouter);
 
 // Route to exchange an authorization code for an access token
-router.use('/token', authentication.isClientAuthenticated, tokenRouter);
+router.use('/token', authentication.isClientSecretAuthenticated, tokenRouter);
 
 module.exports = router;

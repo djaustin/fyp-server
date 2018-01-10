@@ -144,8 +144,7 @@ if (app.get('env') === 'development') {
   });
 }
 
-
-
+require('app/utils/setup').addIOSClient();
 
 app.listen(80);
 logger.info('Listening on port 80');
