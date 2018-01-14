@@ -22,5 +22,9 @@ exports.addIOSClient = async () => {
   });
   app.clientIds.push(client._id);
   org.applicationIds.push(app._id);
-  await Promise.all([client.save(), app.save(), org.save()]);
+  try{
+    await Promise.all([client.save(), app.save(), org.save()]);
+  } catch(err){
+    logger.error(err);
+  }
 }
