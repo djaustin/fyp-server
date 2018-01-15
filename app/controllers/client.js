@@ -1,5 +1,6 @@
 const Client = require('app/models/client');
 const Application = require('app/models/application');
+const RefreshToken = require('app/models/refreshToken');
 
 const logger = require('app/utils/logger');
 
@@ -101,5 +102,20 @@ exports.editApplicationClient = async function(req, res, next){
     res.jsend.success(null)
   } catch(err){
     next(err);
+  }
+}
+
+exports.getUserClients = async function(req, res, next){
+  try{
+    // Get refresh tokens assigned to user
+    const tokens = await RefreshToken.find({userId: req.params.userId}, {clientId: 1})
+    const clientIds = tokens.map(e => e.clientId)
+
+    // Get all clientIds of those refresh tokens
+    // Search for client objects matching those Ids
+    const clients = await Client.find({_id: { $in: clientIds }}, {secret: 0})
+    res.jsend.success({clients: clients})
+  } catch (err) {
+    next(err)
   }
 }

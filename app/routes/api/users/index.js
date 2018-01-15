@@ -8,8 +8,9 @@ const router = require('express').Router({mergeParams: true});
 const userController = require('app/controllers/user');
 // Import authentication module to restrict access to certain endpoints
 const authentication = require('app/controllers/authentication');
-// Import nested router
+// Import nested routers
 const usageLogRouter = require('app/routes/api/users/usage-logs');
+const clientsRouter = require('app/routes/api/users/clients');
 
 // Middleware that checks whether the user id of the authenticated user is the same as the userId in the URL being requested.
 // This prevents the case where an authenticated user can access any other user's details
@@ -30,6 +31,9 @@ router.route('/:userId')
    * Delete a user by their id. The user must be authenticated and and only access their own details
    */
   .patch(authentication.isUserAuthenticated, userIdMatchesAuthenticatedUser, userController.editUser);
+
+
+router.use('/:userId/clients', authentication.isUserAuthenticated, userIdMatchesAuthenticatedUser, clientsRouter);
 
 router.route('/')
   //TODO: ONLY USED TO TEST AUTH. REMOVE FOR PROD.
