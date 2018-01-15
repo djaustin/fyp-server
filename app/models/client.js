@@ -34,6 +34,10 @@ const ClientSchema = new mongoose.Schema({
   },
   redirectUri: {
     type: String,
+  },
+  isThirdParty: {
+    type: Boolean,
+    required: true
   }
 });
 
