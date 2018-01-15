@@ -83,11 +83,21 @@ exports.editUser = async function(req, res, next){
   }
 }
 
-//TEMP: Only here for testing
-exports.allUsers = async function(req, res, next){
+/**
+ * Get users matching the query provided
+ * @param req {Object} request object containing the query (req.query)
+ * @param res {Object} Response parameter with which to send result to client
+ * @param next {Object} next piece of middleware to be run after this one. Used to forward errors to error
+ */
+exports.getUsers = async function(req, res, next){
   try{
-    const users = await User.find();
-    res.jsend.success({users: users});
+    var users
+    if(!req.query){
+      users = []
+    } else {
+      users = await User.find(req.query, {password: 0})
+    }
+    res.jsend.success({users: users})
   } catch(err){
     next(err);
   }

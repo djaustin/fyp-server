@@ -34,7 +34,7 @@ router.route('/:userId')
 router.route('/')
   //TODO: ONLY USED TO TEST AUTH. REMOVE FOR PROD.
   // Get all user details. Must be logged in
-  .get(authentication.isUserAuthenticated, userController.allUsers)
+  .get(authentication.isClientBearerAuthenticated, userController.getUsers)
   /**
    * Add a new user.
    */
