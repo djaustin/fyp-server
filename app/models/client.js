@@ -34,14 +34,19 @@ const ClientSchema = new mongoose.Schema({
   },
   redirectUri: {
     type: String,
+    required: true
   },
   isThirdParty: {
     type: Boolean,
     required: true
+  },
+  platform : {
+    type: String,
+    required: true,
+    enum: ['ios', 'android', 'blackberry', 'windows-phone', 'desktop', 'browser']
   }
 });
 
-// NOTE: Consider changing the code in commons/password.js so that it can be imported here to avoid the code reuse
 /**
  * If the client secret has changed and the document is being saved, make sure the secret is hashed
  */
