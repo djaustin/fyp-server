@@ -11,6 +11,7 @@ const authentication = require('app/controllers/authentication');
 // Import nested routers
 const usageLogRouter = require('app/routes/api/users/usage-logs');
 const clientsRouter = require('app/routes/api/users/clients');
+const metricsRouter = require('app/routes/api/users/metrics');
 
 // Middleware that checks whether the user id of the authenticated user is the same as the userId in the URL being requested.
 // This prevents the case where an authenticated user can access any other user's details
@@ -32,9 +33,6 @@ router.route('/:userId')
    */
   .patch(authentication.isUserAuthenticated, userIdMatchesAuthenticatedUser, userController.editUser);
 
-
-router.use('/:userId/clients', authentication.isUserAuthenticated, userIdMatchesAuthenticatedUser, clientsRouter);
-
 router.route('/')
   //TODO: ONLY USED TO TEST AUTH. REMOVE FOR PROD.
   // Get all user details. Must be logged in
@@ -45,9 +43,10 @@ router.route('/')
   .post(authentication.isClientBearerAuthenticated, userController.newUser);
 
 /**
- * Mount the nested router onto this endpoint. Only accessible via OAuth2 token
+ * Mount the nested routers onto these endpoints. Only accessible via OAuth2 token
  */
 router.use('/:userId/usage-logs', authentication.isUserAuthenticated, userIdMatchesAuthenticatedUser, usageLogRouter);
-
+router.use('/:userId/clients', authentication.isUserAuthenticated, userIdMatchesAuthenticatedUser, clientsRouter);
+router.use('/:userId/metrics', authentication.isUserAuthenticated, userIdMatchesAuthenticatedUser, metricsRouter);
 
 module.exports = router;
