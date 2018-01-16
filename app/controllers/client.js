@@ -1,7 +1,7 @@
 const Client = require('app/models/client');
 const Application = require('app/models/application');
 const RefreshToken = require('app/models/refreshToken');
-
+const AccessToken = require('app/models/accessToken')
 const logger = require('app/utils/logger');
 
 /**
@@ -105,6 +105,12 @@ exports.editApplicationClient = async function(req, res, next){
   }
 }
 
+/**
+ * Get all clients with valid refresh tokens for a given user by userId
+ * @param req {Object} request object containing the userId in req.params
+ * @param res {Object} Response parameter with which to send result to client
+ * @param next {Object} next piece of middleware to be run after this one. Used to forward errors to error
+ */
 exports.getUserClients = async function(req, res, next){
   try{
     // Get refresh tokens assigned to user
@@ -119,3 +125,24 @@ exports.getUserClients = async function(req, res, next){
     next(err)
   }
 }
+
+/**
+ * Revoke client (clientId) access to a user (userId) by removing all access and refresh tokens
+ * @param req {Object} request object containing the userId and clientId in req.params
+ * @param res {Object} Response parameter with which to send result to client
+ * @param next {Object} next piece of middleware to be run after this one. Used to forward errors to error
+ */
+ exports.revokeClientAccess = async function(req, res, next){
+   const queryParams = {
+     clientId: req.params.clientId,
+     userId: req.params.userId
+   }
+
+   try{
+      await Promise.all([RefreshToken.remove(queryParams), AccessToken.remove(queryParams)])
+      res.jsend.success(null)
+   } catch(err){
+     next(err)
+   }
+
+ }
