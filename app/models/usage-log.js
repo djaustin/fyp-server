@@ -55,7 +55,7 @@ UsageLogSchema.statics.getOverallSecondsForUser = function(id, options){
     try{
       const logs = await schema.find(params, {log: 1});
       const durations = logs.map(e => Number(e.duration))
-      const totalDuration = durations.reduce((acc, current) => acc + current);
+      const totalDuration = durations.reduce(((acc, current) => acc + current), 0);
       resolve(totalDuration);
     } catch(err){
       return reject(err)
