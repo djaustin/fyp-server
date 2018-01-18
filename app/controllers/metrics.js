@@ -1,16 +1,14 @@
 const UsageLog = require('app/models/usage-log');
 const Client = require('app/models/client');
 const Application = require('app/models/application');
-exports.getAggregatedMetrics = function(req, res, next){
-  // TODO: Implement this
-}
+exports.getAggregatedMetrics = async function(req, res, next){
+  try{
+    const [overall, applications, platforms] = await Promise.all([getOverallMetrics(req), getApplicationsMetrics(req), getPlatformsMetrics(req)])
 
-exports.getAggregatedMetricsWithQuery = function(req, res, next){
-  // TODO: Implement this
-}
-
-exports.getAggregatedMetrics = function(req, res, next){
-  // TODO: Implement this
+    res.jsend.success({overall, applications: applications.applications, platforms: platforms.platforms})
+  }catch(err){
+    next(err)
+  }
 }
 
 exports.getAggregatedMetricsWithQuery = function(req, res, next){
@@ -26,50 +24,43 @@ exports.getApplicationMetricsByIdWithQuery = function(req, res, next){
 }
 
 exports.getApplicationsMetrics = async function(req, res, next){
-  // Get the usage logs
   try{
-    const logs = await UsageLog.find({userId: req.user._id})
-    console.log(logs);
-    const logClientIds = logs.map(log => log.clientId)
-    console.log("logClientIds", logClientIds);
-    const clients = await Client.find({_id: { $in: logClientIds}})
-    console.log("clients", clients);
-    const clientApplicationIds = clients.map(client => client.applicationId)
-    console.log("clientApplicationIds", clientApplicationIds);
-    const applications = await Application.find({_id: { $in: clientApplicationIds}})
-    console.log("applications", applications);
-    const results = {
-      applications: []
-    }
-    for (client of clients) {
-      const applicableLogs = logs.filter(l =>{
-        console.log(l.clientId, client._id);
-        console.log(typeof(l.clientId), typeof(client._id));
-        return String(l.clientId) === String(client._id)
-      });
-      console.log("applicableLogs", applicableLogs);
-      const usageSum = applicableLogs.reduce(((accumulator, current) => accumulator + current.duration), 0)
-      console.log("usageSum", usageSum);
-      const clientApplication = applications.find(application => String(application._id) === String(client.applicationId))
-      console.log("clientApplication", clientApplication);
-      const resultApplication = results.applications.find(application => String(application.id) === String(clientApplication._id))
-      console.log("resultApplication", resultApplication);
-      if(resultApplication) {
-        resultApplication.usage += usageSum
-      } else {
-        results.applications.push({
-          id: clientApplication._id,
-          name: clientApplication.name,
-          usage: usageSum
-        })
-      }
-    }
+    const results = await getApplicationsMetrics(req)
     res.jsend.success(results)
   } catch(err){
     next(err)
   }
-  // Organise into applications (log.clientId -> client.applicationId -> application)
-  // Sum usage for each application and return as json object
+}
+
+
+async function getApplicationsMetrics(req){
+  // Get the usage logs
+  const logs = await UsageLog.find({userId: req.user._id})
+  const logClientIds = logs.map(log => log.clientId)
+  const clients = await Client.find({_id: { $in: logClientIds}})
+  const clientApplicationIds = clients.map(client => client.applicationId)
+  const applications = await Application.find({_id: { $in: clientApplicationIds}})
+  const results = {
+    applications: []
+  }
+  for (client of clients) {
+    const applicableLogs = logs.filter(l =>{
+      return String(l.clientId) === String(client._id)
+    });
+    const usageSum = applicableLogs.reduce(((accumulator, current) => accumulator + current.duration), 0)
+    const clientApplication = applications.find(application => String(application._id) === String(client.applicationId))
+    const resultApplication = results.applications.find(application => String(application.id) === String(clientApplication._id))
+    if(resultApplication) {
+      resultApplication.duration += usageSum
+    } else {
+      results.applications.push({
+        id: clientApplication._id,
+        name: clientApplication.name,
+        duration: usageSum
+      })
+    }
+  }
+  return results
 }
 
 exports.getApplicationsMetricsWithQuery = function(req, res, next){
@@ -78,13 +69,16 @@ exports.getApplicationsMetricsWithQuery = function(req, res, next){
 
 exports.getOverallMetrics = async function(req, res, next){
   try{
-    console.log("in getOverallMetrics");
-    console.log("About to try to get duration");
-    const overallDuration = await UsageLog.getOverallSecondsForUser(req.user._id);
-    res.jsend.success({duration: overallDuration})
+    const result = await getOverallMetrics(req)
+    res.jsend.success(result)
   } catch(err){
     next(err)
   }
+}
+
+async function getOverallMetrics(req){
+    const overallDuration = await UsageLog.getOverallSecondsForUser(req.user._id);
+    return {duration: overallDuration}
 }
 
 exports.getOverallMetricsWithQuery = function(req, res, next){
@@ -99,8 +93,32 @@ exports.getPlatformMetricsByNameWithQuery = function(req, res, next){
   // TODO: Implement this
 }
 
-exports.getPlatformsMetrics = function(req, res, next){
-  // TODO: Implement this
+exports.getPlatformsMetrics = async function(req, res, next){
+  try{
+    const results = await getPlatformsMetrics(req)
+    res.jsend.success(results)
+  }catch(err){
+    next(err)
+  }
+}
+
+async function getPlatformsMetrics(req){
+  const logs = await UsageLog.find({userId: req.user._id})
+  const results = {
+    platforms: []
+  }
+  for (log of logs){
+    const logPlatform = await log.platform
+    const resultPlatform = results.platforms.find(platform => {
+      return platform.name === logPlatform
+    })
+    if(!resultPlatform) {
+      results.platforms.push({name: logPlatform, duration: log.duration})
+    } else {
+      resultPlatform.duration += log.duration
+    }
+  }
+  return results
 }
 
 exports.getPlatformsMetricsWithQuery = function(req, res, next){

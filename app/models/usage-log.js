@@ -63,4 +63,9 @@ UsageLogSchema.statics.getOverallSecondsForUser = function(id, options){
   });
 }
 
+UsageLogSchema.virtual('platform').get(async function(){
+  const client = await require('app/models/client').findOne({_id: this.clientId}, 'platform')
+  return client.platform
+})
+
 module.exports = mongoose.model('UsageLog', UsageLogSchema);
