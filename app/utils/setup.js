@@ -1,6 +1,7 @@
 const Organisation = require('app/models/organisation');
 const Application = require('app/models/application');
 const Client = require('app/models/client');
+const logger = require('app/utils/logger')
 
 exports.addIOSClient = async () => {
   const org = new Organisation({
@@ -18,7 +19,9 @@ exports.addIOSClient = async () => {
     id: 'dmios',
     secret: 'password',
     applicationId: app._id,
-    redirectUri: 'https://digitalmonitor.tk/'
+    redirectUri: 'https://digitalmonitor.tk/',
+    isThirdParty: false,
+    platform: 'ios'
   });
   app.clientIds.push(client._id);
   org.applicationIds.push(app._id);

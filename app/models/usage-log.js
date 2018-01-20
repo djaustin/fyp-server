@@ -28,7 +28,7 @@ const UsageLogSchema = new mongoose.Schema({
 });
 
 UsageLogSchema.virtual('duration').get(function(){
-  return (this.log.endTime - this.log.startTime) / 1000
+  return Math.round((this.log.endTime - this.log.startTime) / 1000)
 });
 
 UsageLogSchema.statics.getOverallSecondsForUser = function(params){

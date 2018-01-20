@@ -116,7 +116,6 @@ server.exchange(oauth2orize.exchange.password(async function(client, email, pass
     const user = await User.findOne({email: email});
     // If no user matches, reject exchange
     if(!user) return callback(null, false);
-    console.log('User found, verifying password:', password);
     // Verify the provided password agains the one in the database
     const match = await user.verifyPassword(password);
     // If the passwords do not match then reject exchange
@@ -177,7 +176,7 @@ server.exchange(oauth2orize.exchange.code(async function(client, code, redirectU
 
 server.exchange(oauth2orize.exchange.refreshToken(async function(client, refreshAccessToken, callback){
   try{
-    const refreshToken = await RefreshToken.find({value: refreshAccessToken, clientId: client._id});
+    const refreshToken = await RefreshToken.findOne({value: refreshAccessToken, clientId: client._id});
     if(!refreshToken) return callback(refreshToken);
     const tokens = await generateTokens(refreshToken.clientId, refreshToken.userId, false);
     callback(null, tokens.accessToken.value, refreshToken.value, {expires_in: accessTokenLifetime});

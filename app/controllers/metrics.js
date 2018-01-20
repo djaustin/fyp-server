@@ -138,6 +138,5 @@ function generateParamsObject(req){
       "$lte": new Date(Number(options.toTime))
     }
   }
-  console.log(params);
   return params
 }

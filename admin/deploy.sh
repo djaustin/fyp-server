@@ -27,7 +27,7 @@ mkdir logs
 tar xf ../server.tar.gz
 rm ../server.tar.gz
 mv docker-compose-remote.yml docker-compose.yml
-docker-compose down
+docker-compose down -v
 docker container rm -f $(docker container ls -aq)
 mkdir node_modules
 # This link needs to exist so that files can be 'required' from the app root. It has to be copied to the docker image

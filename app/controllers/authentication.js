@@ -131,4 +131,4 @@ passport.use(new LocalStrategy(async function(email, password, callback){
 exports.isUserAuthenticated = passport.authenticate('user-bearer', {session: false, failWithError: true});
 exports.isOrganisationAuthenticated = passport.authenticate('organisation-basic', {session: false, failWithError: true});
 exports.isClientSecretAuthenticated = passport.authenticate('client-basic', {session: false, failWithError: true});
-exports.isClientBearerAuthenticated = passport.authenticate('client-bearer', {session: false, failWithError: true});
+exports.isClientBearerAuthenticated = passport.authenticate(['client-bearer', 'user-bearer'], {session: false, failWithError: true});
