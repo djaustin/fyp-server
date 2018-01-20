@@ -31,27 +31,16 @@ UsageLogSchema.virtual('duration').get(function(){
   return (this.log.endTime - this.log.startTime) / 1000
 });
 
-UsageLogSchema.statics.getOverallSecondsForUser = function(id, options){
+UsageLogSchema.statics.getOverallSecondsForUser = function(params){
   const schema = this
   return new Promise(async function(resolve, reject) {
-    if(!id){
+    if(!params.userId){
       const err = new Error("User ID must be provided to query getSecondsByUserId")
       return reject(err)
     }
-    options = options || {}
-    const params = {}
-    params.userId = id
 
-    if (options.fromTime){
-      params.startTime = {
-        $gte: options.fromTime
-      }
-    }
-    if (options.toTime){
-      params.endTime = {
-        $lte: options.toTime
-      }
-    }
+
+
     try{
       const logs = await schema.find(params, {log: 1});
       const durations = logs.map(e => Number(e.duration))

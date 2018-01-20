@@ -3,11 +3,10 @@ const applicationsRouter = require('app/routes/api/users/metrics/applications');
 const platformsRouter = require('app/routes/api/users/metrics/platforms');
 const overallRouter = require('app/routes/api/users/metrics/overall');
 const metricsController = require('app/controllers/metrics');
-const query = require('app/middleware/query');
 /**
  * Get an aggregation of all metrics data with optional url query
  */
-router.get('/', query.runIfQueryExists(metricsController.getAggregatedMetricsWithQuery), metricsController.getAggregatedMetrics)
+router.get('/', metricsController.getAggregatedMetrics)
 
 /**
  * Get metrics on an application-by-application basis

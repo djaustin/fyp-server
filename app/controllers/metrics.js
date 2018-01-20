@@ -4,15 +4,10 @@ const Application = require('app/models/application');
 exports.getAggregatedMetrics = async function(req, res, next){
   try{
     const [overall, applications, platforms] = await Promise.all([getOverallMetrics(req), getApplicationsMetrics(req), getPlatformsMetrics(req)])
-
     res.jsend.success({overall, applications: applications.applications, platforms: platforms.platforms})
   }catch(err){
     next(err)
   }
-}
-
-exports.getAggregatedMetricsWithQuery = function(req, res, next){
-  // TODO: Implement this
 }
 
 exports.getApplicationMetricsById = function(req, res, next){
@@ -33,9 +28,10 @@ exports.getApplicationsMetrics = async function(req, res, next){
 }
 
 
-async function getApplicationsMetrics(req){
+async function getApplicationsMetrics(req, options){
+  const params = generateParamsObject(req)
   // Get the usage logs
-  const logs = await UsageLog.find({userId: req.user._id})
+  const logs = await UsageLog.find(params)
   const logClientIds = logs.map(log => log.clientId)
   const clients = await Client.find({_id: { $in: logClientIds}})
   const clientApplicationIds = clients.map(client => client.applicationId)
@@ -64,7 +60,7 @@ async function getApplicationsMetrics(req){
 }
 
 exports.getApplicationsMetricsWithQuery = function(req, res, next){
-  // TODO: Implement this
+
 }
 
 exports.getOverallMetrics = async function(req, res, next){
@@ -77,12 +73,13 @@ exports.getOverallMetrics = async function(req, res, next){
 }
 
 async function getOverallMetrics(req){
-    const overallDuration = await UsageLog.getOverallSecondsForUser(req.user._id);
+    const params = generateParamsObject(req)
+    const overallDuration = await UsageLog.getOverallSecondsForUser(params);
     return {duration: overallDuration}
 }
 
 exports.getOverallMetricsWithQuery = function(req, res, next){
-  // TODO: Implement this
+
 }
 
 exports.getPlatformMetricsByName = function(req, res, next){
@@ -103,7 +100,8 @@ exports.getPlatformsMetrics = async function(req, res, next){
 }
 
 async function getPlatformsMetrics(req){
-  const logs = await UsageLog.find({userId: req.user._id})
+  const params = generateParamsObject(req)
+  const logs = await UsageLog.find(params)
   const results = {
     platforms: []
   }
@@ -123,4 +121,23 @@ async function getPlatformsMetrics(req){
 
 exports.getPlatformsMetricsWithQuery = function(req, res, next){
   // TODO: Implement this
+}
+
+function generateParamsObject(req){
+  options = req.query || {}
+  const params = {}
+  params.userId = req.user._id
+
+  if (options.fromTime){
+    params['log.startTime'] = {
+      "$gte": new Date(Number(options.fromTime))
+    }
+  }
+  if (options.toTime){
+    params['log.endTime'] = {
+      "$lte": new Date(Number(options.toTime))
+    }
+  }
+  console.log(params);
+  return params
 }
