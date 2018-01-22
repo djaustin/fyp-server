@@ -84,6 +84,36 @@ passport.use('user-bearer', new BearerStrategy({passReqToCallback: true},
   }
 ));
 
+
+passport.use('organisation-bearer', new BearerStrategy({passReqToCallback: true},
+  async function(req, accessToken, callback){
+    try{
+      // Find a token with a value matching the one provided
+      const token = await Token.findOne({value: accessToken});
+      logger.debug("FOUND TOKEN", token)
+      // Reject auth if token not found
+      if(!token) return callback(null, false);
+
+      // Get the user and client objects from their respective IDs in parallel
+      const organisation = await Organisation.findOne({_id: token.userId});
+      logger.debug("ACCESS TOKEN VALUE", accessToken.value)
+      logger.debug("FOUND ORGANISATION", organisation)
+      // Reject auth if no user or no client found
+      if(!organisation) return callback(null, false);
+
+      // Alias req.user === req.organisation
+      req.organisation = organisation
+
+      // Allow all scopes. TODO: Is this actually going to be used
+      return callback(null, organisation, {scope: '*'});
+
+    } catch(err){
+      logger.error(err);
+      callback(err);
+    }
+  }
+));
+
 // Allow authentication of requests made by client with no user authorization (eg. register a new user or organisation);
 passport.use('client-bearer', new BearerStrategy({passReqToCallback: true},
   async function(req, accessToken, callback){
@@ -129,6 +159,6 @@ passport.use(new LocalStrategy(async function(email, password, callback){
 
 // Export authentication for easier use when module is imported
 exports.isUserAuthenticated = passport.authenticate('user-bearer', {session: false, failWithError: true});
-exports.isOrganisationAuthenticated = passport.authenticate('organisation-basic', {session: false, failWithError: true});
+exports.isOrganisationAuthenticated = passport.authenticate('organisation-bearer', {session: false, failWithError: true});
 exports.isClientSecretAuthenticated = passport.authenticate('client-basic', {session: false, failWithError: true});
-exports.isClientBearerAuthenticated = passport.authenticate(['client-bearer', 'user-bearer'], {session: false, failWithError: true});
+exports.isClientBearerAuthenticated = passport.authenticate(['client-bearer', 'user-bearer', 'organisation-bearer'], {session: false, failWithError: true});

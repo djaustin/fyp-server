@@ -8,6 +8,7 @@ const Client = require('app/models/client');
 const AccessToken = require('app/models/accessToken');
 const Code = require('app/models/code');
 const RefreshToken = require('app/models/refreshToken');
+const Organisation = require('app/models/organisation');
 const config = require('../../config/config');
 
 // This instance exposes config options and middleware that will be used in routes
@@ -115,16 +116,30 @@ server.exchange(oauth2orize.exchange.password(async function(client, email, pass
     // Try to find user with given email
     const user = await User.findOne({email: email});
     // If no user matches, reject exchange
-    if(!user) return callback(null, false);
-    // Verify the provided password agains the one in the database
-    const match = await user.verifyPassword(password);
-    // If the passwords do not match then reject exchange
-    if(!match) return callback(null, false);
+    if(!user) {
+      const organisation = await Organisation.findOne({email: email});
+      logger.debug("FOUND ORGANISATION", organisation)
+      const match = await organisation.verifyPassword(password);
+      logger.debug("DOES PASSWORD MATCH?", match)
+      if(!match) return callback(null, false);
+      const tokens = await generateTokens(client._id, organisation._id);
+      logger.debug("GOT TOKENS", tokens)
 
-    const tokens = await generateTokens(client._id, user._id);
+      callback(null, tokens.accessToken.value, tokens.refreshToken.value, {expires_in: accessTokenLifetime});
+      if (!organisation){
+        return callback(null, false);
+      }
+    } else {
+      // Verify the provided password agains the one in the database
+      const match = await user.verifyPassword(password);
+      // If the passwords do not match then reject exchange
+      if(!match) return callback(null, false);
 
-    // Return access token to the callback
-    callback(null, tokens.accessToken.value, tokens.refreshToken.value, {expires_in: accessTokenLifetime});
+      const tokens = await generateTokens(client._id, user._id);
+
+      // Return access token to the callback
+      callback(null, tokens.accessToken.value, tokens.refreshToken.value, {expires_in: accessTokenLifetime});
+    }
   } catch (err){
     logger.error(err);
     callback(err);

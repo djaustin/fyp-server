@@ -80,10 +80,15 @@ exports.editOrganisation = async function(req, res, next){
 
 // GET all organisations from the database
 // TEMP: Only here for testing.
-exports.allOrganisations = async function(req, res, next){
+exports.getOrganisations = async function(req, res, next){
   try{
-    const organisations = await Organisation.find();
-    res.jsend.success({organisations: organisations});
+    var organisations
+    if(!req.query){
+      organisations = []
+    } else {
+      organisations = await Organisation.find(req.query, {password: 0})
+    }
+    res.jsend.success({organisations: organisations})
   } catch(err){
     next(err);
   }
