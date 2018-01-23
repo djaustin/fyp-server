@@ -3,7 +3,7 @@ const Application = require('app/models/application');
 const RefreshToken = require('app/models/refreshToken');
 const AccessToken = require('app/models/accessToken')
 const logger = require('app/utils/logger');
-
+const uid = require('uid2');
 /**
  * Gets all clients connected to the application provided.
  * @param req Request paramater that contains the application id in req.params.applicationId
@@ -16,7 +16,7 @@ exports.getApplicationClients = async function(req, res, next){
     // Get application instance first
     const application = await Application.findOne({_id: req.params.applicationId});
     // Get clients from the application
-    const clients = await Client.find({_id : { $in: application.clientIds} }, {secret: 0});
+    const clients = await Client.find({_id : { $in: application.clientIds} });
     res.jsend.success({clients: clients});
   } catch(err){
     next(err);
@@ -33,8 +33,8 @@ exports.newApplicationClient = async function(req, res, next){
   // Create new in-memory client
   const client = new Client({
     name: req.body.name,
-    id: req.body.id,
-    secret: req.body.secret, //TODO: Think about how this will be generated. It will be hashed in the database but there are probably standards for this kind of thing. Maybe it could just be a GUID and then get sent back in the response
+    id: uid(128),
+    secret: uid(128),
     applicationId: req.params.applicationId,
     redirectUri: req.body.redirectUri,
     isThirdParty: true,
@@ -67,7 +67,7 @@ exports.newApplicationClient = async function(req, res, next){
  */
 exports.getApplicationClient = async function(req, res, next){
   try{
-    const client = await Client.findOne({_id: req.params.clientId}, {secret: 0});
+    const client = await Client.findOne({_id: req.params.clientId});
     res.jsend.success({client: client});
   } catch(err){
     next(err);

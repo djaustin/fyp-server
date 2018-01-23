@@ -50,13 +50,16 @@ const ClientSchema = new mongoose.Schema({
 /**
  * If the client secret has changed and the document is being saved, make sure the secret is hashed
  */
-ClientSchema.pre('save', crypto.hashSecret('secret'));
+// ClientSchema.pre('save', crypto.hashSecret('secret'));
 
 /**
  * Verify a plaintext secret by hashing and comparing it to the stored hash
  * @param secret {String} The plaintext secret to verify
  */
-ClientSchema.methods.verifySecret = crypto.verifySecret('secret');
+// ClientSchema.methods.verifySecret = crypto.verifySecret('secret');
+ClientSchema.methods.verifySecret = function(secret){
+  return String(secret) === String(this.secret)
+}
 
 // Export the model created by this schema for use in other files
 module.exports = mongoose.model('Client', ClientSchema);
