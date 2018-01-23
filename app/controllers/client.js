@@ -16,7 +16,7 @@ exports.getApplicationClients = async function(req, res, next){
     // Get application instance first
     const application = await Application.findOne({_id: req.params.applicationId});
     // Get clients from the application
-    const clients = await Client.find({_id : { $in: application.clientIds} }, '_id name id');
+    const clients = await Client.find({_id : { $in: application.clientIds} }, {secret: 0});
     res.jsend.success({clients: clients});
   } catch(err){
     next(err);

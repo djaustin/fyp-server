@@ -159,6 +159,6 @@ passport.use(new LocalStrategy(async function(email, password, callback){
 
 // Export authentication for easier use when module is imported
 exports.isUserAuthenticated = passport.authenticate('user-bearer', {session: false, failWithError: true});
-exports.isOrganisationAuthenticated = passport.authenticate('organisation-bearer', {session: false, failWithError: true});
+exports.isOrganisationAuthenticated = passport.authenticate(['organisation-bearer', 'organisation-basic'], {session: false, failWithError: true});
 exports.isClientSecretAuthenticated = passport.authenticate('client-basic', {session: false, failWithError: true});
 exports.isClientBearerAuthenticated = passport.authenticate(['client-bearer', 'user-bearer', 'organisation-bearer'], {session: false, failWithError: true});
