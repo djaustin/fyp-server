@@ -10,19 +10,22 @@ const UsageLog = require('app/models/usage-log');
 exports.newUsageLog = async function(req, res, next){
   //TODO: Find a way to allow user to report usage without a client application
   const log = new UsageLog({
-    userId: req.params.userId,
+    userId: req.user._id,
     clientId: req.client._id, // client was added to the req object in the BearerStrategy. It only exists if a client made this requets with an access token
     log: {
       startTime: new Date(Number(req.body.startTime)),
       endTime: new Date(Number(req.body.endTime))
     }
   });
+
+  logger.debug("startTime", log.startTime)
+  logger.debug("endTime", log.endTime)
   try{
     await log.save();
     res.status(201);
     res.jsend.success({
       log: log,
-      locations: [`https://digitalmonitor.tk/api/users/${req.params.userId}/logs/${log._id}`]
+      locations: [`https://digitalmonitor.tk/api/users/${req.params.userId}/usage-logs/${log._id}`]
     });
   } catch(err){
     next(err);
