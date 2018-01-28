@@ -12,6 +12,7 @@ const authentication = require('app/controllers/authentication');
 const usageLogRouter = require('app/routes/api/users/usage-logs');
 const clientsRouter = require('app/routes/api/users/clients');
 const metricsRouter = require('app/routes/api/users/metrics');
+const usageGoalsRouter = require('app/routes/api/users/usage-goals');
 
 // Middleware that checks whether the user id of the authenticated user is the same as the userId in the URL being requested.
 // This prevents the case where an authenticated user can access any other user's details
@@ -48,5 +49,6 @@ router.route('/')
 router.use('/:userId/usage-logs', authentication.isUserAuthenticated, userIdMatchesAuthenticatedUser, usageLogRouter);
 router.use('/:userId/clients', authentication.isUserAuthenticated, userIdMatchesAuthenticatedUser, clientsRouter);
 router.use('/:userId/metrics', authentication.isUserAuthenticated, userIdMatchesAuthenticatedUser, metricsRouter);
+router.use('/:userId/usage-goals', authentication.isUserAuthenticated, userIdMatchesAuthenticatedUser, usageGoalsRouter)
 
 module.exports = router;

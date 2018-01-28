@@ -7,6 +7,7 @@
 const mongoose = require('mongoose');
 // Password hashing
 const crypto = require('app/utils/crypto');
+const UsageGoalSchema = require('app/models/usage-goal').schema;
 
 // Define the schema for a user document
 const UserSchema = new mongoose.Schema({
@@ -21,7 +22,11 @@ const UserSchema = new mongoose.Schema({
   },
   firstName: String,
   lastName: String,
-});
+  usageGoals: [UsageGoalSchema]
+}, {usePushEach: true});
+
+
+
 
 // Define action to complete before saving a document.
 // Here we make sure that every password is hashed before placing it in the database

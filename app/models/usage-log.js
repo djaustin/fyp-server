@@ -4,7 +4,7 @@
  */
 
 const mongoose = require('mongoose');
-
+const Client = require('app/models/client');
 const UsageLogSchema = new mongoose.Schema({
   clientId: {
     type: mongoose.Schema.ObjectId,
@@ -55,6 +55,11 @@ UsageLogSchema.statics.getOverallSecondsForUser = function(params){
 UsageLogSchema.virtual('platform').get(async function(){
   const client = await require('app/models/client').findOne({_id: this.clientId}, 'platform')
   return client.platform
+})
+
+UsageLogSchema.virtual('client').get(async function(){
+  const client = await require('app/models/client').findOne({_id: this.clientId})
+  return client
 })
 
 module.exports = mongoose.model('UsageLog', UsageLogSchema);

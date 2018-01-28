@@ -14,7 +14,8 @@ exports.newUser = async function(req, res, next){
     email: req.body.email,
     password: req.body.password,
     firstName: req.body.firstName,
-    lastName: req.body.lastName
+    lastName: req.body.lastName,
+    usageGoals: []
   });
 
   try{

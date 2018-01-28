@@ -104,3 +104,17 @@ exports.deleteOrganisationApplication = async function(req, res, next){
      next(err);
    }
  }
+
+
+exports.getApplicationById = async function(req, res, next) {
+  try {
+    const id = req.query.id
+    if(!id) {
+      throw Error("Query parameter 'id' not provided")
+    }
+    const applications = await Application.find({_id: id})
+    res.jsend.success({applications: applications})
+  } catch (err) {
+    next(err)
+  }
+}

@@ -3,11 +3,15 @@ const Organisation = require('app/models/organisation');
 const Application = require('app/models/application')
 const Client = require('app/models/client');
 const UsageLog = require('app/models/usage-log');
+const UsageGoal = require('app/models/usage-goal').model;
 const uid = require('uid2');
 
 async function generate(){
   console.log("starting");
   try{
+
+    let platforms = ['ios', 'android', 'blackberry', 'windows-phone', 'desktop', 'browser']
+    let periods = ['daily', 'weekly', 'monthly', 'yearly']
 
     console.log("finding user");
     // Get user
@@ -23,6 +27,7 @@ async function generate(){
       await user.save()
       console.log("SAVED USER", user);
     }
+
     let orgNum = uid(10)
     // Create a new organisation
     const organisation = new Organisation({
@@ -41,14 +46,42 @@ async function generate(){
         clientIds: []
       })
       await application.save()
+
+      // Generate some usage goals
+      var applicationId = Math.random() < 0.5 ? null : application._id
+      var platform = platforms[getRandomInt(0, platforms.length-1)]
+      var period = periods[getRandomInt(0, periods.length-1)]
+      var goal = new UsageGoal({
+        platform: platform,
+        duration: getRandomInt(1, 60*60*3),
+        period: period,
+        applicationId: applicationId
+      })
+      user.usageGoals.push(goal);
+      user.save()
+
+      if(Math.random() < 0.5){
+        var applicationId = Math.random() < 0.5 ? null : application._id
+        var platform = platforms[getRandomInt(0, platforms.length-1)]
+        var period = periods[getRandomInt(0, periods.length-1)]
+        var goal = new UsageGoal({
+          platform: platform,
+          duration: getRandomInt(1, 60*60*3),
+          period: period,
+          applicationId: applicationId
+        })
+        user.usageGoals.push(goal);
+        user.save()
+      }
+
+
+
       console.log('Saved application', application);
       organisation.applicationIds.push(application._id)
       await organisation.save()
       // Create a random number of clients
       for (var k = 0; k < getRandomInt(1, 10); k++) {
         let clientNum = uid(10)
-
-        let platforms = ['ios', 'android', 'blackberry', 'windows-phone', 'desktop', 'browser']
         platform = platforms[getRandomInt(0, platforms.length-1)]
         let client = new Client({
           name: 'client' + clientNum,
