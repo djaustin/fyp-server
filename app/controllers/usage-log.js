@@ -18,8 +18,6 @@ exports.newUsageLog = async function(req, res, next){
     }
   });
 
-  logger.debug("startTime", log.startTime)
-  logger.debug("endTime", log.endTime)
   try{
     await log.save();
     res.status(201);

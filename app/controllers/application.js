@@ -4,6 +4,10 @@
 
 // Import data model for mongodb interface
 const Application = require('app/models/application');
+const UsageLog = require('app/models/usage-log');
+const RefreshToken = require('app/models/refreshToken');
+const Client = require('app/models/client');
+const logger = require('app/utils/logger');
 
 /**
   Add a new application to the database under the given authenticated and authorized organisation
@@ -115,6 +119,22 @@ exports.getApplicationById = async function(req, res, next) {
     const applications = await Application.find({_id: id})
     res.jsend.success({applications: applications})
   } catch (err) {
+    next(err)
+  }
+}
+
+
+exports.getUserAuthorisedApplications = async function(req, res, next){
+  try {
+    // Refresh tokens mean the client has access to this user
+    const tokens = await RefreshToken.find({userId: req.user._id}, {clientId: 1})
+    const firstPartyClients = await Client.find({isThirdParty: false}, {_id: 1})
+    const firstPartyClientIds = firstPartyClients.map(e => String(e._id))
+    const clientIds = tokens.map(e => e.clientId).filter(e => !firstPartyClientIds.includes(e))
+    // Find all applications containing one of the clientIds in its clientIds field
+    const applications = await Application.find({clientIds: {$in: clientIds}})
+    res.jsend.success({applications: applications})
+  } catch(err){
     next(err)
   }
 }

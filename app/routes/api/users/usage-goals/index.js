@@ -4,7 +4,9 @@ const progressRouter = require('app/routes/api/users/usage-goals/progress');
 router.route('/')
   .get(usageGoalsController.getUserUsageGoals)
   .post(usageGoalsController.postUserUsageGoal)
-  // .put()
+
+router.route('/:goalId')
+  .put(usageGoalsController.putUserUsageGoal)
   // .delete()
 
 

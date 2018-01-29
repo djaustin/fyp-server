@@ -90,14 +90,11 @@ passport.use('organisation-bearer', new BearerStrategy({passReqToCallback: true}
     try{
       // Find a token with a value matching the one provided
       const token = await Token.findOne({value: accessToken});
-      logger.debug("FOUND TOKEN", token)
       // Reject auth if token not found
       if(!token) return callback(null, false);
 
       // Get the user and client objects from their respective IDs in parallel
       const organisation = await Organisation.findOne({_id: token.userId});
-      logger.debug("ACCESS TOKEN VALUE", accessToken.value)
-      logger.debug("FOUND ORGANISATION", organisation)
       // Reject auth if no user or no client found
       if(!organisation) return callback(null, false);
 

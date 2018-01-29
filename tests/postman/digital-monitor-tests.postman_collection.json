@@ -437,6 +437,98 @@
 								"description": ""
 							},
 							"response": []
+						},
+						{
+							"name": "Get user by email",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "d1ae81ed-e639-4cba-9044-a3be5561b76c",
+										"type": "text/javascript",
+										"exec": [
+											"eval(globals.commonTests)();",
+											"",
+											"const schema = {",
+											"  \"definitions\": {},",
+											"  \"$schema\": \"http://json-schema.org/draft-06/schema#\",",
+											"  \"$id\": \"http://example.com/example.json\",",
+											"  \"type\": \"object\",",
+											"  \"properties\": {",
+											"    \"status\": {",
+											"      \"$id\": \"/properties/status\",",
+											"      \"type\": \"string\"",
+											"    },",
+											"    \"data\": {",
+											"      \"$id\": \"/properties/data\",",
+											"      \"type\": \"object\",",
+											"      \"properties\": {",
+											"        \"users\": {",
+											"          \"$id\": \"/properties/data/properties/users\",",
+											"          \"type\": \"array\",",
+											"          \"items\": {",
+											"            \"$id\": \"/properties/data/properties/users/items\",",
+											"            \"type\": \"object\",",
+											"            \"properties\": {",
+											"              \"_id\": {",
+											"                \"$id\": \"/properties/data/properties/users/items/properties/_id\",",
+											"                \"type\": \"string\"",
+											"              },",
+											"              \"email\": {",
+											"                \"$id\": \"/properties/data/properties/users/items/properties/email\",",
+											"                \"type\": \"string\"",
+											"              },",
+											"              \"firstName\": {",
+											"                \"$id\": \"/properties/data/properties/users/items/properties/firstName\",",
+											"                \"type\": \"string\"",
+											"              },",
+											"              \"lastName\": {",
+											"                \"$id\": \"/properties/data/properties/users/items/properties/lastName\",",
+											"                \"type\": \"string\"",
+											"              },",
+											"              \"__v\": {",
+											"                \"$id\": \"/properties/data/properties/users/items/properties/__v\",",
+											"                \"type\": \"integer\"",
+											"              }",
+											"            }",
+											"          }",
+											"        }",
+											"      }",
+											"    }",
+											"  }",
+											"}",
+											"",
+											"const responseJson = JSON.parse(responseBody);",
+											"tests[\"Status code is 200\"] = responseCode.code === 200;",
+											"tests[\"Response schema is valid\"] = tv4.validate(responseJson, schema);"
+										]
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {},
+								"url": {
+									"raw": "{{hostname}}/api/users?email={{userEmail}}",
+									"host": [
+										"{{hostname}}"
+									],
+									"path": [
+										"api",
+										"users"
+									],
+									"query": [
+										{
+											"key": "email",
+											"value": "{{userEmail}}",
+											"equals": true
+										}
+									]
+								},
+								"description": ""
+							},
+							"response": []
 						}
 					],
 					"_postman_isSubFolder": true
@@ -1430,6 +1522,104 @@
 								"description": ""
 							},
 							"response": []
+						},
+						{
+							"name": "Get organisation applications",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "6d82a693-cee9-45a1-beae-5c9dd3a22ef2",
+										"type": "text/javascript",
+										"exec": [
+											"eval(globals.commonTests)();",
+											"",
+											"const responseJson = JSON.parse(responseBody);",
+											"",
+											"const schema = {",
+											"  \"definitions\": {},",
+											"  \"$schema\": \"http://json-schema.org/draft-06/schema#\",",
+											"  \"$id\": \"https://digitalmonitor.tk/api/\",",
+											"  \"type\": \"object\",",
+											"  \"properties\": {",
+											"    \"status\": {",
+											"      \"$id\": \"/properties/status\",",
+											"      \"type\": \"string\"",
+											"    },",
+											"    \"data\": {",
+											"      \"$id\": \"/properties/data\",",
+											"      \"type\": \"object\",",
+											"      \"properties\": {",
+											"        \"application\": {",
+											"          \"$id\": \"/properties/data/properties/application\",",
+											"          \"type\": \"object\",",
+											"          \"properties\": {",
+											"            \"_id\": {",
+											"              \"$id\": \"/properties/data/properties/application/properties/_id\",",
+											"              \"type\": \"string\"",
+											"            },",
+											"            \"name\": {",
+											"              \"$id\": \"/properties/data/properties/application/properties/name\",",
+											"              \"type\": \"string\"",
+											"            },",
+											"            \"__v\": {",
+											"              \"$id\": \"/properties/data/properties/application/properties/__v\",",
+											"              \"type\": \"integer\"",
+											"            },",
+											"            \"clientIds\": {",
+											"              \"$id\": \"/properties/data/properties/application/properties/clients\",",
+											"              \"type\": \"array\",",
+											"              \"items\": {",
+											"                \"title\": \"Empty Object\",",
+											"                \"description\": \"Accepts anything iff it's valid JSON.\"",
+											"              }",
+											"            }",
+											"          },",
+											"          \"required\": [",
+											"            \"_id\",",
+											"            \"name\",",
+											"            \"__v\",",
+											"            \"clientIds\"",
+											"          ]",
+											"        }",
+											"      },",
+											"      \"required\": [",
+											"        \"application\"",
+											"      ]",
+											"    }",
+											"  },",
+											"  \"required\": [",
+											"    \"status\",",
+											"    \"data\"",
+											"  ]",
+											"};",
+											"",
+											"tests[\"Status code is 200\"] = responseCode.code === 200;",
+											"tests[\"Response schema is valid\"] = tv4.validate(responseJson, schema);"
+										]
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {},
+								"url": {
+									"raw": "{{hostname}}/api/organisations/{{organisationId}}/applications/",
+									"host": [
+										"{{hostname}}"
+									],
+									"path": [
+										"api",
+										"organisations",
+										"{{organisationId}}",
+										"applications",
+										""
+									]
+								},
+								"description": ""
+							},
+							"response": []
 						}
 					],
 					"_postman_isSubFolder": true
@@ -1908,7 +2098,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "513b7e67-58b9-47fa-b55f-b230a9d1d627",
+										"id": "a9be2156-3ff6-49b5-8a32-7d338cfc0516",
 										"type": "text/javascript",
 										"exec": [
 											"eval(globals.commonTests)();",
@@ -1997,7 +2187,7 @@
 											"",
 											"pm.environment.set(\"clientId\",jsonResponse.data.client._id);",
 											"pm.environment.set(\"oauthClientId\", jsonResponse.data.client.id);",
-											"pm.environment.set(\"oauthClientSecret\", \"client\" + environment.clientNumber);"
+											"pm.environment.set(\"oauthClientSecret\", jsonResponse.data.client.secret);"
 										]
 									}
 								}
@@ -2012,7 +2202,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n\t\"name\": \"client{{clientNumber}}\",\n    \"id\": \"client{{clientNumber}}\",\n    \"secret\": \"client{{clientNumber}}\", \n    \"redirectUri\": \"{{hostname}}\"\n}"
+									"raw": "{\n\t\"name\": \"client{{clientNumber}}\",\n    \"id\": \"client{{clientNumber}}\",\n    \"secret\": \"client{{clientNumber}}\", \n    \"redirectUri\": \"{{hostname}}\",\n    \"platform\": \"desktop\"\n}"
 								},
 								"url": {
 									"raw": "{{hostname}}/api/organisations/{{organisationId}}/applications/{{applicationId}}/clients",
@@ -2371,6 +2561,564 @@
 						],
 						"id": "132279c2-ca84-4cbe-aa06-3250bc26fc90",
 						"type": "text/javascript"
+					}
+				}
+			]
+		},
+		{
+			"name": "Usage Logs",
+			"description": "",
+			"item": [
+				{
+					"name": "Create a new user",
+					"description": "Workflow to test creation of a new user",
+					"item": [
+						{
+							"name": "Add a user",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "25c77851-7eea-4148-bbc6-989dc6f98977",
+										"type": "text/javascript",
+										"exec": [
+											"pm.environment.set('userNumber', Math.floor(Math.random()*100000));"
+										]
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "175b8577-1658-4470-a8dd-57dcc79c957b",
+										"type": "text/javascript",
+										"exec": [
+											"postman.setGlobalVariable(\"commonTests\", () =>{",
+											"    ",
+											"  // The Content-Type must be JSON",
+											"  tests[\"Content-Type header includes application/json\"] = postman.getResponseHeader(\"Content-Type\").includes(\"application/json\");",
+											"",
+											"  // The response time must be less than 500 milliseconds",
+											"  tests[\"Response time is acceptable\"] = responseTime < 500;",
+											"",
+											"  // The response body must include an \"id\" property",
+											"  const jsonResponse = JSON.parse(responseBody);",
+											"  const jsendSchema = JSON.parse(environment.JSendBasicSchema);",
+											"  tests[\"Response matches JSend schema\"] = tv4.validate(jsonResponse, jsendSchema);",
+											"  tests[\"Response 'status' equals 'success'\"] = jsonResponse.status === \"success\";",
+											"})",
+											"",
+											"eval(globals.commonTests)();",
+											"",
+											"",
+											"const addUserResponse = JSON.parse(responseBody);",
+											"const addUserResponseSchema = {",
+											"  \"definitions\": {},",
+											"  \"$schema\": \"http://json-schema.org/draft-06/schema#\",",
+											"  \"$id\": \"https://digitalmonitor.tk/api/\",",
+											"  \"type\": \"object\",",
+											"  \"properties\": {",
+											"    \"status\": {",
+											"      \"$id\": \"/properties/status\",",
+											"      \"type\": \"string\"",
+											"    },",
+											"    \"data\": {",
+											"      \"$id\": \"/properties/data\",",
+											"      \"type\": \"object\",",
+											"      \"properties\": {",
+											"        \"user\": {",
+											"          \"$id\": \"/properties/data/properties/user\",",
+											"          \"type\": \"object\",",
+											"          \"properties\": {",
+											"            \"__v\": {",
+											"              \"$id\": \"/properties/data/properties/user/properties/__v\",",
+											"              \"type\": \"integer\"",
+											"            },",
+											"            \"email\": {",
+											"              \"$id\": \"/properties/data/properties/user/properties/email\",",
+											"              \"type\": \"string\"",
+											"            },",
+											"            \"firstName\": {",
+											"              \"$id\": \"/properties/data/properties/user/properties/firstName\",",
+											"              \"type\": \"string\"",
+											"            },",
+											"            \"lastName\": {",
+											"              \"$id\": \"/properties/data/properties/user/properties/lastName\",",
+											"              \"type\": \"string\"",
+											"            },",
+											"            \"_id\": {",
+											"              \"$id\": \"/properties/data/properties/user/properties/_id\",",
+											"              \"type\": \"string\"",
+											"            }",
+											"          },",
+											"          \"required\": [",
+											"            \"__v\",",
+											"            \"email\",",
+											"            \"firstName\",",
+											"            \"lastName\",",
+											"            \"_id\"",
+											"          ]",
+											"        },",
+											"        \"locations\": {",
+											"          \"$id\": \"/properties/data/properties/locations\",",
+											"          \"type\": \"array\",",
+											"          \"items\": {",
+											"            \"$id\": \"/properties/data/properties/locations/items\",",
+											"            \"type\": \"string\"",
+											"          }",
+											"        }",
+											"      },",
+											"      \"required\": [",
+											"        \"user\",",
+											"        \"locations\"",
+											"      ]",
+											"    }",
+											"  },",
+											"  \"required\": [",
+											"    \"status\",",
+											"    \"data\"",
+											"  ]",
+											"}",
+											"",
+											"tests[\"Status code is 201\"] = responseCode.code === 201;",
+											"tests[\"Response schema is valid\"] = tv4.validate(addUserResponse, addUserResponseSchema);",
+											"",
+											"pm.environment.set('userId', addUserResponse.data.user._id);",
+											"pm.environment.set('userEmail', addUserResponse.data.user.email);",
+											"",
+											"",
+											"",
+											"pm.sendRequest({",
+											"    url: environment.hostname + '/api/oauth2/token',",
+											"    method: 'POST',",
+											"    header: {",
+											"        'Authorization':'Basic ZG1pb3M6cGFzc3dvcmQ=',",
+											"        'content-type':'application/json'",
+											"    },",
+											"    body: {",
+											"        mode: 'raw',",
+											"        raw: JSON.stringify({",
+											"        \t\"grant_type\": \"password\",",
+											"        \t\"username\": addUserResponse.data.user.email,",
+											"        \t\"password\": \"password\"",
+											"        })",
+											"    }",
+											"}, function (err, res) {",
+											"    pm.environment.set(\"oauthResourceOwnerToken\", res.json().access_token);",
+											"});"
+										]
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "",
+										"value": ""
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"email\": \"user{{userNumber}}@mail.com\",\n\t\"password\": \"password\",\n\t\"firstName\": \"firstName{{userNumber}}\",\n\t\"lastName\": \"lastName{{userNumber}}\"\n}"
+								},
+								"url": {
+									"raw": "{{hostname}}/api/users",
+									"host": [
+										"{{hostname}}"
+									],
+									"path": [
+										"api",
+										"users"
+									]
+								},
+								"description": ""
+							},
+							"response": []
+						}
+					],
+					"auth": {
+						"type": "bearer",
+						"bearer": [
+							{
+								"key": "token",
+								"value": "{{oauthClientCredentialsToken}}",
+								"type": "string"
+							}
+						]
+					},
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "02846f53-b612-4b18-89e5-4222f395c633",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "6311cc12-6636-44bb-9f98-b4b134d8db08",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					],
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Create a new usage log",
+					"description": "",
+					"item": [
+						{
+							"name": "Add usage log",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "10dc39c4-a97a-4d8b-bf1d-ea82d2c4b422",
+										"type": "text/javascript",
+										"exec": [
+											"const timeNow = new Date().getTime();",
+											"",
+											"pm.environment.set(\"startTime\", timeNow);",
+											"pm.environment.set(\"endTime\", timeNow+10000);",
+											""
+										]
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "2e3b55ff-9398-41d8-9e89-1eeab64115a6",
+										"type": "text/javascript",
+										"exec": [
+											"eval(globals.commonTests)();",
+											"",
+											"const schema = {",
+											"  \"definitions\": {},",
+											"  \"$schema\": \"http://json-schema.org/draft-06/schema#\",",
+											"  \"$id\": \"http://example.com/example.json\",",
+											"  \"type\": \"object\",",
+											"  \"properties\": {",
+											"    \"status\": {",
+											"      \"$id\": \"/properties/status\",",
+											"      \"type\": \"string\"",
+											"    },",
+											"    \"data\": {",
+											"      \"$id\": \"/properties/data\",",
+											"      \"type\": \"object\",",
+											"      \"properties\": {",
+											"        \"log\": {",
+											"          \"$id\": \"/properties/data/properties/log\",",
+											"          \"type\": \"object\",",
+											"          \"properties\": {",
+											"            \"__v\": {",
+											"              \"$id\": \"/properties/data/properties/log/properties/__v\",",
+											"              \"type\": \"integer\"",
+											"            },",
+											"            \"userId\": {",
+											"              \"$id\": \"/properties/data/properties/log/properties/userId\",",
+											"              \"type\": \"string\"",
+											"            },",
+											"            \"clientId\": {",
+											"              \"$id\": \"/properties/data/properties/log/properties/clientId\",",
+											"              \"type\": \"string\"",
+											"            },",
+											"            \"log\": {",
+											"              \"$id\": \"/properties/data/properties/log/properties/log\",",
+											"              \"type\": \"object\",",
+											"              \"properties\": {",
+											"                \"endTime\": {",
+											"                  \"$id\": \"/properties/data/properties/log/properties/log/properties/endTime\",",
+											"                  \"type\": \"string\"",
+											"                },",
+											"                \"startTime\": {",
+											"                  \"$id\": \"/properties/data/properties/log/properties/log/properties/startTime\",",
+											"                  \"type\": \"string\"",
+											"                }",
+											"              },",
+											"              \"required\": [",
+											"                \"endTime\",",
+											"                \"startTime\"",
+											"              ]",
+											"            },",
+											"            \"_id\": {",
+											"              \"$id\": \"/properties/data/properties/log/properties/_id\",",
+											"              \"type\": \"string\"",
+											"            }",
+											"          },",
+											"          \"required\": [",
+											"            \"__v\",",
+											"            \"userId\",",
+											"            \"clientId\",",
+											"            \"log\",",
+											"            \"_id\"",
+											"          ]",
+											"        },",
+											"        \"locations\": {",
+											"          \"$id\": \"/properties/data/properties/locations\",",
+											"          \"type\": \"array\",",
+											"          \"items\": {",
+											"            \"$id\": \"/properties/data/properties/locations/items\",",
+											"            \"type\": \"string\"",
+											"          }",
+											"        }",
+											"      },",
+											"      \"required\": [",
+											"        \"log\",",
+											"        \"locations\"",
+											"      ]",
+											"    }",
+											"  },",
+											"  \"required\": [",
+											"    \"status\",",
+											"    \"data\"",
+											"  ]",
+											"};",
+											"",
+											"const responseJson = JSON.parse(responseBody);",
+											"",
+											"tests[\"Status code is 201\"] = responseCode.code === 201;",
+											"tests[\"Response schema is valid\"] = tv4.validate(responseJson, schema);",
+											"",
+											"pm.environment.set(\"usageLogId\", responseJson.data.log._id);"
+										]
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"startTime\": \"{{startTime}}\",\n\t\"endTime\": \"{{endTime}}\"\n}"
+								},
+								"url": {
+									"raw": "{{hostname}}/api/users/{{userId}}/usage-logs/",
+									"host": [
+										"{{hostname}}"
+									],
+									"path": [
+										"api",
+										"users",
+										"{{userId}}",
+										"usage-logs",
+										""
+									]
+								},
+								"description": ""
+							},
+							"response": []
+						}
+					],
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Get all usage logs for user",
+					"description": "",
+					"item": [
+						{
+							"name": "Get all user's usage logs",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "5f23afc8-84c2-4406-ba83-b140f4133ac8",
+										"type": "text/javascript",
+										"exec": [
+											"eval(globals.commonTests)();",
+											"",
+											"tests[\"Status code is 200\"] = responseCode.code === 200;"
+										]
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {},
+								"url": {
+									"raw": "{{hostname}}/api/users/{{userId}}/usage-logs/",
+									"host": [
+										"{{hostname}}"
+									],
+									"path": [
+										"api",
+										"users",
+										"{{userId}}",
+										"usage-logs",
+										""
+									]
+								},
+								"description": ""
+							},
+							"response": []
+						}
+					],
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Get usage log by ID",
+					"description": "",
+					"item": [
+						{
+							"name": "Get a specific usage log by ID",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "1f90305f-fba7-4906-8bce-c8f2cb39e038",
+										"type": "text/javascript",
+										"exec": [
+											"eval(globals.commonTests)();",
+											"",
+											"tests[\"Status code is 200\"] = responseCode.code === 200;"
+										]
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {},
+								"url": {
+									"raw": "{{hostname}}/api/users/{{userId}}/usage-logs/{{usageLogId}}",
+									"host": [
+										"{{hostname}}"
+									],
+									"path": [
+										"api",
+										"users",
+										"{{userId}}",
+										"usage-logs",
+										"{{usageLogId}}"
+									]
+								},
+								"description": ""
+							},
+							"response": []
+						}
+					],
+					"_postman_isSubFolder": true
+				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "{{oauthResourceOwnerToken}}",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "249a868f-5b14-4226-b1ea-1e2966883801",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "0a9d72ae-206f-4f5d-879f-da8ac54bf184",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Delete a user",
+			"description": "",
+			"item": [
+				{
+					"name": "Delete a user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "3d1e5ef4-59be-4be3-826f-043b0491717d",
+								"type": "text/javascript",
+								"exec": [
+									"eval(globals.commonTests)();",
+									"",
+									"tests[\"Status code is 200\"] = responseCode.code = 200;",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "{{hostname}}/api/users/{{userId}}",
+							"host": [
+								"{{hostname}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"{{userId}}"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "{{oauthResourceOwnerToken}}",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "1998edce-5b39-423e-98f3-6967ff3f0a16",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "9f378bb3-9420-4bf6-812a-c5edf55bf065",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
 					}
 				}
 			]
@@ -2774,7 +3522,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\n\t\"name\": \"client{{clientNumber}}\",\n    \"id\": \"client{{clientNumber}}\",\n    \"secret\": \"client{{clientNumber}}\", \n    \"redirectUri\": \"{{hostname}}\"\n}"
+											"raw": "{\n\t\"name\": \"client{{clientNumber}}\",\n    \"id\": \"client{{clientNumber}}\",\n    \"secret\": \"client{{clientNumber}}\", \n    \"redirectUri\": \"{{hostname}}\",\n    \"platform\": \"ios\"\n}"
 										},
 										"url": {
 											"raw": "{{hostname}}/api/organisations/{{organisationId}}/applications/{{applicationId}}/clients",
@@ -4007,7 +4755,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\n\t\"name\": \"client{{clientNumber}}\",\n    \"id\": \"client{{clientNumber}}\",\n    \"secret\": \"client{{clientNumber}}\", \n    \"redirectUri\": \"{{hostname}}\"\n}"
+											"raw": "{\n\t\"name\": \"client{{clientNumber}}\",\n    \"id\": \"client{{clientNumber}}\",\n    \"secret\": \"client{{clientNumber}}\", \n    \"redirectUri\": \"{{hostname}}\",\n    \"platform\": \"ios\"\n}"
 										},
 										"url": {
 											"raw": "{{hostname}}/api/organisations/{{organisationId}}/applications/{{applicationId}}/clients",
@@ -4750,7 +5498,7 @@
 												],
 												"body": {
 													"mode": "raw",
-													"raw": "{\n\t\"name\": \"client{{clientNumber}}\",\n    \"id\": \"client{{clientNumber}}\",\n    \"secret\": \"client{{clientNumber}}\", \n    \"redirectUri\": \"{{hostname}}\"\n}"
+													"raw": "{\n\t\"name\": \"client{{clientNumber}}\",\n    \"id\": \"client{{clientNumber}}\",\n    \"secret\": \"client{{clientNumber}}\", \n    \"redirectUri\": \"{{hostname}}\",\n    \"platform\": \"ios\"\n}"
 												},
 												"url": {
 													"raw": "{{hostname}}/api/organisations/{{organisationId}}/applications/{{applicationId}}/clients",
@@ -5203,6 +5951,47 @@
 					}
 				}
 			]
+		},
+		{
+			"name": "Add user usage goal",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{oauthResourceOwnerToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"duration\": 172800,\n\t\"period\": \"monthly\"\n}"
+				},
+				"url": {
+					"raw": "{{hostname}}/api/users/{{userId}}/usage-goals/",
+					"host": [
+						"{{hostname}}"
+					],
+					"path": [
+						"api",
+						"users",
+						"{{userId}}",
+						"usage-goals",
+						""
+					]
+				},
+				"description": ""
+			},
+			"response": []
 		}
 	]
 }

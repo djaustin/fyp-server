@@ -118,12 +118,9 @@ server.exchange(oauth2orize.exchange.password(async function(client, email, pass
     // If no user matches, reject exchange
     if(!user) {
       const organisation = await Organisation.findOne({email: email});
-      logger.debug("FOUND ORGANISATION", organisation)
       const match = await organisation.verifyPassword(password);
-      logger.debug("DOES PASSWORD MATCH?", match)
       if(!match) return callback(null, false);
       const tokens = await generateTokens(client._id, organisation._id);
-      logger.debug("GOT TOKENS", tokens)
 
       callback(null, tokens.accessToken.value, tokens.refreshToken.value, {expires_in: accessTokenLifetime});
       if (!organisation){

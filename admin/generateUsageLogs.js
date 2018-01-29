@@ -47,35 +47,6 @@ async function generate(){
       })
       await application.save()
 
-      // Generate some usage goals
-      var applicationId = Math.random() < 0.5 ? null : application._id
-      var platform = platforms[getRandomInt(0, platforms.length-1)]
-      var period = periods[getRandomInt(0, periods.length-1)]
-      var goal = new UsageGoal({
-        platform: platform,
-        duration: getRandomInt(1, 60*60*3),
-        period: period,
-        applicationId: applicationId
-      })
-      user.usageGoals.push(goal);
-      user.save()
-
-      if(Math.random() < 0.5){
-        var applicationId = Math.random() < 0.5 ? null : application._id
-        var platform = platforms[getRandomInt(0, platforms.length-1)]
-        var period = periods[getRandomInt(0, periods.length-1)]
-        var goal = new UsageGoal({
-          platform: platform,
-          duration: getRandomInt(1, 60*60*3),
-          period: period,
-          applicationId: applicationId
-        })
-        user.usageGoals.push(goal);
-        user.save()
-      }
-
-
-
       console.log('Saved application', application);
       organisation.applicationIds.push(application._id)
       await organisation.save()

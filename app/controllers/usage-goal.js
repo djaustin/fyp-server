@@ -19,7 +19,7 @@ exports.postUserUsageGoal = async function(req, res, next){
     await user.save()
     res.status(201)
     res.jsend.success({
-      user: user,
+      usageGoal: goal,
       locations: [
         "https://digitalmonitor.tk/api/users/" + user._id + "/usage-goals" + goal._id + "/"
       ]
@@ -39,6 +39,27 @@ exports.getUserGoalProgress = async function(req, res, next){
       results.push(goalObj)
     }
     res.jsend.success({usageGoals: results})
+  } catch(err){
+    next(err)
+  }
+}
+
+exports.putUserUsageGoal = async function(req, res, next){
+  try{
+    const user = req.user
+    const goal = req.user.usageGoals.id(req.params.goalId)
+
+    if(!goal){
+      let err = new Error("Usage goal not found")
+      err.status = 404
+      throw err
+    }
+    goal.platform = req.body.platform
+    goal.applicationId = req.body.applicationId
+    goal.period = req.body.period
+    goal.duration = req.body.duration
+    await user.save()
+    res.jsend.success(null)
   } catch(err){
     next(err)
   }
