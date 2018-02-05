@@ -20,6 +20,7 @@ services:
     build: .
     image: daustin/monitor-api
     volumes:
+      - ./AuthKey_4JB9YML372.p8:/var/www/api/AuthKey_4JB9YML372.p8:ro
       - ./config/config.json:/var/www/api/config/config.json:ro
       - ./logs:/var/www/api/logs
     depends_on:

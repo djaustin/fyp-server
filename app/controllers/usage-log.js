@@ -1,6 +1,8 @@
 const logger = require('app/utils/logger');
 const UsageLog = require('app/models/usage-log');
-
+const DeviceToken = require('app/models/deviceToken');
+const apnProvider = require('app/utils/apns');
+const apn = require('apn');
 /**
  * Add a new usage log for the user and client authenticated by an access token.
  * @param req {Object} request object containing the userId and client object in req.params.userId and req.client
@@ -20,6 +22,16 @@ exports.newUsageLog = async function(req, res, next){
 
   try{
     await log.save();
+    const tokens = await DeviceToken.find({user: req.user._id});
+    var note = new apn.Notification();
+    note.expiry = Math.floor(Date.now() / 1000) + 3600; // Expires 1 hour from now.
+    note.sound = "ping.aiff";
+    note.alert = "\uD83D\uDCE7 \u2709 You have a new message";
+    note.payload = {'messageFrom': 'John Appleseed'};
+    note.topic = "com.djaustin.Digital-Monitor";
+    const destinations = tokens.map(e => e.value)
+    logger.debug("Destinations:", destinations);
+    await apnProvider.send(note, destinations);
     res.status(201);
     res.jsend.success({
       log: log,
