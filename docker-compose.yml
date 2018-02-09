@@ -22,6 +22,16 @@ services:
       - ./logs:/var/www/api/logs
     depends_on:
       - db
+  redis:
+    image: redis
+    command: redis-server --appendonly yes
+    volumes: redisdata:/data
+  notifications:
+    image: daustin/digitalmonitor-notifications
+    depends_on:
+      - redis
+
 
 volumes:
   dbdata:
+  redisdata:

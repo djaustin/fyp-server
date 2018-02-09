@@ -1,8 +1,8 @@
 const logger = require('app/utils/logger');
 const UsageLog = require('app/models/usage-log');
 const DeviceToken = require('app/models/deviceToken');
-const apnProvider = require('app/utils/apns');
-const apn = require('apn');
+const rsmq = require('app/utils/rsmq');
+
 /**
  * Add a new usage log for the user and client authenticated by an access token.
  * @param req {Object} request object containing the userId and client object in req.params.userId and req.client
@@ -22,17 +22,8 @@ exports.newUsageLog = async function(req, res, next){
 
   try{
     await log.save();
-    const tokens = await DeviceToken.find({user: req.user._id});
-    var note = new apn.Notification();
-    note.expiry = Math.floor(Date.now() / 1000) + 3600; // Expires 1 hour from now.
-    note.sound = "ping.aiff";
-    note.alert = "\uD83D\uDCE7 \u2709 You have a new message";
-    note.payload = {'messageFrom': 'John Appleseed'};
-    note.topic = "com.djaustin.Digital-Monitor";
-    const destinations = tokens.map(e => e.value)
-    logger.debug("Destinations:", destinations);
-    await apnProvider.send(note, destinations);
     res.status(201);
+    addUserIdToNotificationQueue(req.user._id);
     res.jsend.success({
       log: log,
       locations: [`https://digitalmonitor.tk/api/users/${req.params.userId}/usage-logs/${log._id}`]
@@ -70,4 +61,17 @@ exports.getUserLog = async function(req, res, next){
   } catch(err){
     next(err);
   }
+}
+
+function addUserIdToNotificationQueue(id){
+  logger.debug("Adding userId " + id + " to message queue");
+  rsmq.sendMessage({qname: "userIds", message: String(id)}, function (err, resp) {
+    if (resp) {
+        logger.debug(resp)
+    } else {
+      if(err){
+        logger.debug(err)
+      }
+    }
+});
 }

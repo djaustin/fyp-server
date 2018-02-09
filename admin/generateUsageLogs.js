@@ -7,16 +7,13 @@ const UsageGoal = require('app/models/usage-goal').model;
 const uid = require('uid2');
 
 async function generate(){
-  console.log("starting");
   try{
 
     let platforms = ['ios', 'android', 'blackberry', 'windows-phone', 'desktop', 'browser']
     let periods = ['daily', 'weekly', 'monthly', 'yearly']
 
-    console.log("finding user");
     // Get user
     var user = await User.findOne({email: 'dan@mail.com'})
-    console.log('Got user', user);
     if(!user){
       user = new User({
         email: 'dan@mail.com',
@@ -25,7 +22,6 @@ async function generate(){
         lastName: 'Austin'
       })
       await user.save()
-      console.log("SAVED USER", user);
     }
 
     let orgNum = uid(10)
@@ -37,7 +33,6 @@ async function generate(){
       applicationIds: []
     })
     await organisation.save()
-    console.log('Saved org', organisation);
     // Create a random number of applications
     for (var j = 0; j < getRandomInt(5, 10); j++) {
       let appNum = uid(10)
@@ -47,7 +42,6 @@ async function generate(){
       })
       await application.save()
 
-      console.log('Saved application', application);
       organisation.applicationIds.push(application._id)
       await organisation.save()
       // Create a random number of clients
@@ -64,7 +58,6 @@ async function generate(){
           platform: platform
         })
         await client.save()
-        console.log("SAVED CLIENT", client);
         application.clientIds.push(client._id)
         await application.save()
 
@@ -83,7 +76,6 @@ async function generate(){
           })
 
           await usageLog.save()
-          console.log("USAGE LOG SAVED", usageLog);
         }
       }
 

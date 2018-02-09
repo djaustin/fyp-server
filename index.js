@@ -29,6 +29,9 @@ const config = require('./config/config');
 // Import custom winston logger
 const logger = require('app/utils/logger');
 
+// Instantiated reddis message queue interface
+const rsmq = require('app/utils/rsmq');
+
 // Imports beginning with 'app' are possible using a symlink to ./app in at location node_modules/app.
 // This avoids excessive use of '../../' in other files as all files can be addressed from app directory
 const apiRouter = require('app/routes/api')
@@ -38,7 +41,18 @@ const indexRouter = require('app/routes/index');
  * APPLICATION CONFIGURATION
  */
 
-// TODO: Use authenticated login
+
+// Crate redis message queue if one does not already exists
+rsmq.createQueue({qname:"userIds"}, function (err, resp) {
+        if (resp===1) {
+            logger.info("Redis queue created")
+        } else {
+            if(err){
+                logger.error(err)
+            }
+        }
+});
+
 mongoose.Promise = global.Promise;
 mongoose.connect('mongodb://db/digitalmonitor', {useMongoClient: true});
 

@@ -2,7 +2,7 @@ version: '3.1'
 
 services:
   proxy:
-    image: nginx
+    image: nginx:latest
     volumes:
       - /etc/letsencrypt:/etc/nginx/ssl
       - ./config/nginx/remote/conf.d:/etc/nginx/conf.d
@@ -25,6 +25,18 @@ services:
       - ./logs:/var/www/api/logs
     depends_on:
       - db
+      - redis
+  redis:
+    image: redis:latest
+    command: redis-server --appendonly yes
+    volumes:
+      - redisdata:/data
+  notifications:
+    image: daustin/notifications:latest
+    depends_on:
+      - redis
+
 
 volumes:
   dbdata:
+  redisdata:
