@@ -14,13 +14,12 @@ services:
       - '443:443'
   db:
     image: mongo
-    # volumes:
-    #   - dbdata:/data/db
+    volumes:
+      - dbdata:/data/db
   web:
     build: .
     image: daustin/monitor-api
     volumes:
-      - ./AuthKey_4JB9YML372.p8:/var/www/api/AuthKey_4JB9YML372.p8:ro
       - ./config/config.json:/var/www/api/config/config.json:ro
       - ./logs:/var/www/api/logs
     depends_on:
@@ -33,6 +32,8 @@ services:
       - redisdata:/data
   notifications:
     image: daustin/notifications:latest
+    volumes:
+      - ./AuthKey_4JB9YML372.p8:/app/AuthKey_4JB9YML372.p8:ro
     depends_on:
       - redis
 
