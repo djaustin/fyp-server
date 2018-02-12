@@ -5,10 +5,11 @@ const Client = require('app/models/client');
 const UsageLog = require('app/models/usage-log');
 const UsageGoal = require('app/models/usage-goal').model;
 const uid = require('uid2');
+let appNames = ["Amazon Kindle","Android Device Manager","Android Pay","Any.do","Avast Mobile Security","Blendle","CamScanner","Duolingo","ESPN","Facebook Messenger","Flamingo","Flipboard","GBoard","Google Chrome","Google Drive","Google Fit","Google Maps","Google Photos","Google Translate","GrubHub","Headspace","IFTTT","Inbox by Gmail","Instagram","LastPass"]
+
 
 async function generate(){
   try{
-
     let platforms = ['ios', 'android', 'blackberry', 'windows-phone', 'desktop', 'browser']
     let periods = ['daily', 'weekly', 'monthly', 'yearly']
 
@@ -36,8 +37,10 @@ async function generate(){
     // Create a random number of applications
     for (var j = 0; j < getRandomInt(5, 10); j++) {
       let appNum = uid(10)
+      let appName = appNames[getRandomInt(0, appNames.length)]
+      appNames = appNames.filter(e => e !== appName)
       let application = new Application({
-        name: 'application' + appNum,
+        name: appName,
         clientIds: []
       })
       await application.save()
@@ -81,9 +84,6 @@ async function generate(){
 
 
     }
-
-
-
   } catch (err){
     console.log("ERROR:", err);
   }
