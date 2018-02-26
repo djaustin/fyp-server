@@ -3,6 +3,7 @@ const Organisation = require('app/models/organisation');
 const Application = require('app/models/application')
 const Client = require('app/models/client');
 const UsageLog = require('app/models/usage-log');
+const RefreshToken = require('app/models/refreshToken');
 const UsageGoal = require('app/models/usage-goal').model;
 const uid = require('uid2');
 let appNames = ["Amazon Kindle","Android Device Manager","Android Pay","Any.do","Avast Mobile Security","Blendle","CamScanner","Duolingo","ESPN","Facebook Messenger","Flamingo","Flipboard","GBoard","Google Chrome","Google Drive","Google Fit","Google Maps","Google Photos","Google Translate","GrubHub","Headspace","IFTTT","Inbox by Gmail","Instagram","LastPass"]
@@ -63,6 +64,13 @@ async function generate(){
         await client.save()
         application.clientIds.push(client._id)
         await application.save()
+        let refreshToken = new RefreshToken({
+          value: uid(16),
+          userId: user._id,
+          clientId: client._id
+        });
+
+        await refreshToken.save();
 
         // Create a random number of usage logs of random lengths at random dates
         for (var l = 0; l < getRandomInt(1, 10); l++) {
