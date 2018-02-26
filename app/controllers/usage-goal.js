@@ -48,7 +48,6 @@ exports.putUserUsageGoal = async function(req, res, next){
   try{
     const user = req.user
     const goal = req.user.usageGoals.id(req.params.goalId)
-
     if(!goal){
       let err = new Error("Usage goal not found")
       err.status = 404
@@ -62,5 +61,16 @@ exports.putUserUsageGoal = async function(req, res, next){
     res.jsend.success(null)
   } catch(err){
     next(err)
+  }
+}
+
+exports.deleteUserUsageGoal = async function(req, res, next){
+  try{
+    const user = req.user;
+    user.usageGoals.pull(req.params.goalId);
+    await user.save();
+    res.jsend.success(null);
+  }catch(err){
+    next(err);
   }
 }
