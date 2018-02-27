@@ -93,7 +93,7 @@ server.deserializeClient(async function(id, callback){
 server.grant(oauth2orize.grant.code(async function(client, redirectUri, user, authorizationResponse, callback){
   // Create a new Code object from mongoose model
   const code = new Code({
-    value: uid(16),
+    value: uid(256),
     clientId: client._id,
     redirectUri: redirectUri,
     userId: user._id

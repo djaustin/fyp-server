@@ -18,11 +18,27 @@ const UsageLogSchema = new mongoose.Schema({
     required: true,
     type: {
       locations: [{
-        longitude: String,
-        latitude: String
+        timestamp: {
+          type: Date,
+          required: true
+        },
+        longitude: {
+          type: Number,
+          required: true
+        },
+        latitude: {
+          type: Number,
+          required: true
+        }
       }],
-      startTime: Date,
-      endTime: Date
+      startTime: {
+        type: Date,
+        required: true
+      },
+      endTime: {
+        type: Date,
+        required: true
+      }
     }
   }
 });
@@ -38,8 +54,6 @@ UsageLogSchema.statics.getOverallSecondsForUser = function(params){
       const err = new Error("User ID must be provided to query getSecondsByUserId")
       return reject(err)
     }
-
-
 
     try{
       const logs = await schema.find(params, {log: 1});
