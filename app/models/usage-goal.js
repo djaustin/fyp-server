@@ -29,17 +29,17 @@ UsageGoalSchema.methods.getProgress = async function(userId){
   // Get duration
   const duration = this.duration;
   // Get the period information for this goal
-  const period = Period.findOne({_id: this.period})
+  const period = await Period.findOne({_id: this.period})
   // Convert period into date range
-  const startTime = new Date();
   const endTime = new Date();
-  endTime.setSeconds(endTime.getSeconds() - period.duration);
+  const startTime = new Date(Date.now() - period.duration*1000);
   // Find all usage logs in that date range for the platform and applicationId specified
   var logs = await UsageLog.find({
     userId: userId,
     'log.startTime': { $gte : startTime},
     'log.endTime': { $lte: endTime},
   })
+
 
   let logsWithClients = []
 
@@ -48,13 +48,13 @@ UsageGoalSchema.methods.getProgress = async function(userId){
     logsWithClients.push({log: log, client: client})
   }
 
-
   if(this.applicationId){
     logsWithClients = logsWithClients.filter(e => String(e.client.applicationId) === String(this.applicationId))
   }
   if(this.platform){
     logsWithClients = logsWithClients.filter(e => String(e.client.platform) === String(this.platform))
   }
+
 
   // Sum the durations of the usage logs
   const totalDuration = logsWithClients.reduce((acc, e) => e.log.duration + acc, 0)

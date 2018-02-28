@@ -96,7 +96,7 @@ exports.getUsers = async function(req, res, next){
     if(!req.query){
       users = []
     } else {
-      users = await User.find(req.query, {password: 0})
+      users = await User.find(req.query, {password: 0}).populate('usageGoals.platform').populate('usageGoals.period')
     }
     res.jsend.success({users: users})
   } catch(err){

@@ -56,6 +56,8 @@ exports.getUserGoalProgress = async function(req, res, next){
     for (goal of user.usageGoals) {
       let goalObj = goal.toObject()
       goalObj.progress = await goal.getProgress(user._id)
+      goalObj.platform = await Platform.findOne({_id: goal.platform});
+      goalObj.period = await Period.findOne({_id: goal.period})
       results.push(goalObj)
     }
     res.jsend.success({usageGoals: results})
