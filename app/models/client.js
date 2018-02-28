@@ -41,9 +41,9 @@ const ClientSchema = new mongoose.Schema({
     required: true
   },
   platform : {
-    type: String,
+    type: mongoose.Schema.ObjectId,
     required: true,
-    enum: ['ios', 'android', 'blackberry', 'windows-phone', 'desktop', 'browser']
+    ref: 'Platform'
   }
 });
 

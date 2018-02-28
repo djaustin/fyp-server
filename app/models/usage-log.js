@@ -68,6 +68,7 @@ UsageLogSchema.statics.getOverallSecondsForUser = function(params){
 
 UsageLogSchema.virtual('platform').get(async function(){
   const client = await require('app/models/client').findOne({_id: this.clientId}, 'platform')
+  const platform = await require('app/models/platform').findOne({_id: client.platform});
   return client.platform
 })
 

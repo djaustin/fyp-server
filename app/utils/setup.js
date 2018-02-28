@@ -1,5 +1,6 @@
 const Organisation = require('app/models/organisation');
 const Application = require('app/models/application');
+const Platform = require('app/models/platform');
 const Client = require('app/models/client');
 const logger = require('app/utils/logger')
 
@@ -9,6 +10,8 @@ exports.addIOSClient = async () => {
     password: 'password',
     name: 'Digital Monitor'
   });
+
+  const platform = await Platform.findOne({name: 'iOS'});
 
   const app = new Application({
     name: 'Digital Monitor'
@@ -21,7 +24,7 @@ exports.addIOSClient = async () => {
     applicationId: app._id,
     redirectUri: 'https://digitalmonitor.tk/',
     isThirdParty: false,
-    platform: 'ios'
+    platform: platform._id
   });
   app.clientIds.push(client._id);
   org.applicationIds.push(app._id);

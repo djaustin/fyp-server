@@ -1,13 +1,20 @@
 const mongoose = require('mongoose');
 const UsageLog = require('app/models/usage-log');
+const Period = require('app/models/period');
 const logger = require('app/utils/logger');
 const UsageGoalSchema = new mongoose.Schema({
-  applicationId: mongoose.Schema.ObjectId,
-  platform: String,
+  applicationId: {
+    type: mongoose.Schema.ObjectId,
+    ref: 'Application'
+  },
+  platform: {
+    type: mongoose.Schema.ObjectId,
+    ref: 'Platform'
+  },
   period: {
-    type: String,
+    type: mongoose.Schema.ObjectId,
     required: true,
-    enum: ['daily', 'weekly', 'monthly', 'yearly']
+    ref: 'Period'
   },
   duration: {
     type: Number,
@@ -21,15 +28,19 @@ UsageGoalSchema.methods.getProgress = async function(userId){
   }
   // Get duration
   const duration = this.duration;
+  // Get the period information for this goal
+  const period = Period.findOne({_id: this.period})
   // Convert period into date range
-  const dateRange = periodToRollingDateRange(this.period)
+  const startTime = new Date();
+  const endTime = new Date();
+  endTime.setSeconds(endTime.getSeconds() - period.duration);
   // Find all usage logs in that date range for the platform and applicationId specified
   var logs = await UsageLog.find({
     userId: userId,
-    'log.startTime': { $gte : dateRange.startTime},
-    'log.endTime': { $lte: dateRange.endTime},
+    'log.startTime': { $gte : startTime},
+    'log.endTime': { $lte: endTime},
   })
-  
+
   let logsWithClients = []
 
   for (log of logs) {
@@ -49,30 +60,6 @@ UsageGoalSchema.methods.getProgress = async function(userId){
   const totalDuration = logsWithClients.reduce((acc, e) => e.log.duration + acc, 0)
   // Calculate percentage progress
   return (totalDuration/this.duration);
-}
-
-function periodToRollingDateRange(period){
-  var result = {
-    endTime: new Date()
-  }
-  let startTime = new Date()
-  switch (period) {
-    case 'daily':
-      startTime.setDate(startTime.getDate()-1)
-      break;
-    case 'weekly':
-      startTime.setDate(startTime.getDate()-7)
-      break;
-    case 'monthly':
-      startTime.setMonth(startTime.getMonth()-1)
-      break;
-    case 'yearly':
-      startTime.setFullYear(startTime.getFullYear()-1)
-      break;
-    default:
-  }
-  result.startTime = startTime
-  return result
 }
 
 exports.model = mongoose.model('UsageGoal', UsageGoalSchema);

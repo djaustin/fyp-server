@@ -1,4 +1,6 @@
 const User = require('app/models/user');
+const Platform = require('app/models/platform');
+const Period = require('app/models/period');
 const Organisation = require('app/models/organisation');
 const Application = require('app/models/application')
 const Client = require('app/models/client');
@@ -11,8 +13,8 @@ let appNames = ["Amazon Kindle","Android Device Manager","Android Pay","Any.do",
 
 async function generate(){
   try{
-    let platforms = ['ios', 'android', 'blackberry', 'windows-phone', 'desktop', 'browser']
-    let periods = ['daily', 'weekly', 'monthly', 'yearly']
+    let platforms = await Platform.find();
+    let periods = await Period.find();
 
     // Get user
     var user = await User.findOne({email: 'dan@mail.com'})
@@ -59,7 +61,7 @@ async function generate(){
           applicationId: application._id,
           redirectUri: 'http://localhost',
           isThirdParty: true,
-          platform: platform
+          platform: platform._id
         })
         await client.save()
         application.clientIds.push(client._id)

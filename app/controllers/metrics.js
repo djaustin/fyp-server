@@ -1,5 +1,6 @@
 const UsageLog = require('app/models/usage-log');
 const Client = require('app/models/client');
+const Platform = require('app/models/platform');
 const Application = require('app/models/application');
 exports.getAggregatedMetrics = async function(req, res, next){
   try{
@@ -31,12 +32,13 @@ async function getApplicationMetricsById(req){
     if(String(client.applicationId) !== applicationId){
       continue;
     }
-    const logPlatform = await log.platform
+    const logPlatformId = await log.platform
+    const logPlatform = await Platform.findOne({_id: logPlatformId})
     const resultPlatform = results.platforms.find(platform => {
-      return platform.name === logPlatform
+      return platform.platform.name === logPlatform.name
     })
     if(!resultPlatform) {
-      results.platforms.push({name: logPlatform, duration: log.duration})
+      results.platforms.push({platform: logPlatform, duration: log.duration})
     } else {
       resultPlatform.duration += log.duration
     }
@@ -97,9 +99,9 @@ async function getOverallMetrics(req){
     return {duration: overallDuration}
 }
 
-exports.getPlatformMetricsByName = async function(req, res, next){
+exports.getPlatformMetricsById = async function(req, res, next){
   try{
-    const result = await getPlatformMetricsByName(req);
+    const result = await getPlatformMetricsById(req);
     res.jsend.success(result)
   }catch(err){
     next(err)
@@ -107,14 +109,14 @@ exports.getPlatformMetricsByName = async function(req, res, next){
 }
 
 
-async function getPlatformMetricsByName(req){
+async function getPlatformMetricsById(req){
   const params = generateParamsObject(req)
   const logs = await UsageLog.find(params)
   const results = []
   for (log of logs){
     const logClient = await log.client
-    console.log(logClient.platform, req.params.platformName);
-    if (logClient.platform !== req.params.platformName){
+    console.log(logClient.platform, req.params.platformId);
+    if (String(logClient.platform) !== req.params.platformId){
       continue;
     }
     const applicationId = logClient.applicationId;
@@ -156,12 +158,13 @@ async function getPlatformsMetrics(req){
     platforms: []
   }
   for (log of logs){
-    const logPlatform = await log.platform
+    const logPlatformId = await log.platform
+    const logPlatform = await Platform.findOne({_id: logPlatformId});
     const resultPlatform = results.platforms.find(platform => {
-      return platform.name === logPlatform
+      return platform.platform.name === logPlatform.name
     })
     if(!resultPlatform) {
-      results.platforms.push({name: logPlatform, duration: log.duration})
+      results.platforms.push({platform: logPlatform, duration: log.duration})
     } else {
       resultPlatform.duration += log.duration
     }

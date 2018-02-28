@@ -1,5 +1,6 @@
 const Client = require('app/models/client');
 const Application = require('app/models/application');
+const Platform = require('app/models/platform');
 const RefreshToken = require('app/models/refreshToken');
 const AccessToken = require('app/models/accessToken')
 const logger = require('app/utils/logger');
@@ -30,6 +31,12 @@ exports.getApplicationClients = async function(req, res, next){
  * @param next {Object} next piece of middleware to be run after this one. Used to forward errors to error
  */
 exports.newApplicationClient = async function(req, res, next){
+  const platform = await Platform.findOne({_id: req.body.platformId});
+  if(!platform){
+    let error = new Error('Unable to find platform with ID ' + req.body.platformId)
+    error.status = 422;
+    return next(error);
+  }
   // Create new in-memory client
   const client = new Client({
     name: req.body.name,
@@ -38,7 +45,7 @@ exports.newApplicationClient = async function(req, res, next){
     applicationId: req.params.applicationId,
     redirectUri: req.body.redirectUri,
     isThirdParty: true,
-    platform: req.body.platform
+    platform: req.body.platformId
   });
   try{
     // Try to save the new client object
