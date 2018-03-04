@@ -159,7 +159,7 @@ if (app.get('env') === 'development') {
 }
 
 require('app/utils/setup').addIOSClient();
-  require('./admin/generateUsageLogs')().then(() => "DONE");
+  // require('./admin/generateUsageLogs')().then(() => "DONE");
 app.listen(80);
 logger.info('Listening on port 80');
 
