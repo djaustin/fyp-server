@@ -1,8 +1,6 @@
-doctype html
-html 
-  head 
-    title Digital Monitor
-  body 
-    h1 Welcome to this site 
-    if user 
-      p #{user.firstName} #{user.lastName}
+extends layout.pug
+
+block content
+  h1 Welcome to this site 
+  if user 
+    p #{user.firstName} #{user.lastName}

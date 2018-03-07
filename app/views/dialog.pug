@@ -1,7 +1,5 @@
-doctype html
-html
-  head 
-    title Digital Monitor
+extends layout.pug
+block content
   body
     p Hi #{user.firstName}!
     p #[b #{client.name}] is requesting #[b full access] to your account
@@ -9,5 +7,5 @@ html
     form(method='POST' action='/api/oauth2/authorize')
       input(name='transaction_id' type='hidden' value=transactionId)
       div
-      input(type='submit' value='Allow' id='allow')
-      input(type='submit' value='Deny' name='cancel' id='deny')
+      input.btn.btn-primary(type='submit' value='Allow' id='allow')
+      input.btn.btn-danger(type='submit' value='Deny' name='cancel' id='deny')

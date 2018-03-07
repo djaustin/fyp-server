@@ -1,10 +1,17 @@
-doctype html
-html
-  head 
-    title Digital Monitor
-  body
-    form(method='POST' action='/login')
-      input(name='username' type='text' id='username')
-      input(name='password' type='password' id='password')
-      div
-      input(type='submit' value='Login')
+extends layout.pug
+block content
+  h1 Digital Monitor
+  form(method='POST' action='/login')
+    .form-group
+      label(for='emailInput') Email address
+      input#emailInput.form-control(type='text', aria-describedby='emailHelp', placeholder='Enter email' name="username")
+    .form-group
+      label(for='passwordInput') Password
+      input#passwordInput.form-control(type='password', placeholder='Password' name="password")
+    button.btn.btn-primary(type='submit') Submit
+    //- 
+    //- form(method='POST' action='/login')
+    //-   input(name='username' type='text' id='username')
+    //-   input(name='password' type='password' id='password')
+    //-   div
+    //-   input(type='submit' value='Login')
