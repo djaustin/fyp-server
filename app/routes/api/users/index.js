@@ -37,8 +37,9 @@ router.route('/:userId')
   .put(authentication.isUserAuthenticated, userIdMatchesAuthenticatedUser, userController.editUser);
 
 router.route('/')
-  //TODO: ONLY USED TO TEST AUTH. REMOVE FOR PROD.
-  // Get all user details. Must be logged in
+  /*
+   * Get users by query
+   */
   .get(authentication.isClientBearerAuthenticated, userController.getUsers)
   /**
    * Add a new user.

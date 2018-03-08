@@ -116,8 +116,8 @@ exports.getApplicationById = async function(req, res, next) {
     if(!id) {
       throw Error("Query parameter 'id' not provided")
     }
-    const applications = await Application.find({_id: id})
-    res.jsend.success({applications: applications})
+    const application = await Application.findOne({_id: id})
+    res.jsend.success({application: application})
   } catch (err) {
     next(err)
   }

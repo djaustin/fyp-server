@@ -41,7 +41,7 @@ exports.postUserUsageGoal = async function(req, res, next){
     res.jsend.success({
       usageGoal: goalObj,
       locations: [
-        "https://digitalmonitor.tk/api/users/" + user._id + "/usage-goals" + goal._id + "/"
+        "https://digitalmonitor.tk/api/users/" + user._id + "/usage-goals/" + goal._id + "/"
       ]
       })
   } catch(err){
