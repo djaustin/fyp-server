@@ -10,6 +10,7 @@ const userController = require('app/controllers/user');
 const authentication = require('app/controllers/authentication');
 // Import nested routers
 const usageLogRouter = require('app/routes/api/users/usage-logs');
+const usageLogCollectionsRouter = require('app/routes/api/users/usage-log-collections');
 const clientsRouter = require('app/routes/api/users/clients');
 const metricsRouter = require('app/routes/api/users/metrics');
 const usageGoalsRouter = require('app/routes/api/users/usage-goals');
@@ -33,7 +34,7 @@ router.route('/:userId')
   /**
    * Delete a user by their id. The user must be authenticated and and only access their own details
    */
-  .patch(authentication.isUserAuthenticated, userIdMatchesAuthenticatedUser, userController.editUser);
+  .put(authentication.isUserAuthenticated, userIdMatchesAuthenticatedUser, userController.editUser);
 
 router.route('/')
   //TODO: ONLY USED TO TEST AUTH. REMOVE FOR PROD.
@@ -50,7 +51,7 @@ router.route('/')
 router.use('/:userId/usage-logs', authentication.isUserAuthenticated, userIdMatchesAuthenticatedUser, usageLogRouter);
 router.use('/:userId/clients', authentication.isUserAuthenticated, userIdMatchesAuthenticatedUser, clientsRouter);
 router.use('/:userId/metrics', authentication.isUserAuthenticated, userIdMatchesAuthenticatedUser, metricsRouter);
-router.use('/:userId/usage-goals', authentication.isUserAuthenticated, userIdMatchesAuthenticatedUser, usageGoalsRouter)
-router.use('/:userId/applications', authentication.isUserAuthenticated, userIdMatchesAuthenticatedUser, applicationRouter)
-
+router.use('/:userId/usage-goals', authentication.isUserAuthenticated, userIdMatchesAuthenticatedUser, usageGoalsRouter);
+router.use('/:userId/applications', authentication.isUserAuthenticated, userIdMatchesAuthenticatedUser, applicationRouter);
+router.use('/:userId/usage-log-collections', authentication.isUserAuthenticated, userIdMatchesAuthenticatedUser, usageLogCollectionsRouter);
 module.exports = router;

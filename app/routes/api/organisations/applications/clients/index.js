@@ -32,6 +32,6 @@ router.route('/:clientId')
   /**
    * Edit a specific client by ID from the specified application owned by the currently authenticated and authorised organisation
    */
-  .patch(clientController.editApplicationClient);
+  .put(clientController.editApplicationClient);
 
 module.exports = router;

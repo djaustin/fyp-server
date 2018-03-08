@@ -36,7 +36,7 @@ router.route('/:applicationId')
   /**
    * Edit an application by ID owned by the currently authenticated and authorised organisation
    */
-  .patch(authorisation.organisationOwnsApplication, applicationController.editOrganisationApplication);
+  .put(authorisation.organisationOwnsApplication, applicationController.editOrganisationApplication);
 
 /**
  * Mount the nested router to this endpoint

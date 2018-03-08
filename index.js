@@ -126,7 +126,7 @@ if (app.get('env') === 'development') {
     } else if (res.statusCode === 403) {
       res.jsend.fail({'authorisation': err.message});
     } else if(res.statusCode >= 400 && res.statusCode < 500){
-      res.jsend.fail(err);
+      res.jsend.fail({message: err.message});
     } else {
       res.jsend.error({
         message: err.message,
@@ -147,7 +147,7 @@ if (app.get('env') === 'development') {
       res.jsend.fail({'authorisation': err.message});
     }
     else if(res.statusCode >= 400 && res.statusCode < 500){
-      res.jsend.fail(err);
+      res.jsend.fail({message: err.message});
     } else {
       res.jsend.error({
         message: err.message,

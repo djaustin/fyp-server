@@ -116,11 +116,11 @@ describe('Users', () => {
     });
   });
 
-  describe('PATCH /api/users/:userId', () => {
+  describe('PUT /api/users/:userId', () => {
     it('should update the details of the specified user', async () => {
       const userBeforeUpdate = await User.findOne({_id: testUsers[0]._id});
       let expectedEmailAfterUpdate = 'prefix' + userBeforeUpdate.email
-      await chai.request(server).patch('/api/users/' + testUsers[0]._id).send({email: expectedEmailAfterUpdate}).auth(testUsers[0].email, 'password');
+      await chai.request(server).put('/api/users/' + testUsers[0]._id).send({email: expectedEmailAfterUpdate}).auth(testUsers[0].email, 'password');
       const userAfterUpdate = await User.findOne({_id: testUsers[0]._id});
       userAfterUpdate.should.be.an('object');
       userAfterUpdate.should.have.property('email').which.equals(expectedEmailAfterUpdate);
@@ -128,9 +128,9 @@ describe('Users', () => {
       userAfterUpdate.should.have.property('lastName').which.equals(userBeforeUpdate.lastName);
     });
 
-    it('should not patch the user if not authenticated', async () => {
+    it('should not put the user if not authenticated', async () => {
       try{
-        await chai.request(server).patch('/api/users/' + testUsers[0]._id);
+        await chai.request(server).put('/api/users/' + testUsers[0]._id);
         throw new Error("Expected error 401");
       } catch(err){
         err.response.should.have.status(401);
@@ -142,7 +142,7 @@ describe('Users', () => {
       }
     });
 
-    it('should not patch the user if authenticated as a different user', async () => {
+    it('should not put the user if authenticated as a different user', async () => {
       try{
         await chai.request(server).delete('/api/users/' + testUsers[1]._id).auth(testUsers[0].email, 'password');
         throw new Error("Expected error 403");

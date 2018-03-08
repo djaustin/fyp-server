@@ -45,7 +45,7 @@ router.route('/:organisationId')
   /**
    * Edit an organisation's details by ID. Must be authenticated and authorized as that organisation
    */
-  .patch(authentication.isOrganisationAuthenticated, orgIdMatchesAuthenticatedOrg, organisationController.editOrganisation);
+  .put(authentication.isOrganisationAuthenticated, orgIdMatchesAuthenticatedOrg, organisationController.editOrganisation);
 
 
 module.exports = router;
