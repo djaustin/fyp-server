@@ -65,7 +65,7 @@ passport.use('user-bearer', new BearerStrategy({passReqToCallback: true},
 
       // Get the user and client objects from their respective IDs in parallel
       const [user, client] = await Promise.all([
-        User.findOne({_id: token.userId}),
+        User.findOne({_id: token.userId}).populate('usageGoals.platform').populate('usageGoals.application').populate('usageGoals.period'),
         Client.findOne({_id: token.clientId})
       ]);
 

@@ -13,7 +13,8 @@ exports.authenticatedUserOwnsResource = function(paramIdName){
   return function(req, res, next){
     const authenticatedId = req.user._id;
     const requestId = req.params[paramIdName];
-
+    console.log(req.user);
+    console.log(authenticatedId, requestId);
     if(authenticatedId != requestId){
       const error = new Error('Authenticated user is not authorized for that operation.');
       error.status = 403;

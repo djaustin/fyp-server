@@ -1,5 +1,6 @@
 const UsageGoal = require('app/models/usage-goal').model;
 const Period = require('app/models/period');
+const Application = require('app/models/application');
 const Platform = require('app/models/platform');
 const logger = require('app/utils/logger');
 
@@ -10,11 +11,19 @@ exports.getUserUsageGoals = function(req, res, next){
 
 exports.postUserUsageGoal = async function(req, res, next){
   try {
-    let platform;
+    let platform, application;
     if(req.body.platformId){
       platform = await Platform.findOne({_id: req.body.platformId});
       if(!platform){
         let error = new Error('Unable to find platform with ID ' + req.body.platformId)
+        error.status = 422;
+        return next(error);
+      }
+    }
+    if(req.body.applicationId){
+      application = await Application.findOne({_id: req.body.applicationId});
+      if(!application){
+        let error = new Error('Unable to find application with ID ' + req.body.applicationId)
         error.status = 422;
         return next(error);
       }
@@ -28,12 +37,13 @@ exports.postUserUsageGoal = async function(req, res, next){
     const user = req.user
     const goal = new UsageGoal({
       platform: req.body.platformId,
-      applicationId: req.body.applicationId,
+      application: req.body.applicationId,
       period: req.body.periodId,
       duration: req.body.duration
     })
     const goalObj = goal.toObject();
     goalObj.platform = platform;
+    goalObj.application = application;
     goalObj.period = period;
     user.usageGoals.push(goal)
     await user.save()
@@ -76,6 +86,14 @@ exports.putUserUsageGoal = async function(req, res, next){
         return next(error);
       }
     }
+    if(req.body.applicationId){
+      application = await Application.findOne({_id: req.body.applicationId});
+      if(!application){
+        let error = new Error('Unable to find application with ID ' + req.body.applicationId)
+        error.status = 422;
+        return next(error);
+      }
+    }
     const period = await Period.findOne({_id: req.body.periodId});
     if(!period){
       let error = new Error('Unable to find period with ID ' + req.body.periodId)
@@ -90,13 +108,24 @@ exports.putUserUsageGoal = async function(req, res, next){
       throw err
     }
     goal.platform = req.body.platformId
-    goal.applicationId = req.body.applicationId
+    goal.application = req.body.applicationId
     goal.period = req.body.periodId
     goal.duration = req.body.duration
     await user.save()
     res.jsend.success(null)
   } catch(err){
     next(err)
+  }
+}
+
+exports.getUserUsageGoalById = async function(req, res, next){
+  const goal = req.user.usageGoals.find(e => String(e._id) === String(req.params.goalId));
+  if(!goal){
+    const error = new Error('Usage goal not found');
+    error.status = 404;
+    next(error);
+  } else {
+    res.jsend.success({usageGoal: goal});
   }
 }
 

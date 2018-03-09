@@ -43,7 +43,7 @@ exports.newUser = async function(req, res, next){
  //NOTE: Is this even needed? Need to be careful about authentication if this is kept
 exports.getUser = async function(req, res, next){
   try{
-    const user = await User.findOne({_id: req.params.userId}, {password: 0});
+    const user = await User.findOne({_id: req.params.userId}, {password: 0}).populate('usageGoals.platform').populate('usageGoals.period');
     res.jsend.success({user: user});
   } catch(err){
     next(err);
@@ -96,7 +96,7 @@ exports.getUsers = async function(req, res, next){
     if(!req.query){
       users = []
     } else {
-      users = await User.find(req.query, {password: 0}).populate('usageGoals.platform').populate('usageGoals.period')
+      users = await User.find(req.query, {password: 0}).populate('usageGoals.platform').populate('usageGoals.period').populate('usageGoals.application')
     }
     res.jsend.success({users: users})
   } catch(err){

@@ -16,8 +16,6 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "2a58e2d2-276e-43c3-bb20-44e20c17ca5c",
-								"type": "text/javascript",
 								"exec": [
 									"const schema = {",
 									"  \"definitions\": {},",
@@ -57,8 +55,30 @@
 									"",
 									"pm.environment.set(\"oauthClientCredentialsToken\", responseJson.access_token);",
 									"",
-									""
-								]
+									"pm.sendRequest({",
+									"    url: environment.hostname + '/api/platforms',",
+									"    method: 'GET',",
+									"    header: {",
+									"        'Authorization':'Bearer ' + pm.environment.get(\"oauthClientCredentialsToken\"),",
+									"    },",
+									"    body: {}",
+									"}, function (err, res) {",
+									"    pm.environment.set(\"platformId\", res.json().data.platforms[0]._id);",
+									"});",
+									"",
+									"pm.sendRequest({",
+									"    url: environment.hostname + '/api/periods',",
+									"    method: 'GET',",
+									"    header: {",
+									"        'Authorization':'Bearer ' + pm.environment.get(\"oauthClientCredentialsToken\"),",
+									"    },",
+									"    body: {}",
+									"}, function (err, res) {",
+									"    pm.environment.set(\"periodId\", res.json().data.periods[0]._id);",
+									"});"
+								],
+								"id": "1d013e48-a8de-4841-97a7-4b4cf42b4fca",
+								"type": "text/javascript"
 							}
 						}
 					],
@@ -109,21 +129,21 @@
 				{
 					"listen": "prerequest",
 					"script": {
-						"id": "d31c33af-1a5d-414b-98f2-3219608d31e9",
-						"type": "text/javascript",
 						"exec": [
 							""
-						]
+						],
+						"id": "d31c33af-1a5d-414b-98f2-3219608d31e9",
+						"type": "text/javascript"
 					}
 				},
 				{
 					"listen": "test",
 					"script": {
-						"id": "652dad7c-75a1-4b51-8638-cc26fccbaaca",
-						"type": "text/javascript",
 						"exec": [
 							""
-						]
+						],
+						"id": "652dad7c-75a1-4b51-8638-cc26fccbaaca",
+						"type": "text/javascript"
 					}
 				}
 			]
@@ -142,18 +162,16 @@
 								{
 									"listen": "prerequest",
 									"script": {
-										"id": "25c77851-7eea-4148-bbc6-989dc6f98977",
-										"type": "text/javascript",
 										"exec": [
 											"pm.environment.set('userNumber', Math.floor(Math.random()*100000));"
-										]
+										],
+										"id": "25c77851-7eea-4148-bbc6-989dc6f98977",
+										"type": "text/javascript"
 									}
 								},
 								{
 									"listen": "test",
 									"script": {
-										"id": "175b8577-1658-4470-a8dd-57dcc79c957b",
-										"type": "text/javascript",
 										"exec": [
 											"postman.setGlobalVariable(\"commonTests\", () =>{",
 											"    ",
@@ -268,7 +286,9 @@
 											"}, function (err, res) {",
 											"    pm.environment.set(\"oauthResourceOwnerToken\", res.json().access_token);",
 											"});"
-										]
+										],
+										"id": "175b8577-1658-4470-a8dd-57dcc79c957b",
+										"type": "text/javascript"
 									}
 								}
 							],
@@ -317,21 +337,21 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "02846f53-b612-4b18-89e5-4222f395c633",
-								"type": "text/javascript",
 								"exec": [
 									""
-								]
+								],
+								"id": "02846f53-b612-4b18-89e5-4222f395c633",
+								"type": "text/javascript"
 							}
 						},
 						{
 							"listen": "test",
 							"script": {
-								"id": "6311cc12-6636-44bb-9f98-b4b134d8db08",
-								"type": "text/javascript",
 								"exec": [
 									""
-								]
+								],
+								"id": "6311cc12-6636-44bb-9f98-b4b134d8db08",
+								"type": "text/javascript"
 							}
 						}
 					],
@@ -341,6 +361,226 @@
 					"name": "Get user details",
 					"description": "",
 					"item": [
+						{
+							"name": "Get user clients",
+							"description": "",
+							"item": [
+								{
+									"name": "Get user authorised clients",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "e897af55-d8ae-4d84-819d-724192bcd76e",
+												"type": "text/javascript",
+												"exec": [
+													"eval(globals.commonTests)();",
+													"",
+													"const schema = {",
+													"  \"$id\": \"http://example.com/example.json\",",
+													"  \"type\": \"object\",",
+													"  \"definitions\": {},",
+													"  \"$schema\": \"http://json-schema.org/draft-07/schema#\",",
+													"  \"properties\": {",
+													"    \"status\": {",
+													"      \"$id\": \"/properties/status\",",
+													"      \"type\": \"string\"",
+													"    },",
+													"    \"data\": {",
+													"      \"$id\": \"/properties/data\",",
+													"      \"type\": \"object\",",
+													"      \"properties\": {",
+													"        \"clients\": {",
+													"          \"$id\": \"/properties/data/properties/clients\",",
+													"          \"type\": \"array\",",
+													"          \"items\": {",
+													"            \"$id\": \"/properties/data/properties/clients/items\",",
+													"            \"type\": \"object\",",
+													"            \"properties\": {",
+													"              \"_id\": {",
+													"                \"$id\": \"/properties/data/properties/clients/items/properties/_id\",",
+													"                \"type\": \"string\"",
+													"              },",
+													"              \"name\": {",
+													"                \"$id\": \"/properties/data/properties/clients/items/properties/name\",",
+													"                \"type\": \"string\"",
+													"              },",
+													"              \"id\": {",
+													"                \"$id\": \"/properties/data/properties/clients/items/properties/id\",",
+													"                \"type\": \"string\"",
+													"              },",
+													"              \"applicationId\": {",
+													"                \"$id\": \"/properties/data/properties/clients/items/properties/applicationId\",",
+													"                \"type\": \"string\"",
+													"              },",
+													"              \"redirectUri\": {",
+													"                \"$id\": \"/properties/data/properties/clients/items/properties/redirectUri\",",
+													"                \"type\": \"string\"",
+													"              },",
+													"              \"isThirdParty\": {",
+													"                \"$id\": \"/properties/data/properties/clients/items/properties/isThirdParty\",",
+													"                \"type\": \"boolean\"",
+													"              },",
+													"              \"platform\": {",
+													"                \"$id\": \"/properties/data/properties/clients/items/properties/platform\",",
+													"                \"type\": \"string\"",
+													"              },",
+													"              \"__v\": {",
+													"                \"$id\": \"/properties/data/properties/clients/items/properties/__v\",",
+													"                \"type\": \"integer\"",
+													"              }",
+													"            }",
+													"          }",
+													"        }",
+													"      }",
+													"    }",
+													"  }",
+													"};",
+													"const jsonResponse = JSON.parse(responseBody);",
+													"tests[\"Status code is 200\"] = responseCode.code === 200;",
+													"tests[\"Response schema is valid\"] = tv4.validate(jsonResponse, schema);",
+													""
+												]
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{oauthResourceOwnerToken}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"body": {},
+										"url": {
+											"raw": "{{hostname}}/api/users/{{userId}}/clients",
+											"host": [
+												"{{hostname}}"
+											],
+											"path": [
+												"api",
+												"users",
+												"{{userId}}",
+												"clients"
+											]
+										},
+										"description": ""
+									},
+									"response": []
+								}
+							],
+							"_postman_isSubFolder": true
+						},
+						{
+							"name": "Get user applications",
+							"description": "",
+							"item": [
+								{
+									"name": "Get user authorised applications",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "1e6230ed-c2e1-4bfb-843b-6a44c2574b71",
+												"type": "text/javascript",
+												"exec": [
+													"eval(globals.commonTests)();",
+													"",
+													"const schema = {",
+													"  \"$id\": \"http://example.com/example.json\",",
+													"  \"type\": \"object\",",
+													"  \"definitions\": {},",
+													"  \"$schema\": \"http://json-schema.org/draft-07/schema#\",",
+													"  \"properties\": {",
+													"    \"status\": {",
+													"      \"$id\": \"/properties/status\",",
+													"      \"type\": \"string\"",
+													"    },",
+													"    \"data\": {",
+													"      \"$id\": \"/properties/data\",",
+													"      \"type\": \"object\",",
+													"      \"properties\": {",
+													"        \"applications\": {",
+													"          \"$id\": \"/properties/data/properties/applications\",",
+													"          \"type\": \"array\",",
+													"          \"items\": {",
+													"            \"$id\": \"/properties/data/properties/applications/items\",",
+													"            \"type\": \"object\",",
+													"            \"properties\": {",
+													"              \"_id\": {",
+													"                \"$id\": \"/properties/data/properties/applications/items/properties/_id\",",
+													"                \"type\": \"string\"",
+													"              },",
+													"              \"name\": {",
+													"                \"$id\": \"/properties/data/properties/applications/items/properties/name\",",
+													"                \"type\": \"string\"",
+													"              },",
+													"              \"__v\": {",
+													"                \"$id\": \"/properties/data/properties/applications/items/properties/__v\",",
+													"                \"type\": \"integer\"",
+													"              },",
+													"              \"clientIds\": {",
+													"                \"$id\": \"/properties/data/properties/applications/items/properties/clientIds\",",
+													"                \"type\": \"array\",",
+													"                \"items\": {",
+													"                  \"$id\": \"/properties/data/properties/applications/items/properties/clientIds/items\",",
+													"                  \"type\": \"string\"",
+													"                }",
+													"              }",
+													"            }",
+													"          }",
+													"        }",
+													"      }",
+													"    }",
+													"  }",
+													"};",
+													"const jsonResponse = JSON.parse(responseBody);",
+													"tests[\"Status code is 200\"] = responseCode.code === 200;",
+													"tests[\"Response schema is valid\"] = tv4.validate(jsonResponse, schema);",
+													""
+												]
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{oauthResourceOwnerToken}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"body": {},
+										"url": {
+											"raw": "{{hostname}}/api/users/{{userId}}/applications",
+											"host": [
+												"{{hostname}}"
+											],
+											"path": [
+												"api",
+												"users",
+												"{{userId}}",
+												"applications"
+											]
+										},
+										"description": ""
+									},
+									"response": []
+								}
+							],
+							"_postman_isSubFolder": true
+						},
 						{
 							"name": "Get user by ID",
 							"event": [
@@ -444,8 +684,6 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "d1ae81ed-e639-4cba-9044-a3be5561b76c",
-										"type": "text/javascript",
 										"exec": [
 											"eval(globals.commonTests)();",
 											"",
@@ -501,7 +739,9 @@
 											"const responseJson = JSON.parse(responseBody);",
 											"tests[\"Status code is 200\"] = responseCode.code === 200;",
 											"tests[\"Response schema is valid\"] = tv4.validate(responseJson, schema);"
-										]
+										],
+										"id": "d1ae81ed-e639-4cba-9044-a3be5561b76c",
+										"type": "text/javascript"
 									}
 								}
 							],
@@ -566,7 +806,7 @@
 								}
 							],
 							"request": {
-								"method": "PATCH",
+								"method": "PUT",
 								"header": [
 									{
 										"key": "Content-Type",
@@ -650,21 +890,21 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "1998edce-5b39-423e-98f3-6967ff3f0a16",
-								"type": "text/javascript",
 								"exec": [
 									""
-								]
+								],
+								"id": "1998edce-5b39-423e-98f3-6967ff3f0a16",
+								"type": "text/javascript"
 							}
 						},
 						{
 							"listen": "test",
 							"script": {
-								"id": "9f378bb3-9420-4bf6-812a-c5edf55bf065",
-								"type": "text/javascript",
 								"exec": [
 									""
-								]
+								],
+								"id": "9f378bb3-9420-4bf6-812a-c5edf55bf065",
+								"type": "text/javascript"
 							}
 						}
 					],
@@ -685,21 +925,21 @@
 				{
 					"listen": "prerequest",
 					"script": {
-						"id": "fa148639-077f-4685-bf29-43a6f19317aa",
-						"type": "text/javascript",
 						"exec": [
 							""
-						]
+						],
+						"id": "fa148639-077f-4685-bf29-43a6f19317aa",
+						"type": "text/javascript"
 					}
 				},
 				{
 					"listen": "test",
 					"script": {
-						"id": "30740a6f-1565-479c-bd35-623bc6533bdc",
-						"type": "text/javascript",
 						"exec": [
 							""
-						]
+						],
+						"id": "30740a6f-1565-479c-bd35-623bc6533bdc",
+						"type": "text/javascript"
 					}
 				}
 			]
@@ -718,18 +958,16 @@
 								{
 									"listen": "prerequest",
 									"script": {
-										"id": "a741d381-e8df-4ebf-8748-f243c2e049f5",
-										"type": "text/javascript",
 										"exec": [
 											"pm.environment.set('organisationNumber', Math.floor(Math.random()*100000));"
-										]
+										],
+										"id": "a741d381-e8df-4ebf-8748-f243c2e049f5",
+										"type": "text/javascript"
 									}
 								},
 								{
 									"listen": "test",
 									"script": {
-										"id": "e5d7e789-af95-4e49-9121-1b734398fffe",
-										"type": "text/javascript",
 										"exec": [
 											"eval(globals.commonTests)();",
 											"",
@@ -811,7 +1049,9 @@
 											"",
 											"pm.environment.set(\"organisationId\",jsonResponse.data.organisation._id);",
 											"pm.environment.set(\"organisationEmail\", jsonResponse.data.organisation.email);"
-										]
+										],
+										"id": "e5d7e789-af95-4e49-9121-1b734398fffe",
+										"type": "text/javascript"
 									}
 								}
 							],
@@ -973,6 +1213,100 @@
 								"description": ""
 							},
 							"response": []
+						},
+						{
+							"name": "Get organisation by query",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "1d8d8cf8-3e99-4aca-add4-9187d5644f67",
+										"type": "text/javascript",
+										"exec": [
+											"eval(globals.commonTests)();",
+											"",
+											"tests[\"Status code is 200\"] = responseCode.code === 200;",
+											"",
+											"const jsonResponse = JSON.parse(responseBody);",
+											"const schema = {",
+											"  \"$id\": \"http://example.com/example.json\",",
+											"  \"type\": \"object\",",
+											"  \"definitions\": {},",
+											"  \"$schema\": \"http://json-schema.org/draft-07/schema#\",",
+											"  \"properties\": {",
+											"    \"status\": {",
+											"      \"$id\": \"/properties/status\",",
+											"      \"type\": \"string\"",
+											"    },",
+											"    \"data\": {",
+											"      \"$id\": \"/properties/data\",",
+											"      \"type\": \"object\",",
+											"      \"properties\": {",
+											"        \"organisation\": {",
+											"          \"$id\": \"/properties/data/properties/organisation\",",
+											"          \"type\": \"object\",",
+											"          \"properties\": {",
+											"            \"_id\": {",
+											"              \"$id\": \"/properties/data/properties/organisation/properties/_id\",",
+											"              \"type\": \"string\"",
+											"            },",
+											"            \"name\": {",
+											"              \"$id\": \"/properties/data/properties/organisation/properties/name\",",
+											"              \"type\": \"string\"",
+											"            },",
+											"            \"email\": {",
+											"              \"$id\": \"/properties/data/properties/organisation/properties/email\",",
+											"              \"type\": \"string\"",
+											"            },",
+											"            \"__v\": {",
+											"              \"$id\": \"/properties/data/properties/organisation/properties/__v\",",
+											"              \"type\": \"integer\"",
+											"            },",
+											"            \"applicationIds\": {",
+											"              \"$id\": \"/properties/data/properties/organisation/properties/applicationIds\",",
+											"              \"type\": \"array\",",
+											"              \"items\": {",
+											"                \"$id\": \"/properties/data/properties/organisation/properties/applicationIds/items\",",
+											"                \"type\": \"string\"",
+											"              }",
+											"            }",
+											"          }",
+											"        }",
+											"      }",
+											"    }",
+											"  }",
+											"};",
+											"",
+											"tests[\"Response schema is valid\"] = tv4.validate(jsonResponse, schema);"
+										]
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {},
+								"url": {
+									"raw": "{{hostname}}/api/organisations/{{organisationId}}?email={{organisationEmail}}",
+									"host": [
+										"{{hostname}}"
+									],
+									"path": [
+										"api",
+										"organisations",
+										"{{organisationId}}"
+									],
+									"query": [
+										{
+											"key": "email",
+											"value": "{{organisationEmail}}",
+											"equals": true
+										}
+									]
+								},
+								"description": ""
+							},
+							"response": []
 						}
 					],
 					"_postman_isSubFolder": true
@@ -997,10 +1331,30 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "8bfc60eb-c9ed-4f5d-a049-478f285c2f59",
+										"id": "cf7528c8-be4a-45d9-ba6f-3fbba2ab4dab",
 										"type": "text/javascript",
 										"exec": [
 											"eval(globals.commonTests)();",
+											"",
+											"const schema = {",
+											"  \"$id\": \"http://example.com/example.json\",",
+											"  \"type\": \"object\",",
+											"  \"definitions\": {},",
+											"  \"$schema\": \"http://json-schema.org/draft-07/schema#\",",
+											"  \"properties\": {",
+											"    \"status\": {",
+											"      \"$id\": \"/properties/status\",",
+											"      \"type\": \"string\"",
+											"    },",
+											"    \"data\": {",
+											"      \"$id\": \"/properties/data\",",
+											"      \"type\": \"null\"",
+											"    }",
+											"  }",
+											"};",
+											"",
+											"const jsonResponse = JSON.parse(responseBody);",
+											"tests[\"Response schema is valid\"] = tv4.validate(jsonResponse, schema);",
 											"",
 											"tests[\"Status code is 200\"] = responseCode.code === 200;",
 											"",
@@ -1010,7 +1364,7 @@
 								}
 							],
 							"request": {
-								"method": "PATCH",
+								"method": "PUT",
 								"header": [
 									{
 										"key": "Content-Type",
@@ -1071,10 +1425,30 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "53921155-38cf-414a-bc39-f2db2e734706",
+										"id": "4b506193-bf52-4541-bc6f-0038b3447536",
 										"type": "text/javascript",
 										"exec": [
 											"eval(globals.commonTests)();",
+											"",
+											"const schema = {",
+											"  \"$id\": \"http://example.com/example.json\",",
+											"  \"type\": \"object\",",
+											"  \"definitions\": {},",
+											"  \"$schema\": \"http://json-schema.org/draft-07/schema#\",",
+											"  \"properties\": {",
+											"    \"status\": {",
+											"      \"$id\": \"/properties/status\",",
+											"      \"type\": \"string\"",
+											"    },",
+											"    \"data\": {",
+											"      \"$id\": \"/properties/data\",",
+											"      \"type\": \"null\"",
+											"    }",
+											"  }",
+											"};",
+											"",
+											"const jsonResponse = JSON.parse(responseBody);",
+											"tests[\"Response schema is valid\"] = tv4.validate(jsonResponse, schema);",
 											"",
 											"tests[\"Status code is 200\"] = responseCode.code = 200;",
 											""
@@ -1157,18 +1531,16 @@
 								{
 									"listen": "prerequest",
 									"script": {
-										"id": "a741d381-e8df-4ebf-8748-f243c2e049f5",
-										"type": "text/javascript",
 										"exec": [
 											"pm.environment.set('organisationNumber', Math.floor(Math.random()*100000));"
-										]
+										],
+										"id": "a741d381-e8df-4ebf-8748-f243c2e049f5",
+										"type": "text/javascript"
 									}
 								},
 								{
 									"listen": "test",
 									"script": {
-										"id": "e5d7e789-af95-4e49-9121-1b734398fffe",
-										"type": "text/javascript",
 										"exec": [
 											"eval(globals.commonTests)();",
 											"",
@@ -1250,7 +1622,9 @@
 											"",
 											"pm.environment.set(\"organisationId\",jsonResponse.data.organisation._id);",
 											"pm.environment.set(\"organisationEmail\", jsonResponse.data.organisation.email);"
-										]
+										],
+										"id": "e5d7e789-af95-4e49-9121-1b734398fffe",
+										"type": "text/javascript"
 									}
 								}
 							],
@@ -1296,18 +1670,16 @@
 								{
 									"listen": "prerequest",
 									"script": {
-										"id": "ccf9fb65-0007-40a6-8e29-12e1b5906075",
-										"type": "text/javascript",
 										"exec": [
 											"pm.environment.set('applicationNumber', Math.floor(Math.random()*100000));"
-										]
+										],
+										"id": "ccf9fb65-0007-40a6-8e29-12e1b5906075",
+										"type": "text/javascript"
 									}
 								},
 								{
 									"listen": "test",
 									"script": {
-										"id": "a8486a74-563c-47f7-a307-c0a5321462a0",
-										"type": "text/javascript",
 										"exec": [
 											"const schema = {",
 											"  \"definitions\": {},",
@@ -1385,7 +1757,9 @@
 											"",
 											"pm.environment.set(\"applicationId\", responseJson.data.application._id);",
 											""
-										]
+										],
+										"id": "a8486a74-563c-47f7-a307-c0a5321462a0",
+										"type": "text/javascript"
 									}
 								}
 							],
@@ -1609,6 +1983,112 @@
 										""
 									]
 								},
+								"description": null
+							},
+							"response": []
+						},
+						{
+							"name": "Get application by ID",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "55d3f1f7-cc1a-4eeb-9465-cc16aa71d5f6",
+										"type": "text/javascript",
+										"exec": [
+											"eval(globals.commonTests)();",
+											"",
+											"const responseJson = JSON.parse(responseBody);",
+											"",
+											"const schema = {",
+											"  \"definitions\": {},",
+											"  \"$schema\": \"http://json-schema.org/draft-06/schema#\",",
+											"  \"$id\": \"https://digitalmonitor.tk/api/\",",
+											"  \"type\": \"object\",",
+											"  \"properties\": {",
+											"    \"status\": {",
+											"      \"$id\": \"/properties/status\",",
+											"      \"type\": \"string\"",
+											"    },",
+											"    \"data\": {",
+											"      \"$id\": \"/properties/data\",",
+											"      \"type\": \"object\",",
+											"      \"properties\": {",
+											"        \"application\": {",
+											"          \"$id\": \"/properties/data/properties/application\",",
+											"          \"type\": \"object\",",
+											"          \"properties\": {",
+											"            \"_id\": {",
+											"              \"$id\": \"/properties/data/properties/application/properties/_id\",",
+											"              \"type\": \"string\"",
+											"            },",
+											"            \"name\": {",
+											"              \"$id\": \"/properties/data/properties/application/properties/name\",",
+											"              \"type\": \"string\"",
+											"            },",
+											"            \"__v\": {",
+											"              \"$id\": \"/properties/data/properties/application/properties/__v\",",
+											"              \"type\": \"integer\"",
+											"            },",
+											"            \"clientIds\": {",
+											"              \"$id\": \"/properties/data/properties/application/properties/clients\",",
+											"              \"type\": \"array\",",
+											"              \"items\": {",
+											"                \"title\": \"Empty Object\",",
+											"                \"description\": \"Accepts anything iff it's valid JSON.\"",
+											"              }",
+											"            }",
+											"          },",
+											"          \"required\": [",
+											"            \"_id\",",
+											"            \"name\",",
+											"            \"__v\",",
+											"            \"clientIds\"",
+											"          ]",
+											"        }",
+											"      },",
+											"      \"required\": [",
+											"        \"application\"",
+											"      ]",
+											"    }",
+											"  },",
+											"  \"required\": [",
+											"    \"status\",",
+											"    \"data\"",
+											"  ]",
+											"};",
+											"",
+											"tests[\"Status code is 200\"] = responseCode.code === 200;",
+											"tests[\"Response schema is valid\"] = tv4.validate(responseJson, schema);"
+										]
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{oauthClientCredentialsToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {},
+								"url": {
+									"raw": "{{hostname}}/api/applications/{{applicationId}}",
+									"host": [
+										"{{hostname}}"
+									],
+									"path": [
+										"api",
+										"applications",
+										"{{applicationId}}"
+									]
+								},
 								"description": ""
 							},
 							"response": []
@@ -1636,10 +2116,30 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "90af0c7e-ee37-464e-a70f-5c6d88dff4e7",
+										"id": "e12a3e33-f5a2-4862-a2bd-2b42d523c74a",
 										"type": "text/javascript",
 										"exec": [
 											"eval(globals.commonTests)();",
+											"",
+											"const schema = {",
+											"  \"$id\": \"http://example.com/example.json\",",
+											"  \"type\": \"object\",",
+											"  \"definitions\": {},",
+											"  \"$schema\": \"http://json-schema.org/draft-07/schema#\",",
+											"  \"properties\": {",
+											"    \"status\": {",
+											"      \"$id\": \"/properties/status\",",
+											"      \"type\": \"string\"",
+											"    },",
+											"    \"data\": {",
+											"      \"$id\": \"/properties/data\",",
+											"      \"type\": \"null\"",
+											"    }",
+											"  }",
+											"};",
+											"",
+											"const jsonResponse = JSON.parse(responseBody);",
+											"tests[\"Response schema is valid\"] = tv4.validate(jsonResponse, schema);",
 											"",
 											"tests[\"Status code is 200\"] = responseCode.code === 200;",
 											""
@@ -1648,7 +2148,7 @@
 								}
 							],
 							"request": {
-								"method": "PATCH",
+								"method": "PUT",
 								"header": [
 									{
 										"key": "Content-Type",
@@ -1813,18 +2313,16 @@
 								{
 									"listen": "prerequest",
 									"script": {
-										"id": "a741d381-e8df-4ebf-8748-f243c2e049f5",
-										"type": "text/javascript",
 										"exec": [
 											"pm.environment.set('organisationNumber', Math.floor(Math.random()*100000));"
-										]
+										],
+										"id": "a741d381-e8df-4ebf-8748-f243c2e049f5",
+										"type": "text/javascript"
 									}
 								},
 								{
 									"listen": "test",
 									"script": {
-										"id": "e5d7e789-af95-4e49-9121-1b734398fffe",
-										"type": "text/javascript",
 										"exec": [
 											"eval(globals.commonTests)();",
 											"",
@@ -1906,7 +2404,9 @@
 											"",
 											"pm.environment.set(\"organisationId\",jsonResponse.data.organisation._id);",
 											"pm.environment.set(\"organisationEmail\", jsonResponse.data.organisation.email);"
-										]
+										],
+										"id": "e5d7e789-af95-4e49-9121-1b734398fffe",
+										"type": "text/javascript"
 									}
 								}
 							],
@@ -1952,18 +2452,16 @@
 								{
 									"listen": "prerequest",
 									"script": {
-										"id": "ccf9fb65-0007-40a6-8e29-12e1b5906075",
-										"type": "text/javascript",
 										"exec": [
 											"pm.environment.set('applicationNumber', Math.floor(Math.random()*100000));"
-										]
+										],
+										"id": "ccf9fb65-0007-40a6-8e29-12e1b5906075",
+										"type": "text/javascript"
 									}
 								},
 								{
 									"listen": "test",
 									"script": {
-										"id": "a8486a74-563c-47f7-a307-c0a5321462a0",
-										"type": "text/javascript",
 										"exec": [
 											"const schema = {",
 											"  \"definitions\": {},",
@@ -2041,7 +2539,9 @@
 											"",
 											"pm.environment.set(\"applicationId\", responseJson.data.application._id);",
 											""
-										]
+										],
+										"id": "a8486a74-563c-47f7-a307-c0a5321462a0",
+										"type": "text/javascript"
 									}
 								}
 							],
@@ -2080,10 +2580,14 @@
 								{
 									"listen": "prerequest",
 									"script": {
-										"id": "5e36ecfb-d986-435f-be41-2becbe9fa272",
+										"id": "2b242328-ec03-4efd-86fc-e98e8c99d995",
 										"type": "text/javascript",
 										"exec": [
-											"pm.environment.set('clientNumber', Math.floor(Math.random()*100000));"
+											"pm.environment.set('clientNumber', Math.floor(Math.random()*100000));",
+											"",
+											"pm.variables.get(\"variable_key\");",
+											"",
+											""
 										]
 									}
 								},
@@ -2194,7 +2698,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n\t\"name\": \"client{{clientNumber}}\",\n    \"id\": \"client{{clientNumber}}\",\n    \"secret\": \"client{{clientNumber}}\", \n    \"redirectUri\": \"{{hostname}}\",\n    \"platform\": \"desktop\"\n}"
+									"raw": "{\n  \"name\": \"client{{clientNumber}}\",\n    \"id\": \"client{{clientNumber}}\",\n    \"secret\": \"client{{clientNumber}}\", \n    \"redirectUri\": \"{{hostname}}\",\n    \"platformId\": \"{{platformId}}\"\n}"
 								},
 								"url": {
 									"raw": "{{hostname}}/api/organisations/{{organisationId}}/applications/{{applicationId}}/clients",
@@ -2326,6 +2830,112 @@
 								"description": ""
 							},
 							"response": []
+						},
+						{
+							"name": "Get application clients",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "d44ee227-44dc-447a-ad2e-e08087a14fb2",
+										"type": "text/javascript",
+										"exec": [
+											"eval(globals.commonTests)();",
+											"",
+											"const responseJson = JSON.parse(responseBody);",
+											"",
+											"const schema = {",
+											"  \"$id\": \"http://example.com/example.json\",",
+											"  \"type\": \"object\",",
+											"  \"definitions\": {},",
+											"  \"$schema\": \"http://json-schema.org/draft-07/schema#\",",
+											"  \"properties\": {",
+											"    \"status\": {",
+											"      \"$id\": \"/properties/status\",",
+											"      \"type\": \"string\"",
+											"    },",
+											"    \"data\": {",
+											"      \"$id\": \"/properties/data\",",
+											"      \"type\": \"object\",",
+											"      \"properties\": {",
+											"        \"clients\": {",
+											"          \"$id\": \"/properties/data/properties/clients\",",
+											"          \"type\": \"array\",",
+											"          \"items\": {",
+											"            \"$id\": \"/properties/data/properties/clients/items\",",
+											"            \"type\": \"object\",",
+											"            \"properties\": {",
+											"              \"_id\": {",
+											"                \"$id\": \"/properties/data/properties/clients/items/properties/_id\",",
+											"                \"type\": \"string\"",
+											"              },",
+											"              \"name\": {",
+											"                \"$id\": \"/properties/data/properties/clients/items/properties/name\",",
+											"                \"type\": \"string\"",
+											"              },",
+											"              \"id\": {",
+											"                \"$id\": \"/properties/data/properties/clients/items/properties/id\",",
+											"                \"type\": \"string\"",
+											"              },",
+											"              \"secret\": {",
+											"                \"$id\": \"/properties/data/properties/clients/items/properties/secret\",",
+											"                \"type\": \"string\"",
+											"              },",
+											"              \"applicationId\": {",
+											"                \"$id\": \"/properties/data/properties/clients/items/properties/applicationId\",",
+											"                \"type\": \"string\"",
+											"              },",
+											"              \"redirectUri\": {",
+											"                \"$id\": \"/properties/data/properties/clients/items/properties/redirectUri\",",
+											"                \"type\": \"string\"",
+											"              },",
+											"              \"isThirdParty\": {",
+											"                \"$id\": \"/properties/data/properties/clients/items/properties/isThirdParty\",",
+											"                \"type\": \"boolean\"",
+											"              },",
+											"              \"platform\": {",
+											"                \"$id\": \"/properties/data/properties/clients/items/properties/platform\",",
+											"                \"type\": \"string\"",
+											"              },",
+											"              \"__v\": {",
+											"                \"$id\": \"/properties/data/properties/clients/items/properties/__v\",",
+											"                \"type\": \"integer\"",
+											"              }",
+											"            }",
+											"          }",
+											"        }",
+											"      }",
+											"    }",
+											"  }",
+											"};",
+											"",
+											"tests[\"Status code is 200\"] = responseCode.code === 200;",
+											"tests[\"Response schema is valid\"] = tv4.validate(responseJson, schema);"
+										]
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {},
+								"url": {
+									"raw": "{{hostname}}/api/organisations/{{organisationId}}/applications/{{applicationId}}/clients",
+									"host": [
+										"{{hostname}}"
+									],
+									"path": [
+										"api",
+										"organisations",
+										"{{organisationId}}",
+										"applications",
+										"{{applicationId}}",
+										"clients"
+									]
+								},
+								"description": ""
+							},
+							"response": []
 						}
 					],
 					"_postman_isSubFolder": true
@@ -2350,10 +2960,30 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "1a5d6521-0375-4d27-9d08-4b3b8b2827d1",
+										"id": "cd7e69f1-69b4-421b-b350-7a667e613dc5",
 										"type": "text/javascript",
 										"exec": [
 											"eval(globals.commonTests)();",
+											"",
+											"const schema = {",
+											"  \"$id\": \"http://example.com/example.json\",",
+											"  \"type\": \"object\",",
+											"  \"definitions\": {},",
+											"  \"$schema\": \"http://json-schema.org/draft-07/schema#\",",
+											"  \"properties\": {",
+											"    \"status\": {",
+											"      \"$id\": \"/properties/status\",",
+											"      \"type\": \"string\"",
+											"    },",
+											"    \"data\": {",
+											"      \"$id\": \"/properties/data\",",
+											"      \"type\": \"null\"",
+											"    }",
+											"  }",
+											"};",
+											"",
+											"const jsonResponse = JSON.parse(responseBody);",
+											"tests[\"Response schema is valid\"] = tv4.validate(jsonResponse, schema);",
 											"",
 											"tests[\"Status code is 200\"] = responseCode.code === 200;",
 											"",
@@ -2364,7 +2994,7 @@
 								}
 							],
 							"request": {
-								"method": "PATCH",
+								"method": "PUT",
 								"header": [
 									{
 										"key": "Content-Type",
@@ -2407,10 +3037,30 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "53921155-38cf-414a-bc39-f2db2e734706",
+										"id": "a2fc5056-4af7-41ba-8b6c-8399ad11a9ad",
 										"type": "text/javascript",
 										"exec": [
 											"eval(globals.commonTests)();",
+											"",
+											"const schema = {",
+											"  \"$id\": \"http://example.com/example.json\",",
+											"  \"type\": \"object\",",
+											"  \"definitions\": {},",
+											"  \"$schema\": \"http://json-schema.org/draft-07/schema#\",",
+											"  \"properties\": {",
+											"    \"status\": {",
+											"      \"$id\": \"/properties/status\",",
+											"      \"type\": \"string\"",
+											"    },",
+											"    \"data\": {",
+											"      \"$id\": \"/properties/data\",",
+											"      \"type\": \"null\"",
+											"    }",
+											"  }",
+											"};",
+											"",
+											"const jsonResponse = JSON.parse(responseBody);",
+											"tests[\"Response schema is valid\"] = tv4.validate(jsonResponse, schema);",
 											"",
 											"tests[\"Status code is 200\"] = responseCode.code = 200;",
 											""
@@ -2571,18 +3221,16 @@
 								{
 									"listen": "prerequest",
 									"script": {
-										"id": "25c77851-7eea-4148-bbc6-989dc6f98977",
-										"type": "text/javascript",
 										"exec": [
 											"pm.environment.set('userNumber', Math.floor(Math.random()*100000));"
-										]
+										],
+										"id": "25c77851-7eea-4148-bbc6-989dc6f98977",
+										"type": "text/javascript"
 									}
 								},
 								{
 									"listen": "test",
 									"script": {
-										"id": "175b8577-1658-4470-a8dd-57dcc79c957b",
-										"type": "text/javascript",
 										"exec": [
 											"postman.setGlobalVariable(\"commonTests\", () =>{",
 											"    ",
@@ -2697,7 +3345,9 @@
 											"}, function (err, res) {",
 											"    pm.environment.set(\"oauthResourceOwnerToken\", res.json().access_token);",
 											"});"
-										]
+										],
+										"id": "175b8577-1658-4470-a8dd-57dcc79c957b",
+										"type": "text/javascript"
 									}
 								}
 							],
@@ -2746,21 +3396,21 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "02846f53-b612-4b18-89e5-4222f395c633",
-								"type": "text/javascript",
 								"exec": [
 									""
-								]
+								],
+								"id": "02846f53-b612-4b18-89e5-4222f395c633",
+								"type": "text/javascript"
 							}
 						},
 						{
 							"listen": "test",
 							"script": {
-								"id": "6311cc12-6636-44bb-9f98-b4b134d8db08",
-								"type": "text/javascript",
 								"exec": [
 									""
-								]
+								],
+								"id": "6311cc12-6636-44bb-9f98-b4b134d8db08",
+								"type": "text/javascript"
 							}
 						}
 					],
@@ -2776,22 +3426,20 @@
 								{
 									"listen": "prerequest",
 									"script": {
-										"id": "10dc39c4-a97a-4d8b-bf1d-ea82d2c4b422",
-										"type": "text/javascript",
 										"exec": [
 											"const timeNow = new Date().getTime();",
 											"",
-											"pm.environment.set(\"startTime\", timeNow);",
-											"pm.environment.set(\"endTime\", timeNow+10000);",
+											"pm.environment.set(\"startTime\", timeNow-60000);",
+											"pm.environment.set(\"endTime\", timeNow);",
 											""
-										]
+										],
+										"id": "cb854f0d-c72b-480b-ba8a-8c70459991c1",
+										"type": "text/javascript"
 									}
 								},
 								{
 									"listen": "test",
 									"script": {
-										"id": "2e3b55ff-9398-41d8-9e89-1eeab64115a6",
-										"type": "text/javascript",
 										"exec": [
 											"eval(globals.commonTests)();",
 											"",
@@ -2883,11 +3531,23 @@
 											"tests[\"Response schema is valid\"] = tv4.validate(responseJson, schema);",
 											"",
 											"pm.environment.set(\"usageLogId\", responseJson.data.log._id);"
-										]
+										],
+										"id": "2e3b55ff-9398-41d8-9e89-1eeab64115a6",
+										"type": "text/javascript"
 									}
 								}
 							],
 							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{oauthResourceOwnerToken}}",
+											"type": "string"
+										}
+									]
+								},
 								"method": "POST",
 								"header": [
 									{
@@ -2897,7 +3557,161 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n\t\"startTime\": \"{{startTime}}\",\n\t\"endTime\": \"{{endTime}}\"\n}"
+									"raw": "{\n  \"startTime\": \"{{startTime}}\",\n  \"endTime\": \"{{endTime}}\"\n}"
+								},
+								"url": {
+									"raw": "{{hostname}}/api/usage-logs/",
+									"host": [
+										"{{hostname}}"
+									],
+									"path": [
+										"api",
+										"usage-logs",
+										""
+									]
+								},
+								"description": null
+							},
+							"response": []
+						},
+						{
+							"name": "Add usage log - /users",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const timeNow = new Date().getTime();",
+											"",
+											"pm.environment.set(\"startTime\", timeNow-60000);",
+											"pm.environment.set(\"endTime\", timeNow);",
+											""
+										],
+										"id": "cb854f0d-c72b-480b-ba8a-8c70459991c1",
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"eval(globals.commonTests)();",
+											"",
+											"const schema = {",
+											"  \"definitions\": {},",
+											"  \"$schema\": \"http://json-schema.org/draft-06/schema#\",",
+											"  \"$id\": \"http://example.com/example.json\",",
+											"  \"type\": \"object\",",
+											"  \"properties\": {",
+											"    \"status\": {",
+											"      \"$id\": \"/properties/status\",",
+											"      \"type\": \"string\"",
+											"    },",
+											"    \"data\": {",
+											"      \"$id\": \"/properties/data\",",
+											"      \"type\": \"object\",",
+											"      \"properties\": {",
+											"        \"log\": {",
+											"          \"$id\": \"/properties/data/properties/log\",",
+											"          \"type\": \"object\",",
+											"          \"properties\": {",
+											"            \"__v\": {",
+											"              \"$id\": \"/properties/data/properties/log/properties/__v\",",
+											"              \"type\": \"integer\"",
+											"            },",
+											"            \"userId\": {",
+											"              \"$id\": \"/properties/data/properties/log/properties/userId\",",
+											"              \"type\": \"string\"",
+											"            },",
+											"            \"clientId\": {",
+											"              \"$id\": \"/properties/data/properties/log/properties/clientId\",",
+											"              \"type\": \"string\"",
+											"            },",
+											"            \"log\": {",
+											"              \"$id\": \"/properties/data/properties/log/properties/log\",",
+											"              \"type\": \"object\",",
+											"              \"properties\": {",
+											"                \"endTime\": {",
+											"                  \"$id\": \"/properties/data/properties/log/properties/log/properties/endTime\",",
+											"                  \"type\": \"string\"",
+											"                },",
+											"                \"startTime\": {",
+											"                  \"$id\": \"/properties/data/properties/log/properties/log/properties/startTime\",",
+											"                  \"type\": \"string\"",
+											"                }",
+											"              },",
+											"              \"required\": [",
+											"                \"endTime\",",
+											"                \"startTime\"",
+											"              ]",
+											"            },",
+											"            \"_id\": {",
+											"              \"$id\": \"/properties/data/properties/log/properties/_id\",",
+											"              \"type\": \"string\"",
+											"            }",
+											"          },",
+											"          \"required\": [",
+											"            \"__v\",",
+											"            \"userId\",",
+											"            \"clientId\",",
+											"            \"log\",",
+											"            \"_id\"",
+											"          ]",
+											"        },",
+											"        \"locations\": {",
+											"          \"$id\": \"/properties/data/properties/locations\",",
+											"          \"type\": \"array\",",
+											"          \"items\": {",
+											"            \"$id\": \"/properties/data/properties/locations/items\",",
+											"            \"type\": \"string\"",
+											"          }",
+											"        }",
+											"      },",
+											"      \"required\": [",
+											"        \"log\",",
+											"        \"locations\"",
+											"      ]",
+											"    }",
+											"  },",
+											"  \"required\": [",
+											"    \"status\",",
+											"    \"data\"",
+											"  ]",
+											"};",
+											"",
+											"const responseJson = JSON.parse(responseBody);",
+											"",
+											"tests[\"Status code is 201\"] = responseCode.code === 201;",
+											"tests[\"Response schema is valid\"] = tv4.validate(responseJson, schema);",
+											"",
+											"pm.environment.set(\"usageLogId\", responseJson.data.log._id);"
+										],
+										"id": "2e3b55ff-9398-41d8-9e89-1eeab64115a6",
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{oauthResourceOwnerToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"startTime\": \"{{startTime}}\",\n  \"endTime\": \"{{endTime}}\"\n}"
 								},
 								"url": {
 									"raw": "{{hostname}}/api/users/{{userId}}/usage-logs/",
@@ -2912,7 +3726,300 @@
 										""
 									]
 								},
-								"description": ""
+								"description": null
+							},
+							"response": []
+						}
+					],
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Create a new set of usage logs",
+					"description": "",
+					"item": [
+						{
+							"name": "Add usage log set",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const timeNow = new Date().getTime();",
+											"",
+											"pm.environment.set(\"startTime1\", timeNow-60000);",
+											"pm.environment.set(\"endTime1\", timeNow);",
+											"pm.environment.set(\"startTime2\", timeNow-(6000*2));",
+											"pm.environment.set(\"endTime2\", timeNow-60000);",
+											"pm.environment.set(\"startTime3\", timeNow-(60000*3));",
+											"pm.environment.set(\"endTime3\", timeNow-(60000*2));",
+											""
+										],
+										"id": "ef4259c3-d107-4a34-b4b4-1ff39ac0c239",
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"eval(globals.commonTests)();",
+											"",
+											"const schema = {",
+											"  \"$id\": \"http://example.com/example.json\",",
+											"  \"type\": \"object\",",
+											"  \"definitions\": {},",
+											"  \"$schema\": \"http://json-schema.org/draft-07/schema#\",",
+											"  \"properties\": {",
+											"    \"status\": {",
+											"      \"$id\": \"/properties/status\",",
+											"      \"type\": \"string\"",
+											"    },",
+											"    \"data\": {",
+											"      \"$id\": \"/properties/data\",",
+											"      \"type\": \"object\",",
+											"      \"properties\": {",
+											"        \"logs\": {",
+											"          \"$id\": \"/properties/data/properties/logs\",",
+											"          \"type\": \"array\",",
+											"          \"items\": {",
+											"            \"$id\": \"/properties/data/properties/logs/items\",",
+											"            \"type\": \"object\",",
+											"            \"properties\": {",
+											"              \"__v\": {",
+											"                \"$id\": \"/properties/data/properties/logs/items/properties/__v\",",
+											"                \"type\": \"integer\"",
+											"              },",
+											"              \"userId\": {",
+											"                \"$id\": \"/properties/data/properties/logs/items/properties/userId\",",
+											"                \"type\": \"string\"",
+											"              },",
+											"              \"clientId\": {",
+											"                \"$id\": \"/properties/data/properties/logs/items/properties/clientId\",",
+											"                \"type\": \"string\"",
+											"              },",
+											"              \"log\": {",
+											"                \"$id\": \"/properties/data/properties/logs/items/properties/log\",",
+											"                \"type\": \"object\",",
+											"                \"properties\": {",
+											"                  \"endTime\": {",
+											"                    \"$id\": \"/properties/data/properties/logs/items/properties/log/properties/endTime\",",
+											"                    \"type\": \"string\"",
+											"                  },",
+											"                  \"startTime\": {",
+											"                    \"$id\": \"/properties/data/properties/logs/items/properties/log/properties/startTime\",",
+											"                    \"type\": \"string\"",
+											"                  }",
+											"                }",
+											"              },",
+											"              \"_id\": {",
+											"                \"$id\": \"/properties/data/properties/logs/items/properties/_id\",",
+											"                \"type\": \"string\"",
+											"              }",
+											"            }",
+											"          }",
+											"        },",
+											"        \"locations\": {",
+											"          \"$id\": \"/properties/data/properties/locations\",",
+											"          \"type\": \"array\",",
+											"          \"items\": {",
+											"            \"$id\": \"/properties/data/properties/locations/items\",",
+											"            \"type\": \"string\"",
+											"          }",
+											"        }",
+											"      }",
+											"    }",
+											"  }",
+											"};",
+											"",
+											"const responseJson = JSON.parse(responseBody);",
+											"",
+											"tests[\"Status code is 201\"] = responseCode.code === 201;",
+											"tests[\"Response schema is valid\"] = tv4.validate(responseJson, schema);",
+											""
+										],
+										"id": "19448f78-992c-48cf-b938-f547ef391fbc",
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{oauthResourceOwnerToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "[\n\t{\n\t\t\"startTime\": \"{{startTime1}}\",\n\t\t\"endTime\": \"{{endTime1}}\"\n\t},\n\t{\n\t\t\"startTime\": \"{{startTime2}}\",\n\t\t\"endTime\": \"{{endTime2}}\"\n\t},\n\t{\n\t\t\"startTime\": \"{{startTime3}}\",\n\t\t\"endTime\": \"{{endTime3}}\"\n\t}\n]"
+								},
+								"url": {
+									"raw": "{{hostname}}/api/usage-log-collections/",
+									"host": [
+										"{{hostname}}"
+									],
+									"path": [
+										"api",
+										"usage-log-collections",
+										""
+									]
+								},
+								"description": null
+							},
+							"response": []
+						},
+						{
+							"name": "Add usage log set - /users",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const timeNow = new Date().getTime();",
+											"",
+											"pm.environment.set(\"startTime1\", timeNow-60000);",
+											"pm.environment.set(\"endTime1\", timeNow);",
+											"pm.environment.set(\"startTime2\", timeNow-(6000*2));",
+											"pm.environment.set(\"endTime2\", timeNow-60000);",
+											"pm.environment.set(\"startTime3\", timeNow-(60000*3));",
+											"pm.environment.set(\"endTime3\", timeNow-(60000*2));",
+											""
+										],
+										"id": "ef4259c3-d107-4a34-b4b4-1ff39ac0c239",
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"eval(globals.commonTests)();",
+											"",
+											"const schema = {",
+											"  \"$id\": \"http://example.com/example.json\",",
+											"  \"type\": \"object\",",
+											"  \"definitions\": {},",
+											"  \"$schema\": \"http://json-schema.org/draft-07/schema#\",",
+											"  \"properties\": {",
+											"    \"status\": {",
+											"      \"$id\": \"/properties/status\",",
+											"      \"type\": \"string\"",
+											"    },",
+											"    \"data\": {",
+											"      \"$id\": \"/properties/data\",",
+											"      \"type\": \"object\",",
+											"      \"properties\": {",
+											"        \"logs\": {",
+											"          \"$id\": \"/properties/data/properties/logs\",",
+											"          \"type\": \"array\",",
+											"          \"items\": {",
+											"            \"$id\": \"/properties/data/properties/logs/items\",",
+											"            \"type\": \"object\",",
+											"            \"properties\": {",
+											"              \"__v\": {",
+											"                \"$id\": \"/properties/data/properties/logs/items/properties/__v\",",
+											"                \"type\": \"integer\"",
+											"              },",
+											"              \"userId\": {",
+											"                \"$id\": \"/properties/data/properties/logs/items/properties/userId\",",
+											"                \"type\": \"string\"",
+											"              },",
+											"              \"clientId\": {",
+											"                \"$id\": \"/properties/data/properties/logs/items/properties/clientId\",",
+											"                \"type\": \"string\"",
+											"              },",
+											"              \"log\": {",
+											"                \"$id\": \"/properties/data/properties/logs/items/properties/log\",",
+											"                \"type\": \"object\",",
+											"                \"properties\": {",
+											"                  \"endTime\": {",
+											"                    \"$id\": \"/properties/data/properties/logs/items/properties/log/properties/endTime\",",
+											"                    \"type\": \"string\"",
+											"                  },",
+											"                  \"startTime\": {",
+											"                    \"$id\": \"/properties/data/properties/logs/items/properties/log/properties/startTime\",",
+											"                    \"type\": \"string\"",
+											"                  }",
+											"                }",
+											"              },",
+											"              \"_id\": {",
+											"                \"$id\": \"/properties/data/properties/logs/items/properties/_id\",",
+											"                \"type\": \"string\"",
+											"              }",
+											"            }",
+											"          }",
+											"        },",
+											"        \"locations\": {",
+											"          \"$id\": \"/properties/data/properties/locations\",",
+											"          \"type\": \"array\",",
+											"          \"items\": {",
+											"            \"$id\": \"/properties/data/properties/locations/items\",",
+											"            \"type\": \"string\"",
+											"          }",
+											"        }",
+											"      }",
+											"    }",
+											"  }",
+											"};",
+											"",
+											"const responseJson = JSON.parse(responseBody);",
+											"",
+											"tests[\"Status code is 201\"] = responseCode.code === 201;",
+											"tests[\"Response schema is valid\"] = tv4.validate(responseJson, schema);",
+											""
+										],
+										"id": "19448f78-992c-48cf-b938-f547ef391fbc",
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{oauthResourceOwnerToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "[\n\t{\n\t\t\"startTime\": \"{{startTime1}}\",\n\t\t\"endTime\": \"{{endTime1}}\"\n\t},\n\t{\n\t\t\"startTime\": \"{{startTime2}}\",\n\t\t\"endTime\": \"{{endTime2}}\"\n\t},\n\t{\n\t\t\"startTime\": \"{{startTime3}}\",\n\t\t\"endTime\": \"{{endTime3}}\"\n\t}\n]"
+								},
+								"url": {
+									"raw": "{{hostname}}/api/users/{{userId}}/usage-log-collections/",
+									"host": [
+										"{{hostname}}"
+									],
+									"path": [
+										"api",
+										"users",
+										"{{userId}}",
+										"usage-log-collections",
+										""
+									]
+								},
+								"description": null
 							},
 							"response": []
 						}
@@ -2929,17 +4036,27 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "5f23afc8-84c2-4406-ba83-b140f4133ac8",
-										"type": "text/javascript",
 										"exec": [
 											"eval(globals.commonTests)();",
 											"",
 											"tests[\"Status code is 200\"] = responseCode.code === 200;"
-										]
+										],
+										"id": "5f23afc8-84c2-4406-ba83-b140f4133ac8",
+										"type": "text/javascript"
 									}
 								}
 							],
 							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{oauthResourceOwnerToken}}",
+											"type": "string"
+										}
+									]
+								},
 								"method": "GET",
 								"header": [],
 								"body": {},
@@ -3022,21 +4139,21 @@
 				{
 					"listen": "prerequest",
 					"script": {
-						"id": "249a868f-5b14-4226-b1ea-1e2966883801",
-						"type": "text/javascript",
 						"exec": [
 							""
-						]
+						],
+						"id": "249a868f-5b14-4226-b1ea-1e2966883801",
+						"type": "text/javascript"
 					}
 				},
 				{
 					"listen": "test",
 					"script": {
-						"id": "0a9d72ae-206f-4f5d-879f-da8ac54bf184",
-						"type": "text/javascript",
 						"exec": [
 							""
-						]
+						],
+						"id": "0a9d72ae-206f-4f5d-879f-da8ac54bf184",
+						"type": "text/javascript"
 					}
 				}
 			]
@@ -3059,18 +4176,16 @@
 										{
 											"listen": "prerequest",
 											"script": {
-												"id": "a741d381-e8df-4ebf-8748-f243c2e049f5",
-												"type": "text/javascript",
 												"exec": [
 													"pm.environment.set('organisationNumber', Math.floor(Math.random()*100000));"
-												]
+												],
+												"id": "a741d381-e8df-4ebf-8748-f243c2e049f5",
+												"type": "text/javascript"
 											}
 										},
 										{
 											"listen": "test",
 											"script": {
-												"id": "e5d7e789-af95-4e49-9121-1b734398fffe",
-												"type": "text/javascript",
 												"exec": [
 													"eval(globals.commonTests)();",
 													"",
@@ -3152,7 +4267,9 @@
 													"",
 													"pm.environment.set(\"organisationId\",jsonResponse.data.organisation._id);",
 													"pm.environment.set(\"organisationEmail\", jsonResponse.data.organisation.email);"
-												]
+												],
+												"id": "e5d7e789-af95-4e49-9121-1b734398fffe",
+												"type": "text/javascript"
 											}
 										}
 									],
@@ -3198,18 +4315,16 @@
 										{
 											"listen": "prerequest",
 											"script": {
-												"id": "ccf9fb65-0007-40a6-8e29-12e1b5906075",
-												"type": "text/javascript",
 												"exec": [
 													"pm.environment.set('applicationNumber', Math.floor(Math.random()*100000));"
-												]
+												],
+												"id": "ccf9fb65-0007-40a6-8e29-12e1b5906075",
+												"type": "text/javascript"
 											}
 										},
 										{
 											"listen": "test",
 											"script": {
-												"id": "a8486a74-563c-47f7-a307-c0a5321462a0",
-												"type": "text/javascript",
 												"exec": [
 													"const schema = {",
 													"  \"definitions\": {},",
@@ -3287,7 +4402,9 @@
 													"",
 													"pm.environment.set(\"applicationId\", responseJson.data.application._id);",
 													""
-												]
+												],
+												"id": "a8486a74-563c-47f7-a307-c0a5321462a0",
+												"type": "text/javascript"
 											}
 										}
 									],
@@ -3326,18 +4443,16 @@
 										{
 											"listen": "prerequest",
 											"script": {
-												"id": "5e36ecfb-d986-435f-be41-2becbe9fa272",
-												"type": "text/javascript",
 												"exec": [
 													"pm.environment.set('clientNumber', Math.floor(Math.random()*100000));"
-												]
+												],
+												"id": "5e36ecfb-d986-435f-be41-2becbe9fa272",
+												"type": "text/javascript"
 											}
 										},
 										{
 											"listen": "test",
 											"script": {
-												"id": "f35d53fe-ab42-4d21-aa88-b58341a068df",
-												"type": "text/javascript",
 												"exec": [
 													"eval(globals.commonTests)();",
 													"",
@@ -3426,7 +4541,9 @@
 													"pm.environment.set(\"clientId\",jsonResponse.data.client._id);",
 													"pm.environment.set(\"oauthClientId\", jsonResponse.data.client.id);",
 													"pm.environment.set(\"oauthClientSecret\", jsonResponse.data.client.secret);"
-												]
+												],
+												"id": "f35d53fe-ab42-4d21-aa88-b58341a068df",
+												"type": "text/javascript"
 											}
 										}
 									],
@@ -3440,7 +4557,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\n\t\"name\": \"client{{clientNumber}}\",\n    \"id\": \"client{{clientNumber}}\",\n    \"secret\": \"client{{clientNumber}}\", \n    \"redirectUri\": \"{{hostname}}\",\n    \"platform\": \"ios\"\n}"
+											"raw": "{\n  \"name\": \"client{{clientNumber}}\",\n    \"id\": \"client{{clientNumber}}\",\n    \"secret\": \"client{{clientNumber}}\", \n    \"redirectUri\": \"{{hostname}}\",\n    \"platformId\": \"{{platformId}}\"\n}"
 										},
 										"url": {
 											"raw": "{{hostname}}/api/organisations/{{organisationId}}/applications/{{applicationId}}/clients",
@@ -3456,7 +4573,7 @@
 												"clients"
 											]
 										},
-										"description": ""
+										"description": null
 									},
 									"response": []
 								}
@@ -3480,21 +4597,21 @@
 								{
 									"listen": "prerequest",
 									"script": {
-										"id": "b6ee472b-956b-49ec-a548-21364067342f",
-										"type": "text/javascript",
 										"exec": [
 											""
-										]
+										],
+										"id": "b6ee472b-956b-49ec-a548-21364067342f",
+										"type": "text/javascript"
 									}
 								},
 								{
 									"listen": "test",
 									"script": {
-										"id": "94394860-62eb-4f07-886a-ae417b4c9dc2",
-										"type": "text/javascript",
 										"exec": [
 											""
-										]
+										],
+										"id": "94394860-62eb-4f07-886a-ae417b4c9dc2",
+										"type": "text/javascript"
 									}
 								}
 							],
@@ -3510,18 +4627,16 @@
 										{
 											"listen": "prerequest",
 											"script": {
-												"id": "25c77851-7eea-4148-bbc6-989dc6f98977",
-												"type": "text/javascript",
 												"exec": [
 													"pm.environment.set('userNumber', Math.floor(Math.random()*100000));"
-												]
+												],
+												"id": "25c77851-7eea-4148-bbc6-989dc6f98977",
+												"type": "text/javascript"
 											}
 										},
 										{
 											"listen": "test",
 											"script": {
-												"id": "f1e31e46-f6f4-4b8d-b359-e5c3f48d26b0",
-												"type": "text/javascript",
 												"exec": [
 													"postman.setGlobalVariable(\"commonTests\", () =>{",
 													"    ",
@@ -3634,7 +4749,9 @@
 													"}, function (err, res) {",
 													"    pm.environment.set(\"oauthResourceOwnerToken\", res.json().access_token);",
 													"});"
-												]
+												],
+												"id": "f1e31e46-f6f4-4b8d-b359-e5c3f48d26b0",
+												"type": "text/javascript"
 											}
 										}
 									],
@@ -3683,21 +4800,21 @@
 								{
 									"listen": "prerequest",
 									"script": {
-										"id": "f48f81bf-8bf4-49f6-83c9-1fc08a4e5a6c",
-										"type": "text/javascript",
 										"exec": [
 											""
-										]
+										],
+										"id": "f48f81bf-8bf4-49f6-83c9-1fc08a4e5a6c",
+										"type": "text/javascript"
 									}
 								},
 								{
 									"listen": "test",
 									"script": {
-										"id": "cb19317d-1f2d-47fc-aed7-a2b9dd630ae2",
-										"type": "text/javascript",
 										"exec": [
 											""
-										]
+										],
+										"id": "cb19317d-1f2d-47fc-aed7-a2b9dd630ae2",
+										"type": "text/javascript"
 									}
 								}
 							],
@@ -3713,8 +4830,6 @@
 										{
 											"listen": "test",
 											"script": {
-												"id": "bf6c0468-dff3-48c9-8651-c11d597a78eb",
-												"type": "text/javascript",
 												"exec": [
 													"const schema = {",
 													"  \"definitions\": {},",
@@ -3755,7 +4870,9 @@
 													"pm.environment.set(\"oauthAccessToken\", responseJson.access_token);",
 													"",
 													""
-												]
+												],
+												"id": "bf6c0468-dff3-48c9-8651-c11d597a78eb",
+												"type": "text/javascript"
 											}
 										}
 									],
@@ -3765,12 +4882,12 @@
 											"basic": [
 												{
 													"key": "password",
-													"value": "password",
+													"value": "{{oauthClientSecret}}",
 													"type": "string"
 												},
 												{
 													"key": "username",
-													"value": "dmios",
+													"value": "{{oauthClientId}}",
 													"type": "string"
 												}
 											]
@@ -3818,22 +4935,20 @@
 												{
 													"listen": "prerequest",
 													"script": {
-														"id": "10dc39c4-a97a-4d8b-bf1d-ea82d2c4b422",
-														"type": "text/javascript",
 														"exec": [
 															"const timeNow = new Date().getTime();",
 															"",
 															"pm.environment.set(\"startTime\", timeNow);",
 															"pm.environment.set(\"endTime\", timeNow+10000);",
 															""
-														]
+														],
+														"id": "10dc39c4-a97a-4d8b-bf1d-ea82d2c4b422",
+														"type": "text/javascript"
 													}
 												},
 												{
 													"listen": "test",
 													"script": {
-														"id": "2e3b55ff-9398-41d8-9e89-1eeab64115a6",
-														"type": "text/javascript",
 														"exec": [
 															"eval(globals.commonTests)();",
 															"",
@@ -3925,7 +5040,9 @@
 															"tests[\"Response schema is valid\"] = tv4.validate(responseJson, schema);",
 															"",
 															"pm.environment.set(\"usageLogId\", responseJson.data.log._id);"
-														]
+														],
+														"id": "2e3b55ff-9398-41d8-9e89-1eeab64115a6",
+														"type": "text/javascript"
 													}
 												}
 											],
@@ -4038,6 +5155,78 @@
 										}
 									],
 									"_postman_isSubFolder": true
+								}
+							],
+							"_postman_isSubFolder": true
+						},
+						{
+							"name": "Revoke client access",
+							"description": "",
+							"item": [
+								{
+									"name": "Revoke user client access",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "934b4f7c-7aba-4117-aa16-c3474c49a384",
+												"type": "text/javascript",
+												"exec": [
+													"eval(globals.commonTests)();",
+													"const schema = {",
+													"  \"$id\": \"http://example.com/example.json\",",
+													"  \"type\": \"object\",",
+													"  \"definitions\": {},",
+													"  \"$schema\": \"http://json-schema.org/draft-07/schema#\",",
+													"  \"properties\": {",
+													"    \"status\": {",
+													"      \"$id\": \"/properties/status\",",
+													"      \"type\": \"string\"",
+													"    },",
+													"    \"data\": {",
+													"      \"$id\": \"/properties/data\",",
+													"      \"type\": \"null\"",
+													"    }",
+													"  }",
+													"};",
+													"",
+													"const jsonResponse = JSON.parse(responseBody);",
+													"tests[\"Status code is 200\"] = responseCode.code === 200;",
+													"tests[\"Response schema is valid\"] = tv4.validate(jsonResponse, schema);"
+												]
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{oauthResourceOwnerToken}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "DELETE",
+										"header": [],
+										"body": {},
+										"url": {
+											"raw": "{{hostname}}/api/users/{{userId}}/clients/{{clientId}}",
+											"host": [
+												"{{hostname}}"
+											],
+											"path": [
+												"api",
+												"users",
+												"{{userId}}",
+												"clients",
+												"{{clientId}}"
+											]
+										},
+										"description": ""
+									},
+									"response": []
 								}
 							],
 							"_postman_isSubFolder": true
@@ -4255,21 +5444,21 @@
 								{
 									"listen": "prerequest",
 									"script": {
-										"id": "1b7a4655-b3fd-4e56-8753-ea0e748a9469",
-										"type": "text/javascript",
 										"exec": [
 											""
-										]
+										],
+										"id": "1b7a4655-b3fd-4e56-8753-ea0e748a9469",
+										"type": "text/javascript"
 									}
 								},
 								{
 									"listen": "test",
 									"script": {
-										"id": "9a3c4372-5907-4f13-9afd-d0c7dca39381",
-										"type": "text/javascript",
 										"exec": [
 											""
-										]
+										],
+										"id": "9a3c4372-5907-4f13-9afd-d0c7dca39381",
+										"type": "text/javascript"
 									}
 								}
 							],
@@ -4292,18 +5481,16 @@
 										{
 											"listen": "prerequest",
 											"script": {
-												"id": "a741d381-e8df-4ebf-8748-f243c2e049f5",
-												"type": "text/javascript",
 												"exec": [
 													"pm.environment.set('organisationNumber', Math.floor(Math.random()*100000));"
-												]
+												],
+												"id": "a741d381-e8df-4ebf-8748-f243c2e049f5",
+												"type": "text/javascript"
 											}
 										},
 										{
 											"listen": "test",
 											"script": {
-												"id": "e5d7e789-af95-4e49-9121-1b734398fffe",
-												"type": "text/javascript",
 												"exec": [
 													"eval(globals.commonTests)();",
 													"",
@@ -4385,7 +5572,9 @@
 													"",
 													"pm.environment.set(\"organisationId\",jsonResponse.data.organisation._id);",
 													"pm.environment.set(\"organisationEmail\", jsonResponse.data.organisation.email);"
-												]
+												],
+												"id": "e5d7e789-af95-4e49-9121-1b734398fffe",
+												"type": "text/javascript"
 											}
 										}
 									],
@@ -4431,18 +5620,16 @@
 										{
 											"listen": "prerequest",
 											"script": {
-												"id": "ccf9fb65-0007-40a6-8e29-12e1b5906075",
-												"type": "text/javascript",
 												"exec": [
 													"pm.environment.set('applicationNumber', Math.floor(Math.random()*100000));"
-												]
+												],
+												"id": "ccf9fb65-0007-40a6-8e29-12e1b5906075",
+												"type": "text/javascript"
 											}
 										},
 										{
 											"listen": "test",
 											"script": {
-												"id": "a8486a74-563c-47f7-a307-c0a5321462a0",
-												"type": "text/javascript",
 												"exec": [
 													"const schema = {",
 													"  \"definitions\": {},",
@@ -4520,7 +5707,9 @@
 													"",
 													"pm.environment.set(\"applicationId\", responseJson.data.application._id);",
 													""
-												]
+												],
+												"id": "a8486a74-563c-47f7-a307-c0a5321462a0",
+												"type": "text/javascript"
 											}
 										}
 									],
@@ -4559,18 +5748,16 @@
 										{
 											"listen": "prerequest",
 											"script": {
-												"id": "5e36ecfb-d986-435f-be41-2becbe9fa272",
-												"type": "text/javascript",
 												"exec": [
 													"pm.environment.set('clientNumber', Math.floor(Math.random()*100000));"
-												]
+												],
+												"id": "5e36ecfb-d986-435f-be41-2becbe9fa272",
+												"type": "text/javascript"
 											}
 										},
 										{
 											"listen": "test",
 											"script": {
-												"id": "7f22c053-7db8-4bd9-bca2-b46c7dcb276f",
-												"type": "text/javascript",
 												"exec": [
 													"eval(globals.commonTests)();",
 													"",
@@ -4659,7 +5846,9 @@
 													"pm.environment.set(\"clientId\",jsonResponse.data.client._id);",
 													"pm.environment.set(\"oauthClientId\", jsonResponse.data.client.id);",
 													"pm.environment.set(\"oauthClientSecret\", jsonResponse.data.client.secret);"
-												]
+												],
+												"id": "7f22c053-7db8-4bd9-bca2-b46c7dcb276f",
+												"type": "text/javascript"
 											}
 										}
 									],
@@ -4673,7 +5862,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\n\t\"name\": \"client{{clientNumber}}\",\n    \"id\": \"client{{clientNumber}}\",\n    \"secret\": \"client{{clientNumber}}\", \n    \"redirectUri\": \"{{hostname}}\",\n    \"platform\": \"ios\"\n}"
+											"raw": "{\n  \"name\": \"client{{clientNumber}}\",\n    \"id\": \"client{{clientNumber}}\",\n    \"secret\": \"client{{clientNumber}}\", \n    \"redirectUri\": \"{{hostname}}\",\n    \"platformId\": \"{{platformId}}\"\n}"
 										},
 										"url": {
 											"raw": "{{hostname}}/api/organisations/{{organisationId}}/applications/{{applicationId}}/clients",
@@ -4689,7 +5878,7 @@
 												"clients"
 											]
 										},
-										"description": ""
+										"description": null
 									},
 									"response": []
 								}
@@ -4743,8 +5932,6 @@
 										{
 											"listen": "test",
 											"script": {
-												"id": "6efd3bce-b3dd-432a-a47f-f65a88b4e74e",
-												"type": "text/javascript",
 												"exec": [
 													"const schema = {",
 													"  \"definitions\": {},",
@@ -4785,7 +5972,9 @@
 													"pm.environment.set(\"oauthAccessToken\", responseJson.access_token);",
 													"",
 													""
-												]
+												],
+												"id": "6efd3bce-b3dd-432a-a47f-f65a88b4e74e",
+												"type": "text/javascript"
 											}
 										}
 									],
@@ -4814,7 +6003,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\n\t\"grant_type\": \"client_credentials\"\n}"
+											"raw": "{\n  \"grant_type\": \"client_credentials\"\n}"
 										},
 										"url": {
 											"raw": "{{hostname}}/api/oauth2/token",
@@ -4827,7 +6016,7 @@
 												"token"
 											]
 										},
-										"description": ""
+										"description": null
 									},
 									"response": []
 								}
@@ -5431,7 +6620,7 @@
 												],
 												"body": {
 													"mode": "raw",
-													"raw": "{\n\t\"name\": \"client{{clientNumber}}\",\n    \"id\": \"client{{clientNumber}}\",\n    \"secret\": \"client{{clientNumber}}\", \n    \"redirectUri\": \"{{hostname}}\",\n    \"platform\": \"ios\"\n}"
+													"raw": "{\n  \"name\": \"client{{clientNumber}}\",\n    \"id\": \"client{{clientNumber}}\",\n    \"secret\": \"client{{clientNumber}}\", \n    \"redirectUri\": \"{{hostname}}\",\n    \"platformId\": \"{{platformId}}\"\n}"
 												},
 												"url": {
 													"raw": "{{hostname}}/api/organisations/{{organisationId}}/applications/{{applicationId}}/clients",
@@ -5447,7 +6636,7 @@
 														"clients"
 													]
 												},
-												"description": ""
+												"description": null
 											},
 											"response": []
 										}
@@ -5501,8 +6690,6 @@
 												{
 													"listen": "test",
 													"script": {
-														"id": "1c970a30-2202-4999-b0c4-9f149037088f",
-														"type": "text/javascript",
 														"exec": [
 															"const schema = {",
 															"  \"definitions\": {},",
@@ -5543,7 +6730,9 @@
 															"pm.environment.set(\"oauthRefreshToken\", responseJson.refresh_token);",
 															"",
 															""
-														]
+														],
+														"id": "1c970a30-2202-4999-b0c4-9f149037088f",
+														"type": "text/javascript"
 													}
 												}
 											],
@@ -5866,21 +7055,21 @@
 				{
 					"listen": "prerequest",
 					"script": {
-						"id": "f7719e8c-e0e7-45ce-be1c-450d3f8c3fdf",
-						"type": "text/javascript",
 						"exec": [
 							""
-						]
+						],
+						"id": "f7719e8c-e0e7-45ce-be1c-450d3f8c3fdf",
+						"type": "text/javascript"
 					}
 				},
 				{
 					"listen": "test",
 					"script": {
-						"id": "20bc1cca-9c3b-458f-b075-24575ff6ad49",
-						"type": "text/javascript",
 						"exec": [
 							""
-						]
+						],
+						"id": "20bc1cca-9c3b-458f-b075-24575ff6ad49",
+						"type": "text/javascript"
 					}
 				}
 			]
@@ -5899,18 +7088,16 @@
 								{
 									"listen": "prerequest",
 									"script": {
-										"id": "25c77851-7eea-4148-bbc6-989dc6f98977",
-										"type": "text/javascript",
 										"exec": [
 											"pm.environment.set('userNumber', Math.floor(Math.random()*100000));"
-										]
+										],
+										"id": "25c77851-7eea-4148-bbc6-989dc6f98977",
+										"type": "text/javascript"
 									}
 								},
 								{
 									"listen": "test",
 									"script": {
-										"id": "175b8577-1658-4470-a8dd-57dcc79c957b",
-										"type": "text/javascript",
 										"exec": [
 											"postman.setGlobalVariable(\"commonTests\", () =>{",
 											"    ",
@@ -6025,11 +7212,23 @@
 											"}, function (err, res) {",
 											"    pm.environment.set(\"oauthResourceOwnerToken\", res.json().access_token);",
 											"});"
-										]
+										],
+										"id": "175b8577-1658-4470-a8dd-57dcc79c957b",
+										"type": "text/javascript"
 									}
 								}
 							],
 							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{oauthClientCredentialsToken}}",
+											"type": "string"
+										}
+									]
+								},
 								"method": "POST",
 								"header": [
 									{
@@ -6074,21 +7273,21 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "02846f53-b612-4b18-89e5-4222f395c633",
-								"type": "text/javascript",
 								"exec": [
 									""
-								]
+								],
+								"id": "02846f53-b612-4b18-89e5-4222f395c633",
+								"type": "text/javascript"
 							}
 						},
 						{
 							"listen": "test",
 							"script": {
-								"id": "6311cc12-6636-44bb-9f98-b4b134d8db08",
-								"type": "text/javascript",
 								"exec": [
 									""
-								]
+								],
+								"id": "6311cc12-6636-44bb-9f98-b4b134d8db08",
+								"type": "text/javascript"
 							}
 						}
 					],
@@ -6110,6 +7309,39 @@
 											"pm.environment.set(\"deviceToken\", \"deviceToken\" + Math.random(1000))"
 										]
 									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "16c95367-f123-4990-806a-b11bda0d3ae8",
+										"type": "text/javascript",
+										"exec": [
+											"eval(globals.commonTests)();",
+											"",
+											"const schema = {",
+											"  \"$id\": \"http://example.com/example.json\",",
+											"  \"type\": \"object\",",
+											"  \"definitions\": {},",
+											"  \"$schema\": \"http://json-schema.org/draft-07/schema#\",",
+											"  \"properties\": {",
+											"    \"status\": {",
+											"      \"$id\": \"/properties/status\",",
+											"      \"type\": \"string\"",
+											"    },",
+											"    \"data\": {",
+											"      \"$id\": \"/properties/data\",",
+											"      \"type\": \"null\"",
+											"    }",
+											"  }",
+											"};",
+											"",
+											"const jsonResponse = JSON.parse(responseBody);",
+											"tests[\"Response schema is valid\"] = tv4.validate(jsonResponse, schema);",
+											"",
+											"tests[\"Status code is 200\"] = responseCode.code = 200;",
+											""
+										]
+									}
 								}
 							],
 							"request": {
@@ -6122,20 +7354,20 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n\t\"userId\": \"{{userId}}\"\n}"
+									"raw": "{\n  \"userId\": \"{{userId}}\"\n}"
 								},
 								"url": {
-									"raw": "{{hostname}}/api/device-tokens/",
+									"raw": "{{hostname}}/api/device-tokens/abc",
 									"host": [
 										"{{hostname}}"
 									],
 									"path": [
 										"api",
 										"device-tokens",
-										""
+										"abc"
 									]
 								},
-								"description": ""
+								"description": null
 							},
 							"response": []
 						}
@@ -6197,21 +7429,21 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "1998edce-5b39-423e-98f3-6967ff3f0a16",
-								"type": "text/javascript",
 								"exec": [
 									""
-								]
+								],
+								"id": "1998edce-5b39-423e-98f3-6967ff3f0a16",
+								"type": "text/javascript"
 							}
 						},
 						{
 							"listen": "test",
 							"script": {
-								"id": "9f378bb3-9420-4bf6-812a-c5edf55bf065",
-								"type": "text/javascript",
 								"exec": [
 									""
-								]
+								],
+								"id": "9f378bb3-9420-4bf6-812a-c5edf55bf065",
+								"type": "text/javascript"
 							}
 						}
 					],
@@ -6232,21 +7464,21 @@
 				{
 					"listen": "prerequest",
 					"script": {
-						"id": "36069a09-315e-4b53-bb99-2ba0c2c90e9e",
-						"type": "text/javascript",
 						"exec": [
 							""
-						]
+						],
+						"id": "36069a09-315e-4b53-bb99-2ba0c2c90e9e",
+						"type": "text/javascript"
 					}
 				},
 				{
 					"listen": "test",
 					"script": {
-						"id": "ef09751c-4170-47e5-8db2-1ff535087e78",
-						"type": "text/javascript",
 						"exec": [
 							""
-						]
+						],
+						"id": "ef09751c-4170-47e5-8db2-1ff535087e78",
+						"type": "text/javascript"
 					}
 				}
 			]
@@ -6265,18 +7497,16 @@
 								{
 									"listen": "prerequest",
 									"script": {
-										"id": "25c77851-7eea-4148-bbc6-989dc6f98977",
-										"type": "text/javascript",
 										"exec": [
 											"pm.environment.set('userNumber', Math.floor(Math.random()*100000));"
-										]
+										],
+										"id": "25c77851-7eea-4148-bbc6-989dc6f98977",
+										"type": "text/javascript"
 									}
 								},
 								{
 									"listen": "test",
 									"script": {
-										"id": "175b8577-1658-4470-a8dd-57dcc79c957b",
-										"type": "text/javascript",
 										"exec": [
 											"postman.setGlobalVariable(\"commonTests\", () =>{",
 											"    ",
@@ -6391,11 +7621,23 @@
 											"}, function (err, res) {",
 											"    pm.environment.set(\"oauthResourceOwnerToken\", res.json().access_token);",
 											"});"
-										]
+										],
+										"id": "175b8577-1658-4470-a8dd-57dcc79c957b",
+										"type": "text/javascript"
 									}
 								}
 							],
 							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{oauthClientCredentialsToken}}",
+											"type": "string"
+										}
+									]
+								},
 								"method": "POST",
 								"header": [
 									{
@@ -6426,36 +7668,293 @@
 							"response": []
 						}
 					],
-					"auth": {
-						"type": "bearer",
-						"bearer": [
-							{
-								"key": "token",
-								"value": "{{oauthClientCredentialsToken}}",
-								"type": "string"
-							}
-						]
-					},
-					"event": [
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Create a new application",
+					"description": "",
+					"item": [
 						{
-							"listen": "prerequest",
-							"script": {
-								"id": "02846f53-b612-4b18-89e5-4222f395c633",
-								"type": "text/javascript",
-								"exec": [
-									""
-								]
-							}
+							"name": "Add an organisation",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"pm.environment.set('organisationNumber', Math.floor(Math.random()*100000));"
+										],
+										"id": "a741d381-e8df-4ebf-8748-f243c2e049f5",
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"eval(globals.commonTests)();",
+											"",
+											"tests[\"Status code is 201\"] = responseCode.code === 201;",
+											"",
+											"const jsonResponse = JSON.parse(responseBody);",
+											"const schema = {",
+											"  \"definitions\": {},",
+											"  \"$schema\": \"http://json-schema.org/draft-06/schema#\",",
+											"  \"$id\": \"https://digitalmonitor.tk/api/\",",
+											"  \"type\": \"object\",",
+											"  \"properties\": {",
+											"    \"status\": {",
+											"      \"$id\": \"/properties/status\",",
+											"      \"type\": \"string\"",
+											"    },",
+											"    \"data\": {",
+											"      \"$id\": \"/properties/data\",",
+											"      \"type\": \"object\",",
+											"      \"properties\": {",
+											"        \"organisation\": {",
+											"          \"$id\": \"/properties/data/properties/organisation\",",
+											"          \"type\": \"object\",",
+											"          \"properties\": {",
+											"            \"__v\": {",
+											"              \"$id\": \"/properties/data/properties/organisation/properties/__v\",",
+											"              \"type\": \"integer\"",
+											"            },",
+											"            \"name\": {",
+											"              \"$id\": \"/properties/data/properties/organisation/properties/name\",",
+											"              \"type\": \"string\"",
+											"            },",
+											"            \"email\": {",
+											"              \"$id\": \"/properties/data/properties/organisation/properties/email\",",
+											"              \"type\": \"string\"",
+											"            },",
+											"            \"_id\": {",
+											"              \"$id\": \"/properties/data/properties/organisation/properties/_id\",",
+											"              \"type\": \"string\"",
+											"            },",
+											"            \"applicationIds\": {",
+											"              \"$id\": \"/properties/data/properties/organisation/properties/applications\",",
+											"              \"type\": \"array\",",
+											"              \"items\": {",
+											"                \"title\": \"Empty Object\",",
+											"                \"description\": \"Accepts anything iff it's valid JSON.\"",
+											"              }",
+											"            }",
+											"          },",
+											"          \"required\": [",
+											"            \"__v\",",
+											"            \"name\",",
+											"            \"email\",",
+											"            \"_id\",",
+											"            \"applicationIds\"",
+											"          ]",
+											"        },",
+											"        \"locations\": {",
+											"          \"$id\": \"/properties/data/properties/locations\",",
+											"          \"type\": \"array\",",
+											"          \"items\": {",
+											"            \"$id\": \"/properties/data/properties/locations/items\",",
+											"            \"type\": \"string\"",
+											"          }",
+											"        }",
+											"      },",
+											"      \"required\": [",
+											"        \"organisation\",",
+											"        \"locations\"",
+											"      ]",
+											"    }",
+											"  },",
+											"  \"required\": [",
+											"    \"status\",",
+											"    \"data\"",
+											"  ]",
+											"};",
+											"tests[\"Response schema is valid\"] = tv4.validate(jsonResponse, schema);",
+											"",
+											"pm.environment.set(\"organisationId\",jsonResponse.data.organisation._id);",
+											"pm.environment.set(\"organisationEmail\", jsonResponse.data.organisation.email);"
+										],
+										"id": "e5d7e789-af95-4e49-9121-1b734398fffe",
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{oauthClientCredentialsToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"name\": \"organisation{{organisationNumber}}\",\n\t\"email\": \"organisation{{organisationNumber}}@mail.com\",\n\t\"password\": \"password\"\n}"
+								},
+								"url": {
+									"raw": "{{hostname}}/api/organisations",
+									"host": [
+										"{{hostname}}"
+									],
+									"path": [
+										"api",
+										"organisations"
+									]
+								},
+								"description": ""
+							},
+							"response": []
 						},
 						{
-							"listen": "test",
-							"script": {
-								"id": "6311cc12-6636-44bb-9f98-b4b134d8db08",
-								"type": "text/javascript",
-								"exec": [
-									""
-								]
-							}
+							"name": "Add an organisation application",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"pm.environment.set('applicationNumber', Math.floor(Math.random()*100000));"
+										],
+										"id": "ccf9fb65-0007-40a6-8e29-12e1b5906075",
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const schema = {",
+											"  \"definitions\": {},",
+											"  \"$schema\": \"http://json-schema.org/draft-06/schema#\",",
+											"  \"$id\": \"https://digitalmonitor.tk/api/\",",
+											"  \"type\": \"object\",",
+											"  \"properties\": {",
+											"    \"status\": {",
+											"      \"$id\": \"/properties/status\",",
+											"      \"type\": \"string\"",
+											"    },",
+											"    \"data\": {",
+											"      \"$id\": \"/properties/data\",",
+											"      \"type\": \"object\",",
+											"      \"properties\": {",
+											"        \"application\": {",
+											"          \"$id\": \"/properties/data/properties/application\",",
+											"          \"type\": \"object\",",
+											"          \"properties\": {",
+											"            \"__v\": {",
+											"              \"$id\": \"/properties/data/properties/application/properties/__v\",",
+											"              \"type\": \"integer\"",
+											"            },",
+											"            \"name\": {",
+											"              \"$id\": \"/properties/data/properties/application/properties/name\",",
+											"              \"type\": \"string\"",
+											"            },",
+											"            \"_id\": {",
+											"              \"$id\": \"/properties/data/properties/application/properties/_id\",",
+											"              \"type\": \"string\"",
+											"            },",
+											"            \"clientIds\": {",
+											"              \"$id\": \"/properties/data/properties/application/properties/clients\",",
+											"              \"type\": \"array\",",
+											"              \"items\": {",
+											"                \"title\": \"Empty Object\",",
+											"                \"description\": \"Accepts anything iff it's valid JSON.\"",
+											"              }",
+											"            }",
+											"          },",
+											"          \"required\": [",
+											"            \"__v\",",
+											"            \"name\",",
+											"            \"_id\",",
+											"            \"clientIds\"",
+											"          ]",
+											"        },",
+											"        \"locations\": {",
+											"          \"$id\": \"/properties/data/properties/locations\",",
+											"          \"type\": \"array\",",
+											"          \"items\": {",
+											"            \"$id\": \"/properties/data/properties/locations/items\",",
+											"            \"type\": \"string\"",
+											"          }",
+											"        }",
+											"      },",
+											"      \"required\": [",
+											"        \"application\",",
+											"        \"locations\"",
+											"      ]",
+											"    }",
+											"  },",
+											"  \"required\": [",
+											"    \"status\",",
+											"    \"data\"",
+											"  ]",
+											"};",
+											"",
+											"const responseJson = JSON.parse(responseBody);",
+											"",
+											"eval(globals.commonTests)();",
+											"",
+											"tests[\"Status code is 201\"] = responseCode.code === 201;",
+											"tests[\"Response schema is valid\"] = tv4.validate(responseJson, schema);",
+											"",
+											"pm.environment.set(\"applicationId\", responseJson.data.application._id);",
+											""
+										],
+										"id": "a8486a74-563c-47f7-a307-c0a5321462a0",
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "password",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{organisationEmail}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"name\": \"application{{applicationNumber}}\"\n}"
+								},
+								"url": {
+									"raw": "{{hostname}}/api/organisations/{{organisationId}}/applications/",
+									"host": [
+										"{{hostname}}"
+									],
+									"path": [
+										"api",
+										"organisations",
+										"{{organisationId}}",
+										"applications",
+										""
+									]
+								},
+								"description": ""
+							},
+							"response": []
 						}
 					],
 					"_postman_isSubFolder": true
@@ -6470,11 +7969,92 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "dc42833c-00db-409d-89b3-84161282d320",
+										"id": "2f90d3e8-06f2-4056-b6dc-096b801185ce",
 										"type": "text/javascript",
 										"exec": [
-											"const json = JSON.parse(responseBody);",
-											"pm.environment.set('usageGoalId', json.data.usageGoal._id);",
+											"eval(globals.commonTests)();",
+											"const schema = {",
+											"  \"$id\": \"http://example.com/example.json\",",
+											"  \"type\": \"object\",",
+											"  \"definitions\": {},",
+											"  \"$schema\": \"http://json-schema.org/draft-07/schema#\",",
+											"  \"properties\": {",
+											"    \"status\": {",
+											"      \"$id\": \"/properties/status\",",
+											"      \"type\": \"string\"",
+											"    },",
+											"    \"data\": {",
+											"      \"$id\": \"/properties/data\",",
+											"      \"type\": \"object\",",
+											"      \"properties\": {",
+											"        \"usageGoal\": {",
+											"          \"$id\": \"/properties/data/properties/usageGoal\",",
+											"          \"type\": \"object\",",
+											"          \"properties\": {",
+											"            \"platform\": {",
+											"              \"$id\": \"/properties/data/properties/usageGoal/properties/platform\",",
+											"              \"type\": \"object\",",
+											"              \"properties\": {",
+											"                \"_id\": {",
+											"                  \"$id\": \"/properties/data/properties/usageGoal/properties/platform/properties/_id\",",
+											"                  \"type\": \"string\"",
+											"                },",
+											"                \"name\": {",
+											"                  \"$id\": \"/properties/data/properties/usageGoal/properties/platform/properties/name\",",
+											"                  \"type\": \"string\"",
+											"                }",
+											"              }",
+											"            },",
+											"            \"applicationId\": {",
+											"              \"$id\": \"/properties/data/properties/usageGoal/properties/applicationId\",",
+											"              \"type\": \"string\"",
+											"            },",
+											"            \"period\": {",
+											"              \"$id\": \"/properties/data/properties/usageGoal/properties/period\",",
+											"              \"type\": \"object\",",
+											"              \"properties\": {",
+											"                \"_id\": {",
+											"                  \"$id\": \"/properties/data/properties/usageGoal/properties/period/properties/_id\",",
+											"                  \"type\": \"string\"",
+											"                },",
+											"                \"name\": {",
+											"                  \"$id\": \"/properties/data/properties/usageGoal/properties/period/properties/name\",",
+											"                  \"type\": \"string\"",
+											"                },",
+											"                \"duration\": {",
+											"                  \"$id\": \"/properties/data/properties/usageGoal/properties/period/properties/duration\",",
+											"                  \"type\": \"integer\"",
+											"                }",
+											"              }",
+											"            },",
+											"            \"duration\": {",
+											"              \"$id\": \"/properties/data/properties/usageGoal/properties/duration\",",
+											"              \"type\": \"integer\"",
+											"            },",
+											"            \"_id\": {",
+											"              \"$id\": \"/properties/data/properties/usageGoal/properties/_id\",",
+											"              \"type\": \"string\"",
+											"            }",
+											"          }",
+											"        },",
+											"        \"locations\": {",
+											"          \"$id\": \"/properties/data/properties/locations\",",
+											"          \"type\": \"array\",",
+											"          \"items\": {",
+											"            \"$id\": \"/properties/data/properties/locations/items\",",
+											"            \"type\": \"string\"",
+											"          }",
+											"        }",
+											"      }",
+											"    }",
+											"  }",
+											"};",
+											"",
+											"const jsonResponse = JSON.parse(responseBody);",
+											"tests[\"Status code is 201\"] = responseCode.code === 201;",
+											"tests[\"Response schema is valid\"] = tv4.validate(jsonResponse, schema);",
+											"",
+											"pm.environment.set('usageGoalId', jsonResponse.data.usageGoal._id);",
 											""
 										]
 									}
@@ -6500,7 +8080,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n\t\"duration\": 172800,\n\t\"period\": \"monthly\"\n}"
+									"raw": "{\n  \"duration\": 172800,\n  \"periodId\": \"{{periodId}}\",\n  \"applicationId\": \"{{applicationId}}\",\n  \"platformId\": \"{{platformId}}\"\n}"
 								},
 								"url": {
 									"raw": "{{hostname}}/api/users/{{userId}}/usage-goals/",
@@ -6513,6 +8093,464 @@
 										"{{userId}}",
 										"usage-goals",
 										""
+									]
+								},
+								"description": null
+							},
+							"response": []
+						}
+					],
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Get user usage goals",
+					"description": "",
+					"item": [
+						{
+							"name": "Get all user usage goals",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "e125a856-ac46-4168-9943-4a792e9f1306",
+										"type": "text/javascript",
+										"exec": [
+											"eval(globals.commonTests)();",
+											"const schema = {",
+											"  \"$id\": \"http://example.com/example.json\",",
+											"  \"type\": \"object\",",
+											"  \"definitions\": {},",
+											"  \"$schema\": \"http://json-schema.org/draft-07/schema#\",",
+											"  \"properties\": {",
+											"    \"status\": {",
+											"      \"$id\": \"/properties/status\",",
+											"      \"type\": \"string\"",
+											"    },",
+											"    \"data\": {",
+											"      \"$id\": \"/properties/data\",",
+											"      \"type\": \"object\",",
+											"      \"properties\": {",
+											"        \"usageGoals\": {",
+											"          \"$id\": \"/properties/data/properties/usageGoals\",",
+											"          \"type\": \"array\",",
+											"          \"items\": {",
+											"            \"$id\": \"/properties/data/properties/usageGoals/items\",",
+											"            \"type\": \"object\",",
+											"            \"properties\": {",
+											"              \"_id\": {",
+											"                \"$id\": \"/properties/data/properties/usageGoals/items/properties/_id\",",
+											"                \"type\": \"string\"",
+											"              },",
+											"              \"duration\": {",
+											"                \"$id\": \"/properties/data/properties/usageGoals/items/properties/duration\",",
+											"                \"type\": \"integer\"",
+											"              },",
+											"              \"period\": {",
+											"                \"$id\": \"/properties/data/properties/usageGoals/items/properties/period\",",
+											"                \"type\": \"object\",",
+											"                \"properties\": {",
+											"                  \"_id\": {",
+											"                    \"$id\": \"/properties/data/properties/usageGoals/items/properties/period/properties/_id\",",
+											"                    \"type\": \"string\"",
+											"                  },",
+											"                  \"name\": {",
+											"                    \"$id\": \"/properties/data/properties/usageGoals/items/properties/period/properties/name\",",
+											"                    \"type\": \"string\"",
+											"                  },",
+											"                  \"duration\": {",
+											"                    \"$id\": \"/properties/data/properties/usageGoals/items/properties/period/properties/duration\",",
+											"                    \"type\": \"integer\"",
+											"                  }",
+											"                }",
+											"              },",
+											"              \"applicationId\": {",
+											"                \"$id\": \"/properties/data/properties/usageGoals/items/properties/applicationId\",",
+											"                \"type\": \"null\"",
+											"              },",
+											"              \"platform\": {",
+											"                \"$id\": \"/properties/data/properties/usageGoals/items/properties/platform\",",
+											"                \"type\": \"object\",",
+											"                \"properties\": {",
+											"                  \"_id\": {",
+											"                    \"$id\": \"/properties/data/properties/usageGoals/items/properties/platform/properties/_id\",",
+											"                    \"type\": \"string\"",
+											"                  },",
+											"                  \"name\": {",
+											"                    \"$id\": \"/properties/data/properties/usageGoals/items/properties/platform/properties/name\",",
+											"                    \"type\": \"string\"",
+											"                  }",
+											"                }",
+											"              }",
+											"            }",
+											"          }",
+											"        }",
+											"      }",
+											"    }",
+											"  }",
+											"}",
+											"",
+											"const jsonResponse = JSON.parse(responseBody);",
+											"tests[\"Status code is 200\"] = responseCode.code === 200;",
+											"tests[\"Response schema is valid\"] = tv4.validate(jsonResponse, schema);"
+										]
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{oauthResourceOwnerToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {},
+								"url": {
+									"raw": "{{hostname}}/api/users/{{userId}}/usage-goals/",
+									"host": [
+										"{{hostname}}"
+									],
+									"path": [
+										"api",
+										"users",
+										"{{userId}}",
+										"usage-goals",
+										""
+									]
+								},
+								"description": ""
+							},
+							"response": []
+						},
+						{
+							"name": "Get all user usage goal by id",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "803aa654-1abd-4ec9-9608-0a14493f0988",
+										"type": "text/javascript",
+										"exec": [
+											"eval(globals.commonTests)();",
+											"const schema = {",
+											"  \"$id\": \"http://example.com/example.json\",",
+											"  \"type\": \"object\",",
+											"  \"definitions\": {},",
+											"  \"$schema\": \"http://json-schema.org/draft-07/schema#\",",
+											"  \"properties\": {",
+											"    \"status\": {",
+											"      \"$id\": \"/properties/status\",",
+											"      \"type\": \"string\"",
+											"    },",
+											"    \"data\": {",
+											"      \"$id\": \"/properties/data\",",
+											"      \"type\": \"object\",",
+											"      \"properties\": {",
+											"        \"usageGoal\": {",
+											"          \"$id\": \"/properties/data/properties/usageGoal\",",
+											"          \"type\": \"object\",",
+											"          \"properties\": {",
+											"            \"_id\": {",
+											"              \"$id\": \"/properties/data/properties/usageGoal/properties/_id\",",
+											"              \"type\": \"string\"",
+											"            },",
+											"            \"duration\": {",
+											"              \"$id\": \"/properties/data/properties/usageGoal/properties/duration\",",
+											"              \"type\": \"integer\"",
+											"            },",
+											"            \"period\": {",
+											"              \"$id\": \"/properties/data/properties/usageGoal/properties/period\",",
+											"              \"type\": \"object\",",
+											"              \"properties\": {",
+											"                \"_id\": {",
+											"                  \"$id\": \"/properties/data/properties/usageGoal/properties/period/properties/_id\",",
+											"                  \"type\": \"string\"",
+											"                },",
+											"                \"name\": {",
+											"                  \"$id\": \"/properties/data/properties/usageGoal/properties/period/properties/name\",",
+											"                  \"type\": \"string\"",
+											"                },",
+											"                \"duration\": {",
+											"                  \"$id\": \"/properties/data/properties/usageGoal/properties/period/properties/duration\",",
+											"                  \"type\": \"integer\"",
+											"                }",
+											"              }",
+											"            },",
+											"            \"applicationId\": {",
+											"              \"$id\": \"/properties/data/properties/usageGoal/properties/applicationId\",",
+											"              \"type\": \"null\"",
+											"            },",
+											"            \"platform\": {",
+											"              \"$id\": \"/properties/data/properties/usageGoal/properties/platform\",",
+											"              \"type\": \"object\",",
+											"              \"properties\": {",
+											"                \"_id\": {",
+											"                  \"$id\": \"/properties/data/properties/usageGoal/properties/platform/properties/_id\",",
+											"                  \"type\": \"string\"",
+											"                },",
+											"                \"name\": {",
+											"                  \"$id\": \"/properties/data/properties/usageGoal/properties/platform/properties/name\",",
+											"                  \"type\": \"string\"",
+											"                }",
+											"              }",
+											"            }",
+											"          }",
+											"        }",
+											"      }",
+											"    }",
+											"  }",
+											"}",
+											"",
+											"const jsonResponse = JSON.parse(responseBody);",
+											"tests[\"Status code is 200\"] = responseCode.code === 200;",
+											"tests[\"Response schema is valid\"] = tv4.validate(jsonResponse, schema);"
+										]
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{oauthResourceOwnerToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {},
+								"url": {
+									"raw": "{{hostname}}/api/users/{{userId}}/usage-goals/{{usageGoalId}}",
+									"host": [
+										"{{hostname}}"
+									],
+									"path": [
+										"api",
+										"users",
+										"{{userId}}",
+										"usage-goals",
+										"{{usageGoalId}}"
+									]
+								},
+								"description": ""
+							},
+							"response": []
+						}
+					],
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Get usage goal progress",
+					"description": "",
+					"item": [
+						{
+							"name": "Get usage goal progress",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "f5bb5ce3-d93d-4c1c-8016-0a8a5b9b4c99",
+										"type": "text/javascript",
+										"exec": [
+											"eval(globals.commonTests)();",
+											"const schema = {",
+											"  \"$id\": \"http://example.com/example.json\",",
+											"  \"type\": \"object\",",
+											"  \"definitions\": {},",
+											"  \"$schema\": \"http://json-schema.org/draft-07/schema#\",",
+											"  \"properties\": {",
+											"    \"status\": {",
+											"      \"$id\": \"/properties/status\",",
+											"      \"type\": \"string\"",
+											"    },",
+											"    \"data\": {",
+											"      \"$id\": \"/properties/data\",",
+											"      \"type\": \"object\",",
+											"      \"properties\": {",
+											"        \"usageGoals\": {",
+											"          \"$id\": \"/properties/data/properties/usageGoals\",",
+											"          \"type\": \"array\",",
+											"          \"items\": {",
+											"            \"$id\": \"/properties/data/properties/usageGoals/items\",",
+											"            \"type\": \"object\",",
+											"            \"properties\": {",
+											"              \"_id\": {",
+											"                \"$id\": \"/properties/data/properties/usageGoals/items/properties/_id\",",
+											"                \"type\": \"string\"",
+											"              },",
+											"              \"duration\": {",
+											"                \"$id\": \"/properties/data/properties/usageGoals/items/properties/duration\",",
+											"                \"type\": \"integer\"",
+											"              },",
+											"              \"period\": {",
+											"                \"$id\": \"/properties/data/properties/usageGoals/items/properties/period\",",
+											"                \"type\": \"object\",",
+											"                \"properties\": {",
+											"                  \"_id\": {",
+											"                    \"$id\": \"/properties/data/properties/usageGoals/items/properties/period/properties/_id\",",
+											"                    \"type\": \"string\"",
+											"                  },",
+											"                  \"name\": {",
+											"                    \"$id\": \"/properties/data/properties/usageGoals/items/properties/period/properties/name\",",
+											"                    \"type\": \"string\"",
+											"                  },",
+											"                  \"duration\": {",
+											"                    \"$id\": \"/properties/data/properties/usageGoals/items/properties/period/properties/duration\",",
+											"                    \"type\": \"integer\"",
+											"                  }",
+											"                }",
+											"              },",
+											"              \"applicationId\": {",
+											"                \"$id\": \"/properties/data/properties/usageGoals/items/properties/applicationId\",",
+											"                \"type\": \"null\"",
+											"              },",
+											"              \"platform\": {",
+											"                \"$id\": \"/properties/data/properties/usageGoals/items/properties/platform\",",
+											"                \"type\": \"object\",",
+											"                \"properties\": {",
+											"                  \"_id\": {",
+											"                    \"$id\": \"/properties/data/properties/usageGoals/items/properties/platform/properties/_id\",",
+											"                    \"type\": \"string\"",
+											"                  },",
+											"                  \"name\": {",
+											"                    \"$id\": \"/properties/data/properties/usageGoals/items/properties/platform/properties/name\",",
+											"                    \"type\": \"string\"",
+											"                  }",
+											"                }",
+											"              },",
+											"              \"progress\": {",
+											"                \"$id\": \"/properties/data/properties/usageGoals/items/properties/progress\",",
+											"                \"type\": \"integer\"",
+											"              }",
+											"            }",
+											"          }",
+											"        }",
+											"      }",
+											"    }",
+											"  }",
+											"}",
+											"",
+											"const jsonResponse = JSON.parse(responseBody);",
+											"tests[\"Status code is 200\"] = responseCode.code === 200;",
+											"tests[\"Response schema is valid\"] = tv4.validate(jsonResponse, schema);"
+										]
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{oauthResourceOwnerToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {},
+								"url": {
+									"raw": "{{hostname}}/api/users/{{userId}}/usage-goals/progress",
+									"host": [
+										"{{hostname}}"
+									],
+									"path": [
+										"api",
+										"users",
+										"{{userId}}",
+										"usage-goals",
+										"progress"
+									]
+								},
+								"description": ""
+							},
+							"response": []
+						}
+					],
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Edit usage goal details",
+					"description": "",
+					"item": [
+						{
+							"name": "Edit usage goal details",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "79184e85-ee96-4707-9c49-f0da10c2ff92",
+										"type": "text/javascript",
+										"exec": [
+											"eval(globals.commonTests)();",
+											"const schema = {",
+											"  \"$id\": \"http://example.com/example.json\",",
+											"  \"type\": \"object\",",
+											"  \"definitions\": {},",
+											"  \"$schema\": \"http://json-schema.org/draft-07/schema#\",",
+											"  \"properties\": {",
+											"    \"status\": {",
+											"      \"$id\": \"/properties/status\",",
+											"      \"type\": \"string\"",
+											"    },",
+											"    \"data\": {",
+											"      \"$id\": \"/properties/data\",",
+											"      \"type\": \"null\"",
+											"    }",
+											"  }",
+											"};",
+											"",
+											"const jsonResponse = JSON.parse(responseBody);",
+											"tests[\"Status code is 200\"] = responseCode.code === 200",
+											"tests[\"Response schema is valid\"] = tv4.validate(jsonResponse, schema);",
+											""
+										]
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{oauthResourceOwnerToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"duration\": 1,\n  \"periodId\": \"{{periodId}}\",\n  \"applicationId\": \"{{applicationId}}\",\n  \"platformId\": \"{{platformId}}\"\n}"
+								},
+								"url": {
+									"raw": "{{hostname}}/api/users/{{userId}}/usage-goals/{{usageGoalId}}",
+									"host": [
+										"{{hostname}}"
+									],
+									"path": [
+										"api",
+										"users",
+										"{{userId}}",
+										"usage-goals",
+										"{{usageGoalId}}"
 									]
 								},
 								"description": ""
@@ -6532,10 +8570,31 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "215b599a-493b-4028-819e-c6fe3831ce98",
+										"id": "e203958f-a5d4-4374-9aa1-8262dd0c5ece",
 										"type": "text/javascript",
 										"exec": [
-											"eval(globals.commonTests)();"
+											"eval(globals.commonTests)();",
+											"const schema = {",
+											"  \"$id\": \"http://example.com/example.json\",",
+											"  \"type\": \"object\",",
+											"  \"definitions\": {},",
+											"  \"$schema\": \"http://json-schema.org/draft-07/schema#\",",
+											"  \"properties\": {",
+											"    \"status\": {",
+											"      \"$id\": \"/properties/status\",",
+											"      \"type\": \"string\"",
+											"    },",
+											"    \"data\": {",
+											"      \"$id\": \"/properties/data\",",
+											"      \"type\": \"null\"",
+											"    }",
+											"  }",
+											"};",
+											"",
+											"const jsonResponse = JSON.parse(responseBody);",
+											"tests[\"Status code is 200\"] = responseCode.code === 200",
+											"tests[\"Response schema is valid\"] = tv4.validate(jsonResponse, schema);",
+											""
 										]
 									}
 								}
@@ -6575,6 +8634,124 @@
 					"_postman_isSubFolder": true
 				},
 				{
+					"name": "Delete an application",
+					"description": "",
+					"item": [
+						{
+							"name": "Delete organisation application",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "53921155-38cf-414a-bc39-f2db2e734706",
+										"type": "text/javascript",
+										"exec": [
+											"eval(globals.commonTests)();",
+											"",
+											"tests[\"Status code is 200\"] = responseCode.code = 200;",
+											""
+										]
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {},
+								"url": {
+									"raw": "{{hostname}}/api/organisations/{{organisationId}}/applications/{{applicationId}}",
+									"host": [
+										"{{hostname}}"
+									],
+									"path": [
+										"api",
+										"organisations",
+										"{{organisationId}}",
+										"applications",
+										"{{applicationId}}"
+									]
+								},
+								"description": ""
+							},
+							"response": []
+						},
+						{
+							"name": "Delete organisation",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "53921155-38cf-414a-bc39-f2db2e734706",
+										"type": "text/javascript",
+										"exec": [
+											"eval(globals.commonTests)();",
+											"",
+											"tests[\"Status code is 200\"] = responseCode.code = 200;",
+											""
+										]
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {},
+								"url": {
+									"raw": "{{hostname}}/api/organisations/{{organisationId}}",
+									"host": [
+										"{{hostname}}"
+									],
+									"path": [
+										"api",
+										"organisations",
+										"{{organisationId}}"
+									]
+								},
+								"description": ""
+							},
+							"response": []
+						}
+					],
+					"auth": {
+						"type": "basic",
+						"basic": [
+							{
+								"key": "password",
+								"value": "password",
+								"type": "string"
+							},
+							{
+								"key": "username",
+								"value": "{{organisationEmail}}",
+								"type": "string"
+							}
+						]
+					},
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "97530366-27c9-43bc-83cd-e96cfd416f84",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "c44f1b82-7b05-48e0-ab90-48ffd5c4735f",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					],
+					"_postman_isSubFolder": true
+				},
+				{
 					"name": "Delete a user",
 					"description": "",
 					"item": [
@@ -6584,13 +8761,30 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "3d1e5ef4-59be-4be3-826f-043b0491717d",
+										"id": "2ec2ad16-2295-4c40-ac62-15452d3b117e",
 										"type": "text/javascript",
 										"exec": [
 											"eval(globals.commonTests)();",
+											"const schema = {",
+											"  \"$id\": \"http://example.com/example.json\",",
+											"  \"type\": \"object\",",
+											"  \"definitions\": {},",
+											"  \"$schema\": \"http://json-schema.org/draft-07/schema#\",",
+											"  \"properties\": {",
+											"    \"status\": {",
+											"      \"$id\": \"/properties/status\",",
+											"      \"type\": \"string\"",
+											"    },",
+											"    \"data\": {",
+											"      \"$id\": \"/properties/data\",",
+											"      \"type\": \"null\"",
+											"    }",
+											"  }",
+											"};",
 											"",
-											"tests[\"Status code is 200\"] = responseCode.code = 200;",
-											""
+											"const jsonResponse = JSON.parse(responseBody);",
+											"tests[\"Status code is 200\"] = responseCode.code === 200",
+											"tests[\"Response schema is valid\"] = tv4.validate(jsonResponse, schema);"
 										]
 									}
 								}
@@ -6629,22 +8823,1374 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "1998edce-5b39-423e-98f3-6967ff3f0a16",
-								"type": "text/javascript",
 								"exec": [
 									""
-								]
+								],
+								"id": "1998edce-5b39-423e-98f3-6967ff3f0a16",
+								"type": "text/javascript"
 							}
 						},
 						{
 							"listen": "test",
 							"script": {
+								"exec": [
+									""
+								],
 								"id": "9f378bb3-9420-4bf6-812a-c5edf55bf065",
+								"type": "text/javascript"
+							}
+						}
+					],
+					"_postman_isSubFolder": true
+				}
+			]
+		},
+		{
+			"name": "Periods",
+			"description": "",
+			"item": [
+				{
+					"name": "Get all periods",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "607a8fc6-1425-4b03-92c7-c62f0540a2ea",
 								"type": "text/javascript",
 								"exec": [
+									"eval(globals.commonTests)();",
+									"",
+									"const schema = {",
+									"  \"$id\": \"http://example.com/example.json\",",
+									"  \"type\": \"object\",",
+									"  \"definitions\": {},",
+									"  \"$schema\": \"http://json-schema.org/draft-07/schema#\",",
+									"  \"properties\": {",
+									"    \"status\": {",
+									"      \"$id\": \"/properties/status\",",
+									"      \"type\": \"string\"",
+									"    },",
+									"    \"data\": {",
+									"      \"$id\": \"/properties/data\",",
+									"      \"type\": \"object\",",
+									"      \"properties\": {",
+									"        \"periods\": {",
+									"          \"$id\": \"/properties/data/properties/periods\",",
+									"          \"type\": \"array\",",
+									"          \"items\": {",
+									"            \"$id\": \"/properties/data/properties/periods/items\",",
+									"            \"type\": \"object\",",
+									"            \"properties\": {",
+									"              \"_id\": {",
+									"                \"$id\": \"/properties/data/properties/periods/items/properties/_id\",",
+									"                \"type\": \"string\"",
+									"              },",
+									"              \"name\": {",
+									"                \"$id\": \"/properties/data/properties/periods/items/properties/name\",",
+									"                \"type\": \"string\"",
+									"              },",
+									"              \"duration\": {",
+									"                \"$id\": \"/properties/data/properties/periods/items/properties/duration\",",
+									"                \"type\": \"integer\"",
+									"              }",
+									"            }",
+									"          }",
+									"        }",
+									"      }",
+									"    }",
+									"  }",
+									"};",
+									"",
+									"const jsonResponse = JSON.parse(responseBody);",
+									"tests[\"Response schema is valid\"] = tv4.validate(jsonResponse, schema);",
+									"",
+									"tests[\"Status code is 200\"] = responseCode.code = 200;",
 									""
 								]
 							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{oauthClientCredentialsToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "{{hostname}}/api/periods",
+							"host": [
+								"{{hostname}}"
+							],
+							"path": [
+								"api",
+								"periods"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Platforms",
+			"description": "",
+			"item": [
+				{
+					"name": "Get all platforms",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "b6caf2bc-b06d-40e3-b904-7b749194b5c3",
+								"type": "text/javascript",
+								"exec": [
+									"eval(globals.commonTests)();",
+									"",
+									"const schema = {",
+									"  \"$id\": \"http://example.com/example.json\",",
+									"  \"type\": \"object\",",
+									"  \"definitions\": {},",
+									"  \"$schema\": \"http://json-schema.org/draft-07/schema#\",",
+									"  \"properties\": {",
+									"    \"status\": {",
+									"      \"$id\": \"/properties/status\",",
+									"      \"type\": \"string\"",
+									"    },",
+									"    \"data\": {",
+									"      \"$id\": \"/properties/data\",",
+									"      \"type\": \"object\",",
+									"      \"properties\": {",
+									"        \"platforms\": {",
+									"          \"$id\": \"/properties/data/properties/platforms\",",
+									"          \"type\": \"array\",",
+									"          \"items\": {",
+									"            \"$id\": \"/properties/data/properties/platforms/items\",",
+									"            \"type\": \"object\",",
+									"            \"properties\": {",
+									"              \"_id\": {",
+									"                \"$id\": \"/properties/data/properties/platforms/items/properties/_id\",",
+									"                \"type\": \"string\"",
+									"              },",
+									"              \"name\": {",
+									"                \"$id\": \"/properties/data/properties/platforms/items/properties/name\",",
+									"                \"type\": \"string\"",
+									"              }",
+									"            }",
+									"          }",
+									"        }",
+									"      }",
+									"    }",
+									"  }",
+									"};",
+									"",
+									"const jsonResponse = JSON.parse(responseBody);",
+									"tests[\"Response schema is valid\"] = tv4.validate(jsonResponse, schema);",
+									"",
+									"tests[\"Status code is 200\"] = responseCode.code = 200;",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{oauthClientCredentialsToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "{{hostname}}/api/platforms",
+							"host": [
+								"{{hostname}}"
+							],
+							"path": [
+								"api",
+								"platforms"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Metrics",
+			"description": "",
+			"item": [
+				{
+					"name": "Create a new user",
+					"description": "Workflow to test creation of a new user",
+					"item": [
+						{
+							"name": "Add a user",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"pm.environment.set('userNumber', Math.floor(Math.random()*100000));"
+										],
+										"id": "25c77851-7eea-4148-bbc6-989dc6f98977",
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"postman.setGlobalVariable(\"commonTests\", () =>{",
+											"    ",
+											"  // The Content-Type must be JSON",
+											"  tests[\"Content-Type header includes application/json\"] = postman.getResponseHeader(\"Content-Type\").includes(\"application/json\");",
+											"",
+											"  // The response time must be less than 500 milliseconds",
+											"  tests[\"Response time is acceptable\"] = responseTime < 500;",
+											"",
+											"  // The response body must include an \"id\" property",
+											"  const jsonResponse = JSON.parse(responseBody);",
+											"  const jsendSchema = JSON.parse(environment.JSendBasicSchema);",
+											"  tests[\"Response matches JSend schema\"] = tv4.validate(jsonResponse, jsendSchema);",
+											"  tests[\"Response 'status' equals 'success'\"] = jsonResponse.status === \"success\";",
+											"})",
+											"",
+											"eval(globals.commonTests)();",
+											"",
+											"",
+											"const addUserResponse = JSON.parse(responseBody);",
+											"const addUserResponseSchema = {",
+											"  \"definitions\": {},",
+											"  \"$schema\": \"http://json-schema.org/draft-06/schema#\",",
+											"  \"$id\": \"https://digitalmonitor.tk/api/\",",
+											"  \"type\": \"object\",",
+											"  \"properties\": {",
+											"    \"status\": {",
+											"      \"$id\": \"/properties/status\",",
+											"      \"type\": \"string\"",
+											"    },",
+											"    \"data\": {",
+											"      \"$id\": \"/properties/data\",",
+											"      \"type\": \"object\",",
+											"      \"properties\": {",
+											"        \"user\": {",
+											"          \"$id\": \"/properties/data/properties/user\",",
+											"          \"type\": \"object\",",
+											"          \"properties\": {",
+											"            \"__v\": {",
+											"              \"$id\": \"/properties/data/properties/user/properties/__v\",",
+											"              \"type\": \"integer\"",
+											"            },",
+											"            \"email\": {",
+											"              \"$id\": \"/properties/data/properties/user/properties/email\",",
+											"              \"type\": \"string\"",
+											"            },",
+											"            \"firstName\": {",
+											"              \"$id\": \"/properties/data/properties/user/properties/firstName\",",
+											"              \"type\": \"string\"",
+											"            },",
+											"            \"lastName\": {",
+											"              \"$id\": \"/properties/data/properties/user/properties/lastName\",",
+											"              \"type\": \"string\"",
+											"            },",
+											"            \"_id\": {",
+											"              \"$id\": \"/properties/data/properties/user/properties/_id\",",
+											"              \"type\": \"string\"",
+											"            }",
+											"          },",
+											"          \"required\": [",
+											"            \"__v\",",
+											"            \"email\",",
+											"            \"firstName\",",
+											"            \"lastName\",",
+											"            \"_id\"",
+											"          ]",
+											"        },",
+											"        \"locations\": {",
+											"          \"$id\": \"/properties/data/properties/locations\",",
+											"          \"type\": \"array\",",
+											"          \"items\": {",
+											"            \"$id\": \"/properties/data/properties/locations/items\",",
+											"            \"type\": \"string\"",
+											"          }",
+											"        }",
+											"      },",
+											"      \"required\": [",
+											"        \"user\",",
+											"        \"locations\"",
+											"      ]",
+											"    }",
+											"  },",
+											"  \"required\": [",
+											"    \"status\",",
+											"    \"data\"",
+											"  ]",
+											"}",
+											"",
+											"tests[\"Status code is 201\"] = responseCode.code === 201;",
+											"tests[\"Response schema is valid\"] = tv4.validate(addUserResponse, addUserResponseSchema);",
+											"",
+											"pm.environment.set('userId', addUserResponse.data.user._id);",
+											"pm.environment.set('userEmail', addUserResponse.data.user.email);",
+											"",
+											"",
+											"",
+											"pm.sendRequest({",
+											"    url: environment.hostname + '/api/oauth2/token',",
+											"    method: 'POST',",
+											"    header: {",
+											"        'Authorization':'Basic ZG1pb3M6cGFzc3dvcmQ=',",
+											"        'content-type':'application/json'",
+											"    },",
+											"    body: {",
+											"        mode: 'raw',",
+											"        raw: JSON.stringify({",
+											"        \t\"grant_type\": \"password\",",
+											"        \t\"username\": addUserResponse.data.user.email,",
+											"        \t\"password\": \"password\"",
+											"        })",
+											"    }",
+											"}, function (err, res) {",
+											"    pm.environment.set(\"oauthResourceOwnerToken\", res.json().access_token);",
+											"});"
+										],
+										"id": "175b8577-1658-4470-a8dd-57dcc79c957b",
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "",
+										"value": ""
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"email\": \"user{{userNumber}}@mail.com\",\n\t\"password\": \"password\",\n\t\"firstName\": \"firstName{{userNumber}}\",\n\t\"lastName\": \"lastName{{userNumber}}\"\n}"
+								},
+								"url": {
+									"raw": "{{hostname}}/api/users",
+									"host": [
+										"{{hostname}}"
+									],
+									"path": [
+										"api",
+										"users"
+									]
+								},
+								"description": ""
+							},
+							"response": []
+						}
+					],
+					"auth": {
+						"type": "bearer",
+						"bearer": [
+							{
+								"key": "token",
+								"value": "{{oauthClientCredentialsToken}}",
+								"type": "string"
+							}
+						]
+					},
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"id": "02846f53-b612-4b18-89e5-4222f395c633",
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"id": "6311cc12-6636-44bb-9f98-b4b134d8db08",
+								"type": "text/javascript"
+							}
+						}
+					],
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Create a new usage log",
+					"description": "",
+					"item": [
+						{
+							"name": "Add usage log",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const timeNow = new Date().getTime();",
+											"",
+											"pm.environment.set(\"startTime\", timeNow-60000);",
+											"pm.environment.set(\"endTime\", timeNow);",
+											""
+										],
+										"id": "cb854f0d-c72b-480b-ba8a-8c70459991c1",
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"eval(globals.commonTests)();",
+											"",
+											"const schema = {",
+											"  \"definitions\": {},",
+											"  \"$schema\": \"http://json-schema.org/draft-06/schema#\",",
+											"  \"$id\": \"http://example.com/example.json\",",
+											"  \"type\": \"object\",",
+											"  \"properties\": {",
+											"    \"status\": {",
+											"      \"$id\": \"/properties/status\",",
+											"      \"type\": \"string\"",
+											"    },",
+											"    \"data\": {",
+											"      \"$id\": \"/properties/data\",",
+											"      \"type\": \"object\",",
+											"      \"properties\": {",
+											"        \"log\": {",
+											"          \"$id\": \"/properties/data/properties/log\",",
+											"          \"type\": \"object\",",
+											"          \"properties\": {",
+											"            \"__v\": {",
+											"              \"$id\": \"/properties/data/properties/log/properties/__v\",",
+											"              \"type\": \"integer\"",
+											"            },",
+											"            \"userId\": {",
+											"              \"$id\": \"/properties/data/properties/log/properties/userId\",",
+											"              \"type\": \"string\"",
+											"            },",
+											"            \"clientId\": {",
+											"              \"$id\": \"/properties/data/properties/log/properties/clientId\",",
+											"              \"type\": \"string\"",
+											"            },",
+											"            \"log\": {",
+											"              \"$id\": \"/properties/data/properties/log/properties/log\",",
+											"              \"type\": \"object\",",
+											"              \"properties\": {",
+											"                \"endTime\": {",
+											"                  \"$id\": \"/properties/data/properties/log/properties/log/properties/endTime\",",
+											"                  \"type\": \"string\"",
+											"                },",
+											"                \"startTime\": {",
+											"                  \"$id\": \"/properties/data/properties/log/properties/log/properties/startTime\",",
+											"                  \"type\": \"string\"",
+											"                }",
+											"              },",
+											"              \"required\": [",
+											"                \"endTime\",",
+											"                \"startTime\"",
+											"              ]",
+											"            },",
+											"            \"_id\": {",
+											"              \"$id\": \"/properties/data/properties/log/properties/_id\",",
+											"              \"type\": \"string\"",
+											"            }",
+											"          },",
+											"          \"required\": [",
+											"            \"__v\",",
+											"            \"userId\",",
+											"            \"clientId\",",
+											"            \"log\",",
+											"            \"_id\"",
+											"          ]",
+											"        },",
+											"        \"locations\": {",
+											"          \"$id\": \"/properties/data/properties/locations\",",
+											"          \"type\": \"array\",",
+											"          \"items\": {",
+											"            \"$id\": \"/properties/data/properties/locations/items\",",
+											"            \"type\": \"string\"",
+											"          }",
+											"        }",
+											"      },",
+											"      \"required\": [",
+											"        \"log\",",
+											"        \"locations\"",
+											"      ]",
+											"    }",
+											"  },",
+											"  \"required\": [",
+											"    \"status\",",
+											"    \"data\"",
+											"  ]",
+											"};",
+											"",
+											"const responseJson = JSON.parse(responseBody);",
+											"",
+											"tests[\"Status code is 201\"] = responseCode.code === 201;",
+											"tests[\"Response schema is valid\"] = tv4.validate(responseJson, schema);",
+											"",
+											"pm.environment.set(\"usageLogId\", responseJson.data.log._id);"
+										],
+										"id": "2e3b55ff-9398-41d8-9e89-1eeab64115a6",
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{oauthResourceOwnerToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"startTime\": \"{{startTime}}\",\n  \"endTime\": \"{{endTime}}\"\n}"
+								},
+								"url": {
+									"raw": "{{hostname}}/api/usage-logs/",
+									"host": [
+										"{{hostname}}"
+									],
+									"path": [
+										"api",
+										"usage-logs",
+										""
+									]
+								},
+								"description": null
+							},
+							"response": []
+						},
+						{
+							"name": "Add usage log - /users",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const timeNow = new Date().getTime();",
+											"",
+											"pm.environment.set(\"startTime\", timeNow-60000);",
+											"pm.environment.set(\"endTime\", timeNow);",
+											""
+										],
+										"id": "cb854f0d-c72b-480b-ba8a-8c70459991c1",
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"eval(globals.commonTests)();",
+											"",
+											"const schema = {",
+											"  \"definitions\": {},",
+											"  \"$schema\": \"http://json-schema.org/draft-06/schema#\",",
+											"  \"$id\": \"http://example.com/example.json\",",
+											"  \"type\": \"object\",",
+											"  \"properties\": {",
+											"    \"status\": {",
+											"      \"$id\": \"/properties/status\",",
+											"      \"type\": \"string\"",
+											"    },",
+											"    \"data\": {",
+											"      \"$id\": \"/properties/data\",",
+											"      \"type\": \"object\",",
+											"      \"properties\": {",
+											"        \"log\": {",
+											"          \"$id\": \"/properties/data/properties/log\",",
+											"          \"type\": \"object\",",
+											"          \"properties\": {",
+											"            \"__v\": {",
+											"              \"$id\": \"/properties/data/properties/log/properties/__v\",",
+											"              \"type\": \"integer\"",
+											"            },",
+											"            \"userId\": {",
+											"              \"$id\": \"/properties/data/properties/log/properties/userId\",",
+											"              \"type\": \"string\"",
+											"            },",
+											"            \"clientId\": {",
+											"              \"$id\": \"/properties/data/properties/log/properties/clientId\",",
+											"              \"type\": \"string\"",
+											"            },",
+											"            \"log\": {",
+											"              \"$id\": \"/properties/data/properties/log/properties/log\",",
+											"              \"type\": \"object\",",
+											"              \"properties\": {",
+											"                \"endTime\": {",
+											"                  \"$id\": \"/properties/data/properties/log/properties/log/properties/endTime\",",
+											"                  \"type\": \"string\"",
+											"                },",
+											"                \"startTime\": {",
+											"                  \"$id\": \"/properties/data/properties/log/properties/log/properties/startTime\",",
+											"                  \"type\": \"string\"",
+											"                }",
+											"              },",
+											"              \"required\": [",
+											"                \"endTime\",",
+											"                \"startTime\"",
+											"              ]",
+											"            },",
+											"            \"_id\": {",
+											"              \"$id\": \"/properties/data/properties/log/properties/_id\",",
+											"              \"type\": \"string\"",
+											"            }",
+											"          },",
+											"          \"required\": [",
+											"            \"__v\",",
+											"            \"userId\",",
+											"            \"clientId\",",
+											"            \"log\",",
+											"            \"_id\"",
+											"          ]",
+											"        },",
+											"        \"locations\": {",
+											"          \"$id\": \"/properties/data/properties/locations\",",
+											"          \"type\": \"array\",",
+											"          \"items\": {",
+											"            \"$id\": \"/properties/data/properties/locations/items\",",
+											"            \"type\": \"string\"",
+											"          }",
+											"        }",
+											"      },",
+											"      \"required\": [",
+											"        \"log\",",
+											"        \"locations\"",
+											"      ]",
+											"    }",
+											"  },",
+											"  \"required\": [",
+											"    \"status\",",
+											"    \"data\"",
+											"  ]",
+											"};",
+											"",
+											"const responseJson = JSON.parse(responseBody);",
+											"",
+											"tests[\"Status code is 201\"] = responseCode.code === 201;",
+											"tests[\"Response schema is valid\"] = tv4.validate(responseJson, schema);",
+											"",
+											"pm.environment.set(\"usageLogId\", responseJson.data.log._id);"
+										],
+										"id": "2e3b55ff-9398-41d8-9e89-1eeab64115a6",
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{oauthResourceOwnerToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"startTime\": \"{{startTime}}\",\n  \"endTime\": \"{{endTime}}\"\n}"
+								},
+								"url": {
+									"raw": "{{hostname}}/api/users/{{userId}}/usage-logs/",
+									"host": [
+										"{{hostname}}"
+									],
+									"path": [
+										"api",
+										"users",
+										"{{userId}}",
+										"usage-logs",
+										""
+									]
+								},
+								"description": null
+							},
+							"response": []
+						}
+					],
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Get aggregated metrics",
+					"description": "",
+					"item": [
+						{
+							"name": "Get aggregated metrics",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "2b43d845-dcf2-4975-85d2-f21337db7593",
+										"type": "text/javascript",
+										"exec": [
+											"eval(globals.commonTests)();",
+											"const schema = {",
+											"  \"$id\": \"http://example.com/example.json\",",
+											"  \"type\": \"object\",",
+											"  \"definitions\": {},",
+											"  \"$schema\": \"http://json-schema.org/draft-07/schema#\",",
+											"  \"properties\": {",
+											"    \"status\": {",
+											"      \"$id\": \"/properties/status\",",
+											"      \"type\": \"string\"",
+											"    },",
+											"    \"data\": {",
+											"      \"$id\": \"/properties/data\",",
+											"      \"type\": \"object\",",
+											"      \"properties\": {",
+											"        \"overall\": {",
+											"          \"$id\": \"/properties/data/properties/overall\",",
+											"          \"type\": \"object\",",
+											"          \"properties\": {",
+											"            \"duration\": {",
+											"              \"$id\": \"/properties/data/properties/overall/properties/duration\",",
+											"              \"type\": \"integer\"",
+											"            }",
+											"          }",
+											"        },",
+											"        \"applications\": {",
+											"          \"$id\": \"/properties/data/properties/applications\",",
+											"          \"type\": \"array\",",
+											"          \"items\": {",
+											"            \"$id\": \"/properties/data/properties/applications/items\",",
+											"            \"type\": \"object\",",
+											"            \"properties\": {",
+											"              \"application\": {",
+											"                \"$id\": \"/properties/data/properties/applications/items/properties/application\",",
+											"                \"type\": \"object\",",
+											"                \"properties\": {",
+											"                  \"_id\": {",
+											"                    \"$id\": \"/properties/data/properties/applications/items/properties/application/properties/_id\",",
+											"                    \"type\": \"string\"",
+											"                  },",
+											"                  \"name\": {",
+											"                    \"$id\": \"/properties/data/properties/applications/items/properties/application/properties/name\",",
+											"                    \"type\": \"string\"",
+											"                  },",
+											"                  \"__v\": {",
+											"                    \"$id\": \"/properties/data/properties/applications/items/properties/application/properties/__v\",",
+											"                    \"type\": \"integer\"",
+											"                  },",
+											"                  \"clientIds\": {",
+											"                    \"$id\": \"/properties/data/properties/applications/items/properties/application/properties/clientIds\",",
+											"                    \"type\": \"array\",",
+											"                    \"items\": {",
+											"                      \"$id\": \"/properties/data/properties/applications/items/properties/application/properties/clientIds/items\",",
+											"                      \"type\": \"string\"",
+											"                    }",
+											"                  }",
+											"                }",
+											"              },",
+											"              \"duration\": {",
+											"                \"$id\": \"/properties/data/properties/applications/items/properties/duration\",",
+											"                \"type\": \"integer\"",
+											"              }",
+											"            }",
+											"          }",
+											"        },",
+											"        \"platforms\": {",
+											"          \"$id\": \"/properties/data/properties/platforms\",",
+											"          \"type\": \"array\",",
+											"          \"items\": {",
+											"            \"$id\": \"/properties/data/properties/platforms/items\",",
+											"            \"type\": \"object\",",
+											"            \"properties\": {",
+											"              \"platform\": {",
+											"                \"$id\": \"/properties/data/properties/platforms/items/properties/platform\",",
+											"                \"type\": \"object\",",
+											"                \"properties\": {",
+											"                  \"_id\": {",
+											"                    \"$id\": \"/properties/data/properties/platforms/items/properties/platform/properties/_id\",",
+											"                    \"type\": \"string\"",
+											"                  },",
+											"                  \"name\": {",
+											"                    \"$id\": \"/properties/data/properties/platforms/items/properties/platform/properties/name\",",
+											"                    \"type\": \"string\"",
+											"                  }",
+											"                }",
+											"              },",
+											"              \"duration\": {",
+											"                \"$id\": \"/properties/data/properties/platforms/items/properties/duration\",",
+											"                \"type\": \"integer\"",
+											"              }",
+											"            }",
+											"          }",
+											"        }",
+											"      }",
+											"    }",
+											"  }",
+											"}",
+											"",
+											"const jsonResponse = JSON.parse(responseBody);",
+											"tests[\"Status code is 200\"] = responseCode.code === 200;",
+											"tests[\"Response schema is valid\"] = tv4.validate(jsonResponse, schema);"
+										]
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{oauthResourceOwnerToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {},
+								"url": {
+									"raw": "{{hostname}}/api/users/{{userId}}/metrics/",
+									"host": [
+										"{{hostname}}"
+									],
+									"path": [
+										"api",
+										"users",
+										"{{userId}}",
+										"metrics",
+										""
+									]
+								},
+								"description": ""
+							},
+							"response": []
+						}
+					],
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Get application metrics",
+					"description": "",
+					"item": [
+						{
+							"name": "Get application metrics",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "d4ede4f2-ec7d-48b4-86ee-d4829398c2fb",
+										"type": "text/javascript",
+										"exec": [
+											"eval(globals.commonTests)();",
+											"const schema = {",
+											"  \"$id\": \"http://example.com/example.json\",",
+											"  \"type\": \"object\",",
+											"  \"definitions\": {},",
+											"  \"$schema\": \"http://json-schema.org/draft-07/schema#\",",
+											"  \"properties\": {",
+											"    \"status\": {",
+											"      \"$id\": \"/properties/status\",",
+											"      \"type\": \"string\"",
+											"    },",
+											"    \"data\": {",
+											"      \"$id\": \"/properties/data\",",
+											"      \"type\": \"array\",",
+											"      \"items\": {",
+											"        \"$id\": \"/properties/data/items\",",
+											"        \"type\": \"object\",",
+											"        \"properties\": {",
+											"          \"application\": {",
+											"            \"$id\": \"/properties/data/items/properties/application\",",
+											"            \"type\": \"object\",",
+											"            \"properties\": {",
+											"              \"_id\": {",
+											"                \"$id\": \"/properties/data/items/properties/application/properties/_id\",",
+											"                \"type\": \"string\"",
+											"              },",
+											"              \"name\": {",
+											"                \"$id\": \"/properties/data/items/properties/application/properties/name\",",
+											"                \"type\": \"string\"",
+											"              },",
+											"              \"__v\": {",
+											"                \"$id\": \"/properties/data/items/properties/application/properties/__v\",",
+											"                \"type\": \"integer\"",
+											"              },",
+											"              \"clientIds\": {",
+											"                \"$id\": \"/properties/data/items/properties/application/properties/clientIds\",",
+											"                \"type\": \"array\",",
+											"                \"items\": {",
+											"                  \"$id\": \"/properties/data/items/properties/application/properties/clientIds/items\",",
+											"                  \"type\": \"string\"",
+											"                }",
+											"              }",
+											"            }",
+											"          },",
+											"          \"duration\": {",
+											"            \"$id\": \"/properties/data/items/properties/duration\",",
+											"            \"type\": \"integer\"",
+											"          }",
+											"        }",
+											"      }",
+											"    }",
+											"  }",
+											"}",
+											"",
+											"const jsonResponse = JSON.parse(responseBody);",
+											"tests[\"Status code is 200\"] = responseCode.code === 200;",
+											"tests[\"Response schema is valid\"] = tv4.validate(jsonResponse, schema);"
+										]
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{oauthResourceOwnerToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {},
+								"url": {
+									"raw": "{{hostname}}/api/users/{{userId}}/metrics/applications",
+									"host": [
+										"{{hostname}}"
+									],
+									"path": [
+										"api",
+										"users",
+										"{{userId}}",
+										"metrics",
+										"applications"
+									]
+								},
+								"description": ""
+							},
+							"response": []
+						},
+						{
+							"name": "Get application metrics by Id",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "36d39162-d4a9-4bdd-86d9-285e2a7aa98a",
+										"type": "text/javascript",
+										"exec": [
+											"eval(globals.commonTests)();",
+											"const schema = {",
+											"  \"$id\": \"http://example.com/example.json\",",
+											"  \"type\": \"object\",",
+											"  \"definitions\": {},",
+											"  \"$schema\": \"http://json-schema.org/draft-07/schema#\",",
+											"  \"properties\": {",
+											"    \"status\": {",
+											"      \"$id\": \"/properties/status\",",
+											"      \"type\": \"string\"",
+											"    },",
+											"    \"data\": {",
+											"      \"$id\": \"/properties/data\",",
+											"      \"type\": \"object\",",
+											"      \"properties\": {",
+											"        \"platforms\": {",
+											"          \"$id\": \"/properties/data/properties/platforms\",",
+											"          \"type\": \"array\",",
+											"          \"items\": {",
+											"            \"$id\": \"/properties/data/properties/platforms/items\",",
+											"            \"type\": \"object\",",
+											"            \"properties\": {",
+											"              \"platform\": {",
+											"                \"$id\": \"/properties/data/properties/platforms/items/properties/platform\",",
+											"                \"type\": \"object\",",
+											"                \"properties\": {",
+											"                  \"_id\": {",
+											"                    \"$id\": \"/properties/data/properties/platforms/items/properties/platform/properties/_id\",",
+											"                    \"type\": \"string\"",
+											"                  },",
+											"                  \"name\": {",
+											"                    \"$id\": \"/properties/data/properties/platforms/items/properties/platform/properties/name\",",
+											"                    \"type\": \"string\"",
+											"                  }",
+											"                }",
+											"              },",
+											"              \"duration\": {",
+											"                \"$id\": \"/properties/data/properties/platforms/items/properties/duration\",",
+											"                \"type\": \"integer\"",
+											"              }",
+											"            }",
+											"          }",
+											"        }",
+											"      }",
+											"    }",
+											"  }",
+											"}",
+											"",
+											"const jsonResponse = JSON.parse(responseBody);",
+											"tests[\"Status code is 200\"] = responseCode.code === 200;",
+											"tests[\"Response schema is valid\"] = tv4.validate(jsonResponse, schema);"
+										]
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{oauthResourceOwnerToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {},
+								"url": {
+									"raw": "{{hostname}}/api/users/{{userId}}/metrics/applications/{{applicationId}}",
+									"host": [
+										"{{hostname}}"
+									],
+									"path": [
+										"api",
+										"users",
+										"{{userId}}",
+										"metrics",
+										"applications",
+										"{{applicationId}}"
+									]
+								},
+								"description": ""
+							},
+							"response": []
+						}
+					],
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Get platform metrics",
+					"description": "",
+					"item": [
+						{
+							"name": "Get platform metrics",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "5b51b137-40bb-4fef-b6f3-48fbe045901f",
+										"type": "text/javascript",
+										"exec": [
+											"eval(globals.commonTests)();",
+											"const schema = {",
+											"  \"$id\": \"http://example.com/example.json\",",
+											"  \"type\": \"object\",",
+											"  \"definitions\": {},",
+											"  \"$schema\": \"http://json-schema.org/draft-07/schema#\",",
+											"  \"properties\": {",
+											"    \"status\": {",
+											"      \"$id\": \"/properties/status\",",
+											"      \"type\": \"string\"",
+											"    },",
+											"    \"data\": {",
+											"      \"$id\": \"/properties/data\",",
+											"      \"type\": \"object\",",
+											"      \"properties\": {",
+											"        \"platforms\": {",
+											"          \"$id\": \"/properties/data/properties/platforms\",",
+											"          \"type\": \"array\",",
+											"          \"items\": {",
+											"            \"$id\": \"/properties/data/properties/platforms/items\",",
+											"            \"type\": \"object\",",
+											"            \"properties\": {",
+											"              \"platform\": {",
+											"                \"$id\": \"/properties/data/properties/platforms/items/properties/platform\",",
+											"                \"type\": \"object\",",
+											"                \"properties\": {",
+											"                  \"_id\": {",
+											"                    \"$id\": \"/properties/data/properties/platforms/items/properties/platform/properties/_id\",",
+											"                    \"type\": \"string\"",
+											"                  },",
+											"                  \"name\": {",
+											"                    \"$id\": \"/properties/data/properties/platforms/items/properties/platform/properties/name\",",
+											"                    \"type\": \"string\"",
+											"                  }",
+											"                }",
+											"              },",
+											"              \"duration\": {",
+											"                \"$id\": \"/properties/data/properties/platforms/items/properties/duration\",",
+											"                \"type\": \"integer\"",
+											"              }",
+											"            }",
+											"          }",
+											"        }",
+											"      }",
+											"    }",
+											"  }",
+											"}",
+											"",
+											"const jsonResponse = JSON.parse(responseBody);",
+											"tests[\"Status code is 200\"] = responseCode.code === 200;",
+											"tests[\"Response schema is valid\"] = tv4.validate(jsonResponse, schema);"
+										]
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{oauthResourceOwnerToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {},
+								"url": {
+									"raw": "{{hostname}}/api/users/{{userId}}/metrics/platforms",
+									"host": [
+										"{{hostname}}"
+									],
+									"path": [
+										"api",
+										"users",
+										"{{userId}}",
+										"metrics",
+										"platforms"
+									]
+								},
+								"description": ""
+							},
+							"response": []
+						},
+						{
+							"name": "Get platform metrics by id",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "51fa89f0-7f24-47da-af0d-d72d86e6e7b2",
+										"type": "text/javascript",
+										"exec": [
+											"eval(globals.commonTests)();",
+											"const schema = {",
+											"  \"$id\": \"http://example.com/example.json\",",
+											"  \"type\": \"object\",",
+											"  \"definitions\": {},",
+											"  \"$schema\": \"http://json-schema.org/draft-07/schema#\",",
+											"  \"properties\": {",
+											"    \"status\": {",
+											"      \"$id\": \"/properties/status\",",
+											"      \"type\": \"string\"",
+											"    },",
+											"    \"data\": {",
+											"      \"$id\": \"/properties/data\",",
+											"      \"type\": \"array\",",
+											"      \"items\": {",
+											"        \"$id\": \"/properties/data/items\",",
+											"        \"type\": \"object\",",
+											"        \"properties\": {",
+											"          \"application\": {",
+											"            \"$id\": \"/properties/data/items/properties/application\",",
+											"            \"type\": \"object\",",
+											"            \"properties\": {",
+											"              \"_id\": {",
+											"                \"$id\": \"/properties/data/items/properties/application/properties/_id\",",
+											"                \"type\": \"string\"",
+											"              },",
+											"              \"name\": {",
+											"                \"$id\": \"/properties/data/items/properties/application/properties/name\",",
+											"                \"type\": \"string\"",
+											"              },",
+											"              \"__v\": {",
+											"                \"$id\": \"/properties/data/items/properties/application/properties/__v\",",
+											"                \"type\": \"integer\"",
+											"              },",
+											"              \"clientIds\": {",
+											"                \"$id\": \"/properties/data/items/properties/application/properties/clientIds\",",
+											"                \"type\": \"array\",",
+											"                \"items\": {",
+											"                  \"$id\": \"/properties/data/items/properties/application/properties/clientIds/items\",",
+											"                  \"type\": \"string\"",
+											"                }",
+											"              }",
+											"            }",
+											"          },",
+											"          \"duration\": {",
+											"            \"$id\": \"/properties/data/items/properties/duration\",",
+											"            \"type\": \"integer\"",
+											"          }",
+											"        }",
+											"      }",
+											"    }",
+											"  }",
+											"}",
+											"",
+											"const jsonResponse = JSON.parse(responseBody);",
+											"tests[\"Status code is 200\"] = responseCode.code === 200;",
+											"tests[\"Response schema is valid\"] = tv4.validate(jsonResponse, schema);"
+										]
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{oauthResourceOwnerToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {},
+								"url": {
+									"raw": "{{hostname}}/api/users/{{userId}}/metrics/platforms/{{platformId}}",
+									"host": [
+										"{{hostname}}"
+									],
+									"path": [
+										"api",
+										"users",
+										"{{userId}}",
+										"metrics",
+										"platforms",
+										"{{platformId}}"
+									]
+								},
+								"description": ""
+							},
+							"response": []
+						}
+					],
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Get overall metrics",
+					"description": "",
+					"item": [
+						{
+							"name": "Get overall metrics",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "186bf799-e510-41b0-9027-adba4bf513f0",
+										"type": "text/javascript",
+										"exec": [
+											"eval(globals.commonTests)();",
+											"const schema = {",
+											"  \"$id\": \"http://example.com/example.json\",",
+											"  \"type\": \"object\",",
+											"  \"definitions\": {},",
+											"  \"$schema\": \"http://json-schema.org/draft-07/schema#\",",
+											"  \"properties\": {",
+											"    \"status\": {",
+											"      \"$id\": \"/properties/status\",",
+											"      \"type\": \"string\"",
+											"    },",
+											"    \"data\": {",
+											"      \"$id\": \"/properties/data\",",
+											"      \"type\": \"object\",",
+											"      \"properties\": {",
+											"        \"duration\": {",
+											"          \"$id\": \"/properties/data/properties/duration\",",
+											"          \"type\": \"integer\"",
+											"        }",
+											"      }",
+											"    }",
+											"  }",
+											"}",
+											"",
+											"const jsonResponse = JSON.parse(responseBody);",
+											"tests[\"Status code is 200\"] = responseCode.code === 200;",
+											"tests[\"Response schema is valid\"] = tv4.validate(jsonResponse, schema);"
+										]
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{oauthResourceOwnerToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {},
+								"url": {
+									"raw": "{{hostname}}/api/users/{{userId}}/metrics/overall",
+									"host": [
+										"{{hostname}}"
+									],
+									"path": [
+										"api",
+										"users",
+										"{{userId}}",
+										"metrics",
+										"overall"
+									]
+								},
+								"description": ""
+							},
+							"response": []
 						}
 					],
 					"_postman_isSubFolder": true

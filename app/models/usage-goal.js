@@ -3,7 +3,7 @@ const UsageLog = require('app/models/usage-log');
 const Period = require('app/models/period');
 const logger = require('app/utils/logger');
 const UsageGoalSchema = new mongoose.Schema({
-  applicationId: {
+  application: {
     type: mongoose.Schema.ObjectId,
     ref: 'Application'
   },
@@ -48,11 +48,11 @@ UsageGoalSchema.methods.getProgress = async function(userId){
     logsWithClients.push({log: log, client: client})
   }
 
-  if(this.applicationId){
-    logsWithClients = logsWithClients.filter(e => String(e.client.applicationId) === String(this.applicationId))
+  if(this.application){
+    logsWithClients = logsWithClients.filter(e => String(e.client.applicationId) === String(this.application._id))
   }
   if(this.platform){
-    logsWithClients = logsWithClients.filter(e => String(e.client.platform) === String(this.platform))
+    logsWithClients = logsWithClients.filter(e => String(e.client.platform) === String(this.platform._id))
   }
 
 
