@@ -8846,6 +8846,1397 @@
 			]
 		},
 		{
+			"name": "Monitoring Exceptions",
+			"description": "",
+			"item": [
+				{
+					"name": "Create a new user",
+					"description": "Workflow to test creation of a new user",
+					"item": [
+						{
+							"name": "Add a user",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"pm.environment.set('userNumber', Math.floor(Math.random()*100000));"
+										],
+										"id": "25c77851-7eea-4148-bbc6-989dc6f98977",
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"postman.setGlobalVariable(\"commonTests\", () =>{",
+											"    ",
+											"  // The Content-Type must be JSON",
+											"  tests[\"Content-Type header includes application/json\"] = postman.getResponseHeader(\"Content-Type\").includes(\"application/json\");",
+											"",
+											"  // The response time must be less than 500 milliseconds",
+											"  tests[\"Response time is acceptable\"] = responseTime < 500;",
+											"",
+											"  // The response body must include an \"id\" property",
+											"  const jsonResponse = JSON.parse(responseBody);",
+											"  const jsendSchema = JSON.parse(environment.JSendBasicSchema);",
+											"  tests[\"Response matches JSend schema\"] = tv4.validate(jsonResponse, jsendSchema);",
+											"  tests[\"Response 'status' equals 'success'\"] = jsonResponse.status === \"success\";",
+											"})",
+											"",
+											"eval(globals.commonTests)();",
+											"",
+											"",
+											"const addUserResponse = JSON.parse(responseBody);",
+											"const addUserResponseSchema = {",
+											"  \"definitions\": {},",
+											"  \"$schema\": \"http://json-schema.org/draft-06/schema#\",",
+											"  \"$id\": \"https://digitalmonitor.tk/api/\",",
+											"  \"type\": \"object\",",
+											"  \"properties\": {",
+											"    \"status\": {",
+											"      \"$id\": \"/properties/status\",",
+											"      \"type\": \"string\"",
+											"    },",
+											"    \"data\": {",
+											"      \"$id\": \"/properties/data\",",
+											"      \"type\": \"object\",",
+											"      \"properties\": {",
+											"        \"user\": {",
+											"          \"$id\": \"/properties/data/properties/user\",",
+											"          \"type\": \"object\",",
+											"          \"properties\": {",
+											"            \"__v\": {",
+											"              \"$id\": \"/properties/data/properties/user/properties/__v\",",
+											"              \"type\": \"integer\"",
+											"            },",
+											"            \"email\": {",
+											"              \"$id\": \"/properties/data/properties/user/properties/email\",",
+											"              \"type\": \"string\"",
+											"            },",
+											"            \"firstName\": {",
+											"              \"$id\": \"/properties/data/properties/user/properties/firstName\",",
+											"              \"type\": \"string\"",
+											"            },",
+											"            \"lastName\": {",
+											"              \"$id\": \"/properties/data/properties/user/properties/lastName\",",
+											"              \"type\": \"string\"",
+											"            },",
+											"            \"_id\": {",
+											"              \"$id\": \"/properties/data/properties/user/properties/_id\",",
+											"              \"type\": \"string\"",
+											"            }",
+											"          },",
+											"          \"required\": [",
+											"            \"__v\",",
+											"            \"email\",",
+											"            \"firstName\",",
+											"            \"lastName\",",
+											"            \"_id\"",
+											"          ]",
+											"        },",
+											"        \"locations\": {",
+											"          \"$id\": \"/properties/data/properties/locations\",",
+											"          \"type\": \"array\",",
+											"          \"items\": {",
+											"            \"$id\": \"/properties/data/properties/locations/items\",",
+											"            \"type\": \"string\"",
+											"          }",
+											"        }",
+											"      },",
+											"      \"required\": [",
+											"        \"user\",",
+											"        \"locations\"",
+											"      ]",
+											"    }",
+											"  },",
+											"  \"required\": [",
+											"    \"status\",",
+											"    \"data\"",
+											"  ]",
+											"}",
+											"",
+											"tests[\"Status code is 201\"] = responseCode.code === 201;",
+											"tests[\"Response schema is valid\"] = tv4.validate(addUserResponse, addUserResponseSchema);",
+											"",
+											"pm.environment.set('userId', addUserResponse.data.user._id);",
+											"pm.environment.set('userEmail', addUserResponse.data.user.email);",
+											"",
+											"",
+											"",
+											"pm.sendRequest({",
+											"    url: environment.hostname + '/api/oauth2/token',",
+											"    method: 'POST',",
+											"    header: {",
+											"        'Authorization':'Basic ZG1pb3M6cGFzc3dvcmQ=',",
+											"        'content-type':'application/json'",
+											"    },",
+											"    body: {",
+											"        mode: 'raw',",
+											"        raw: JSON.stringify({",
+											"        \t\"grant_type\": \"password\",",
+											"        \t\"username\": addUserResponse.data.user.email,",
+											"        \t\"password\": \"password\"",
+											"        })",
+											"    }",
+											"}, function (err, res) {",
+											"    pm.environment.set(\"oauthResourceOwnerToken\", res.json().access_token);",
+											"});"
+										],
+										"id": "175b8577-1658-4470-a8dd-57dcc79c957b",
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{oauthClientCredentialsToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "",
+										"value": ""
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"email\": \"user{{userNumber}}@mail.com\",\n\t\"password\": \"password\",\n\t\"firstName\": \"firstName{{userNumber}}\",\n\t\"lastName\": \"lastName{{userNumber}}\"\n}"
+								},
+								"url": {
+									"raw": "{{hostname}}/api/users",
+									"host": [
+										"{{hostname}}"
+									],
+									"path": [
+										"api",
+										"users"
+									]
+								},
+								"description": ""
+							},
+							"response": []
+						}
+					],
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Create a new application",
+					"description": "",
+					"item": [
+						{
+							"name": "Add an organisation",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"pm.environment.set('organisationNumber', Math.floor(Math.random()*100000));"
+										],
+										"id": "a741d381-e8df-4ebf-8748-f243c2e049f5",
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"eval(globals.commonTests)();",
+											"",
+											"tests[\"Status code is 201\"] = responseCode.code === 201;",
+											"",
+											"const jsonResponse = JSON.parse(responseBody);",
+											"const schema = {",
+											"  \"definitions\": {},",
+											"  \"$schema\": \"http://json-schema.org/draft-06/schema#\",",
+											"  \"$id\": \"https://digitalmonitor.tk/api/\",",
+											"  \"type\": \"object\",",
+											"  \"properties\": {",
+											"    \"status\": {",
+											"      \"$id\": \"/properties/status\",",
+											"      \"type\": \"string\"",
+											"    },",
+											"    \"data\": {",
+											"      \"$id\": \"/properties/data\",",
+											"      \"type\": \"object\",",
+											"      \"properties\": {",
+											"        \"organisation\": {",
+											"          \"$id\": \"/properties/data/properties/organisation\",",
+											"          \"type\": \"object\",",
+											"          \"properties\": {",
+											"            \"__v\": {",
+											"              \"$id\": \"/properties/data/properties/organisation/properties/__v\",",
+											"              \"type\": \"integer\"",
+											"            },",
+											"            \"name\": {",
+											"              \"$id\": \"/properties/data/properties/organisation/properties/name\",",
+											"              \"type\": \"string\"",
+											"            },",
+											"            \"email\": {",
+											"              \"$id\": \"/properties/data/properties/organisation/properties/email\",",
+											"              \"type\": \"string\"",
+											"            },",
+											"            \"_id\": {",
+											"              \"$id\": \"/properties/data/properties/organisation/properties/_id\",",
+											"              \"type\": \"string\"",
+											"            },",
+											"            \"applicationIds\": {",
+											"              \"$id\": \"/properties/data/properties/organisation/properties/applications\",",
+											"              \"type\": \"array\",",
+											"              \"items\": {",
+											"                \"title\": \"Empty Object\",",
+											"                \"description\": \"Accepts anything iff it's valid JSON.\"",
+											"              }",
+											"            }",
+											"          },",
+											"          \"required\": [",
+											"            \"__v\",",
+											"            \"name\",",
+											"            \"email\",",
+											"            \"_id\",",
+											"            \"applicationIds\"",
+											"          ]",
+											"        },",
+											"        \"locations\": {",
+											"          \"$id\": \"/properties/data/properties/locations\",",
+											"          \"type\": \"array\",",
+											"          \"items\": {",
+											"            \"$id\": \"/properties/data/properties/locations/items\",",
+											"            \"type\": \"string\"",
+											"          }",
+											"        }",
+											"      },",
+											"      \"required\": [",
+											"        \"organisation\",",
+											"        \"locations\"",
+											"      ]",
+											"    }",
+											"  },",
+											"  \"required\": [",
+											"    \"status\",",
+											"    \"data\"",
+											"  ]",
+											"};",
+											"tests[\"Response schema is valid\"] = tv4.validate(jsonResponse, schema);",
+											"",
+											"pm.environment.set(\"organisationId\",jsonResponse.data.organisation._id);",
+											"pm.environment.set(\"organisationEmail\", jsonResponse.data.organisation.email);"
+										],
+										"id": "e5d7e789-af95-4e49-9121-1b734398fffe",
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{oauthClientCredentialsToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"name\": \"organisation{{organisationNumber}}\",\n\t\"email\": \"organisation{{organisationNumber}}@mail.com\",\n\t\"password\": \"password\"\n}"
+								},
+								"url": {
+									"raw": "{{hostname}}/api/organisations",
+									"host": [
+										"{{hostname}}"
+									],
+									"path": [
+										"api",
+										"organisations"
+									]
+								},
+								"description": ""
+							},
+							"response": []
+						},
+						{
+							"name": "Add an organisation application",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"pm.environment.set('applicationNumber', Math.floor(Math.random()*100000));"
+										],
+										"id": "ccf9fb65-0007-40a6-8e29-12e1b5906075",
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const schema = {",
+											"  \"definitions\": {},",
+											"  \"$schema\": \"http://json-schema.org/draft-06/schema#\",",
+											"  \"$id\": \"https://digitalmonitor.tk/api/\",",
+											"  \"type\": \"object\",",
+											"  \"properties\": {",
+											"    \"status\": {",
+											"      \"$id\": \"/properties/status\",",
+											"      \"type\": \"string\"",
+											"    },",
+											"    \"data\": {",
+											"      \"$id\": \"/properties/data\",",
+											"      \"type\": \"object\",",
+											"      \"properties\": {",
+											"        \"application\": {",
+											"          \"$id\": \"/properties/data/properties/application\",",
+											"          \"type\": \"object\",",
+											"          \"properties\": {",
+											"            \"__v\": {",
+											"              \"$id\": \"/properties/data/properties/application/properties/__v\",",
+											"              \"type\": \"integer\"",
+											"            },",
+											"            \"name\": {",
+											"              \"$id\": \"/properties/data/properties/application/properties/name\",",
+											"              \"type\": \"string\"",
+											"            },",
+											"            \"_id\": {",
+											"              \"$id\": \"/properties/data/properties/application/properties/_id\",",
+											"              \"type\": \"string\"",
+											"            },",
+											"            \"clientIds\": {",
+											"              \"$id\": \"/properties/data/properties/application/properties/clients\",",
+											"              \"type\": \"array\",",
+											"              \"items\": {",
+											"                \"title\": \"Empty Object\",",
+											"                \"description\": \"Accepts anything iff it's valid JSON.\"",
+											"              }",
+											"            }",
+											"          },",
+											"          \"required\": [",
+											"            \"__v\",",
+											"            \"name\",",
+											"            \"_id\",",
+											"            \"clientIds\"",
+											"          ]",
+											"        },",
+											"        \"locations\": {",
+											"          \"$id\": \"/properties/data/properties/locations\",",
+											"          \"type\": \"array\",",
+											"          \"items\": {",
+											"            \"$id\": \"/properties/data/properties/locations/items\",",
+											"            \"type\": \"string\"",
+											"          }",
+											"        }",
+											"      },",
+											"      \"required\": [",
+											"        \"application\",",
+											"        \"locations\"",
+											"      ]",
+											"    }",
+											"  },",
+											"  \"required\": [",
+											"    \"status\",",
+											"    \"data\"",
+											"  ]",
+											"};",
+											"",
+											"const responseJson = JSON.parse(responseBody);",
+											"",
+											"eval(globals.commonTests)();",
+											"",
+											"tests[\"Status code is 201\"] = responseCode.code === 201;",
+											"tests[\"Response schema is valid\"] = tv4.validate(responseJson, schema);",
+											"",
+											"pm.environment.set(\"applicationId\", responseJson.data.application._id);",
+											""
+										],
+										"id": "a8486a74-563c-47f7-a307-c0a5321462a0",
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "password",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{organisationEmail}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"name\": \"application{{applicationNumber}}\"\n}"
+								},
+								"url": {
+									"raw": "{{hostname}}/api/organisations/{{organisationId}}/applications/",
+									"host": [
+										"{{hostname}}"
+									],
+									"path": [
+										"api",
+										"organisations",
+										"{{organisationId}}",
+										"applications",
+										""
+									]
+								},
+								"description": ""
+							},
+							"response": []
+						}
+					],
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Create a new monitoring exception",
+					"description": "",
+					"item": [
+						{
+							"name": "Add user monitoring exception",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "28b3d61b-9aa2-48ff-aae3-370805003cbe",
+										"type": "text/javascript",
+										"exec": [
+											"eval(globals.commonTests)();",
+											"const schema = {",
+											"  \"$id\": \"http://example.com/example.json\",",
+											"  \"type\": \"object\",",
+											"  \"definitions\": {},",
+											"  \"$schema\": \"http://json-schema.org/draft-07/schema#\",",
+											"  \"additionalProperties\": false,",
+											"  \"properties\": {",
+											"    \"status\": {",
+											"      \"$id\": \"/properties/status\",",
+											"      \"type\": \"string\"",
+											"    },",
+											"    \"data\": {",
+											"      \"$id\": \"/properties/data\",",
+											"      \"type\": \"object\",",
+											"      \"additionalProperties\": false,",
+											"      \"properties\": {",
+											"        \"monitoringException\": {",
+											"          \"$id\": \"/properties/data/properties/monitoringException\",",
+											"          \"type\": \"object\",",
+											"          \"additionalProperties\": false,",
+											"          \"properties\": {",
+											"            \"platform\": {",
+											"              \"$id\": \"/properties/data/properties/monitoringException/properties/platform\",",
+											"              \"type\": \"object\",",
+											"              \"additionalProperties\": false,",
+											"              \"properties\": {",
+											"                \"_id\": {",
+											"                  \"$id\": \"/properties/data/properties/monitoringException/properties/platform/properties/_id\",",
+											"                  \"type\": \"string\"",
+											"                },",
+											"                \"name\": {",
+											"                  \"$id\": \"/properties/data/properties/monitoringException/properties/platform/properties/name\",",
+											"                  \"type\": \"string\"",
+											"                }",
+											"              },",
+											"              \"required\": [",
+											"                \"_id\",",
+											"                \"name\"",
+											"              ]",
+											"            },",
+											"            \"application\": {",
+											"              \"$id\": \"/properties/data/properties/monitoringException/properties/application\",",
+											"              \"type\": \"object\",",
+											"              \"additionalProperties\": false,",
+											"              \"properties\": {",
+											"                \"_id\": {",
+											"                  \"$id\": \"/properties/data/properties/monitoringException/properties/application/properties/_id\",",
+											"                  \"type\": \"string\"",
+											"                },",
+											"                \"name\": {",
+											"                  \"$id\": \"/properties/data/properties/monitoringException/properties/application/properties/name\",",
+											"                  \"type\": \"string\"",
+											"                },",
+											"                \"__v\": {",
+											"                  \"$id\": \"/properties/data/properties/monitoringException/properties/application/properties/__v\",",
+											"                  \"type\": \"integer\"",
+											"                },",
+											"                \"clientIds\": {",
+											"                  \"$id\": \"/properties/data/properties/monitoringException/properties/application/properties/clientIds\",",
+											"                  \"type\": \"array\"",
+											"                }",
+											"              },",
+											"              \"required\": [",
+											"                \"_id\",",
+											"                \"name\",",
+											"                \"__v\",",
+											"                \"clientIds\"",
+											"              ]",
+											"            },",
+											"            \"startTime\": {",
+											"              \"$id\": \"/properties/data/properties/monitoringException/properties/startTime\",",
+											"              \"type\": \"string\"",
+											"            },",
+											"            \"endTime\": {",
+											"              \"$id\": \"/properties/data/properties/monitoringException/properties/endTime\",",
+											"              \"type\": \"string\"",
+											"            },",
+											"            \"user\": {",
+											"              \"$id\": \"/properties/data/properties/monitoringException/properties/user\",",
+											"              \"type\": \"string\"",
+											"            },",
+											"            \"_id\": {",
+											"              \"$id\": \"/properties/data/properties/monitoringException/properties/_id\",",
+											"              \"type\": \"string\"",
+											"            }",
+											"          },",
+											"          \"required\": [",
+											"            \"platform\",",
+											"            \"application\",",
+											"            \"startTime\",",
+											"            \"endTime\",",
+											"            \"user\",",
+											"            \"_id\"",
+											"          ]",
+											"        },",
+											"        \"locations\": {",
+											"          \"$id\": \"/properties/data/properties/locations\",",
+											"          \"type\": \"array\",",
+											"          \"items\": {",
+											"            \"$id\": \"/properties/data/properties/locations/items\",",
+											"            \"type\": \"string\"",
+											"          }",
+											"        }",
+											"      },",
+											"      \"required\": [",
+											"        \"monitoringException\",",
+											"        \"locations\"",
+											"      ]",
+											"    }",
+											"  },",
+											"  \"required\": [",
+											"    \"status\",",
+											"    \"data\"",
+											"  ]",
+											"};",
+											"",
+											"const jsonResponse = JSON.parse(responseBody);",
+											"tests[\"Status code is 201\"] = responseCode.code === 201;",
+											"tests[\"Response schema is valid\"] = tv4.validate(jsonResponse, schema);",
+											"",
+											"pm.environment.set('monitoringExceptionId', jsonResponse.data.monitoringException._id);",
+											""
+										]
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "8c23b467-bfc6-4789-b66e-ce57ef1d4cb2",
+										"type": "text/javascript",
+										"exec": [
+											"const timeNow = new Date().getTime();",
+											"",
+											"pm.environment.set(\"startTime\", timeNow-60000000);",
+											"pm.environment.set(\"endTime\", timeNow+60000000);",
+											""
+										]
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{oauthResourceOwnerToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"applicationId\": \"{{applicationId}}\",\n  \"platformId\": \"{{platformId}}\",\n  \"startTime\": \"{{startTime}}\",\n  \"endTime\": \"{{endTime}}\"\n}"
+								},
+								"url": {
+									"raw": "{{hostname}}/api/users/{{userId}}/monitoring-exceptions",
+									"host": [
+										"{{hostname}}"
+									],
+									"path": [
+										"api",
+										"users",
+										"{{userId}}",
+										"monitoring-exceptions"
+									]
+								},
+								"description": null
+							},
+							"response": []
+						}
+					],
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Get user monitoring exceptions",
+					"description": "",
+					"item": [
+						{
+							"name": "Get all user monitoring exceptions",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "9312ed66-b836-42ef-b4f9-4b19a78c8841",
+										"type": "text/javascript",
+										"exec": [
+											"eval(globals.commonTests)();",
+											"const schema = {",
+											"  \"$id\": \"http://example.com/example.json\",",
+											"  \"type\": \"object\",",
+											"  \"definitions\": {},",
+											"  \"$schema\": \"http://json-schema.org/draft-07/schema#\",",
+											"  \"additionalProperties\": false,",
+											"  \"properties\": {",
+											"    \"status\": {",
+											"      \"$id\": \"/properties/status\",",
+											"      \"type\": \"string\"",
+											"    },",
+											"    \"data\": {",
+											"      \"$id\": \"/properties/data\",",
+											"      \"type\": \"object\",",
+											"      \"additionalProperties\": false,",
+											"      \"properties\": {",
+											"        \"monitoringExceptions\": {",
+											"          \"$id\": \"/properties/data/properties/monitoringExceptions\",",
+											"          \"type\": \"array\",",
+											"          \"items\": {",
+											"            \"$id\": \"/properties/data/properties/monitoringExceptions/items\",",
+											"            \"type\": \"object\",",
+											"            \"additionalProperties\": false,",
+											"            \"properties\": {",
+											"              \"_id\": {",
+											"                \"$id\": \"/properties/data/properties/monitoringExceptions/items/properties/_id\",",
+											"                \"type\": \"string\"",
+											"              },",
+											"              \"platform\": {",
+											"                \"$id\": \"/properties/data/properties/monitoringExceptions/items/properties/platform\",",
+											"                \"type\": \"object\",",
+											"                \"additionalProperties\": false,",
+											"                \"properties\": {",
+											"                  \"_id\": {",
+											"                    \"$id\": \"/properties/data/properties/monitoringExceptions/items/properties/platform/properties/_id\",",
+											"                    \"type\": \"string\"",
+											"                  },",
+											"                  \"name\": {",
+											"                    \"$id\": \"/properties/data/properties/monitoringExceptions/items/properties/platform/properties/name\",",
+											"                    \"type\": \"string\"",
+											"                  }",
+											"                },",
+											"                \"required\": [",
+											"                  \"_id\",",
+											"                  \"name\"",
+											"                ]",
+											"              },",
+											"              \"application\": {",
+											"                \"$id\": \"/properties/data/properties/monitoringExceptions/items/properties/application\",",
+											"                \"type\": \"object\",",
+											"                \"additionalProperties\": false,",
+											"                \"properties\": {",
+											"                  \"_id\": {",
+											"                    \"$id\": \"/properties/data/properties/monitoringExceptions/items/properties/application/properties/_id\",",
+											"                    \"type\": \"string\"",
+											"                  },",
+											"                  \"name\": {",
+											"                    \"$id\": \"/properties/data/properties/monitoringExceptions/items/properties/application/properties/name\",",
+											"                    \"type\": \"string\"",
+											"                  },",
+											"                  \"__v\": {",
+											"                    \"$id\": \"/properties/data/properties/monitoringExceptions/items/properties/application/properties/__v\",",
+											"                    \"type\": \"integer\"",
+											"                  },",
+											"                  \"clientIds\": {",
+											"                    \"$id\": \"/properties/data/properties/monitoringExceptions/items/properties/application/properties/clientIds\",",
+											"                    \"type\": \"array\"",
+											"                  }",
+											"                },",
+											"                \"required\": [",
+											"                  \"_id\",",
+											"                  \"name\",",
+											"                  \"__v\",",
+											"                  \"clientIds\"",
+											"                ]",
+											"              },",
+											"              \"startTime\": {",
+											"                \"$id\": \"/properties/data/properties/monitoringExceptions/items/properties/startTime\",",
+											"                \"type\": \"string\"",
+											"              },",
+											"              \"endTime\": {",
+											"                \"$id\": \"/properties/data/properties/monitoringExceptions/items/properties/endTime\",",
+											"                \"type\": \"string\"",
+											"              },",
+											"              \"user\": {",
+											"                \"$id\": \"/properties/data/properties/monitoringExceptions/items/properties/user\",",
+											"                \"type\": \"string\"",
+											"              },",
+											"              \"__v\": {",
+											"                \"$id\": \"/properties/data/properties/monitoringExceptions/items/properties/__v\",",
+											"                \"type\": \"integer\"",
+											"              }",
+											"            },",
+											"            \"required\": [",
+											"              \"_id\",",
+											"              \"platform\",",
+											"              \"application\",",
+											"              \"startTime\",",
+											"              \"endTime\",",
+											"              \"user\",",
+											"              \"__v\"",
+											"            ]",
+											"          }",
+											"        }",
+											"      },",
+											"      \"required\": [",
+											"        \"monitoringExceptions\"",
+											"      ]",
+											"    }",
+											"  },",
+											"  \"required\": [",
+											"    \"status\",",
+											"    \"data\"",
+											"  ]",
+											"}",
+											"",
+											"const jsonResponse = JSON.parse(responseBody);",
+											"tests[\"Status code is 200\"] = responseCode.code === 200;",
+											"tests[\"Response schema is valid\"] = tv4.validate(jsonResponse, schema);"
+										]
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{oauthResourceOwnerToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {},
+								"url": {
+									"raw": "{{hostname}}/api/users/{{userId}}/monitoring-exceptions",
+									"host": [
+										"{{hostname}}"
+									],
+									"path": [
+										"api",
+										"users",
+										"{{userId}}",
+										"monitoring-exceptions"
+									]
+								},
+								"description": ""
+							},
+							"response": []
+						},
+						{
+							"name": "Get user monitoring exception by id",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "9a7f52ed-b905-409d-9360-d65944f1f585",
+										"type": "text/javascript",
+										"exec": [
+											"eval(globals.commonTests)();",
+											"const schema = {",
+											"  \"$id\": \"http://example.com/example.json\",",
+											"  \"type\": \"object\",",
+											"  \"definitions\": {},",
+											"  \"$schema\": \"http://json-schema.org/draft-07/schema#\",",
+											"  \"additionalProperties\": false,",
+											"  \"properties\": {",
+											"    \"status\": {",
+											"      \"$id\": \"/properties/status\",",
+											"      \"type\": \"string\"",
+											"    },",
+											"    \"data\": {",
+											"      \"$id\": \"/properties/data\",",
+											"      \"type\": \"object\",",
+											"      \"additionalProperties\": false,",
+											"      \"properties\": {",
+											"        \"monitoringException\": {",
+											"          \"$id\": \"/properties/data/properties/monitoringException\",",
+											"          \"type\": \"object\",",
+											"          \"additionalProperties\": false,",
+											"          \"properties\": {",
+											"            \"_id\": {",
+											"              \"$id\": \"/properties/data/properties/monitoringException/properties/_id\",",
+											"              \"type\": \"string\"",
+											"            },",
+											"            \"platform\": {",
+											"              \"$id\": \"/properties/data/properties/monitoringException/properties/platform\",",
+											"              \"type\": \"object\",",
+											"              \"additionalProperties\": false,",
+											"              \"properties\": {",
+											"                \"_id\": {",
+											"                  \"$id\": \"/properties/data/properties/monitoringException/properties/platform/properties/_id\",",
+											"                  \"type\": \"string\"",
+											"                },",
+											"                \"name\": {",
+											"                  \"$id\": \"/properties/data/properties/monitoringException/properties/platform/properties/name\",",
+											"                  \"type\": \"string\"",
+											"                }",
+											"              },",
+											"              \"required\": [",
+											"                \"_id\",",
+											"                \"name\"",
+											"              ]",
+											"            },",
+											"            \"application\": {",
+											"              \"$id\": \"/properties/data/properties/monitoringException/properties/application\",",
+											"              \"type\": \"object\",",
+											"              \"additionalProperties\": false,",
+											"              \"properties\": {",
+											"                \"_id\": {",
+											"                  \"$id\": \"/properties/data/properties/monitoringException/properties/application/properties/_id\",",
+											"                  \"type\": \"string\"",
+											"                },",
+											"                \"name\": {",
+											"                  \"$id\": \"/properties/data/properties/monitoringException/properties/application/properties/name\",",
+											"                  \"type\": \"string\"",
+											"                },",
+											"                \"__v\": {",
+											"                  \"$id\": \"/properties/data/properties/monitoringException/properties/application/properties/__v\",",
+											"                  \"type\": \"integer\"",
+											"                },",
+											"                \"clientIds\": {",
+											"                  \"$id\": \"/properties/data/properties/monitoringException/properties/application/properties/clientIds\",",
+											"                  \"type\": \"array\"",
+											"                }",
+											"              },",
+											"              \"required\": [",
+											"                \"_id\",",
+											"                \"name\",",
+											"                \"__v\",",
+											"                \"clientIds\"",
+											"              ]",
+											"            },",
+											"            \"startTime\": {",
+											"              \"$id\": \"/properties/data/properties/monitoringException/properties/startTime\",",
+											"              \"type\": \"string\"",
+											"            },",
+											"            \"endTime\": {",
+											"              \"$id\": \"/properties/data/properties/monitoringException/properties/endTime\",",
+											"              \"type\": \"string\"",
+											"            },",
+											"            \"user\": {",
+											"              \"$id\": \"/properties/data/properties/monitoringException/properties/user\",",
+											"              \"type\": \"string\"",
+											"            },",
+											"            \"__v\": {",
+											"              \"$id\": \"/properties/data/properties/monitoringException/properties/__v\",",
+											"              \"type\": \"integer\"",
+											"            }",
+											"          },",
+											"          \"required\": [",
+											"            \"_id\",",
+											"            \"platform\",",
+											"            \"application\",",
+											"            \"startTime\",",
+											"            \"endTime\",",
+											"            \"user\",",
+											"            \"__v\"",
+											"          ]",
+											"        }",
+											"      },",
+											"      \"required\": [",
+											"        \"monitoringException\"",
+											"      ]",
+											"    }",
+											"  },",
+											"  \"required\": [",
+											"    \"status\",",
+											"    \"data\"",
+											"  ]",
+											"}",
+											"",
+											"const jsonResponse = JSON.parse(responseBody);",
+											"tests[\"Status code is 200\"] = responseCode.code === 200;",
+											"tests[\"Response schema is valid\"] = tv4.validate(jsonResponse, schema);"
+										]
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{oauthResourceOwnerToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {},
+								"url": {
+									"raw": "{{hostname}}/api/users/{{userId}}/monitoring-exceptions/{{monitoringExceptionId}}",
+									"host": [
+										"{{hostname}}"
+									],
+									"path": [
+										"api",
+										"users",
+										"{{userId}}",
+										"monitoring-exceptions",
+										"{{monitoringExceptionId}}"
+									]
+								},
+								"description": ""
+							},
+							"response": []
+						}
+					],
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Edit monitoring exception details",
+					"description": "",
+					"item": [
+						{
+							"name": "Edit monitoring exception details",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ff2bd0db-4d23-4d1d-b704-1bc8689d871c",
+										"type": "text/javascript",
+										"exec": [
+											"eval(globals.commonTests)();",
+											"const schema = {",
+											"  \"$id\": \"http://example.com/example.json\",",
+											"  \"type\": \"object\",",
+											"  \"definitions\": {},",
+											"  \"$schema\": \"http://json-schema.org/draft-07/schema#\",",
+											"  \"additionalProperties\": false,",
+											"  \"properties\": {",
+											"    \"status\": {",
+											"      \"$id\": \"/properties/status\",",
+											"      \"type\": \"string\"",
+											"    },",
+											"    \"data\": {",
+											"      \"$id\": \"/properties/data\",",
+											"      \"type\": \"null\"",
+											"    }",
+											"  },",
+											"  \"required\": [",
+											"    \"status\",",
+											"    \"data\"",
+											"  ]",
+											"};",
+											"",
+											"const jsonResponse = JSON.parse(responseBody);",
+											"tests[\"Status code is 200\"] = responseCode.code === 200",
+											"tests[\"Response schema is valid\"] = tv4.validate(jsonResponse, schema);",
+											""
+										]
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "7ce6fb4e-6495-46ca-b498-f873f97dc207",
+										"type": "text/javascript",
+										"exec": [
+											"const timeNow = new Date().getTime();",
+											"",
+											"pm.environment.set(\"startTime\", timeNow-60000);",
+											"pm.environment.set(\"endTime\", timeNow);",
+											""
+										]
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{oauthResourceOwnerToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"applicationId\": \"{{applicationId}}\",\n  \"platformId\": \"{{platformId}}\",\n  \"startTime\": \"0\",\n  \"endTime\": \"{{endTime}}\"\n}"
+								},
+								"url": {
+									"raw": "{{hostname}}/api/users/{{userId}}/monitoring-exceptions/{{monitoringExceptionId}}",
+									"host": [
+										"{{hostname}}"
+									],
+									"path": [
+										"api",
+										"users",
+										"{{userId}}",
+										"monitoring-exceptions",
+										"{{monitoringExceptionId}}"
+									]
+								},
+								"description": ""
+							},
+							"response": []
+						}
+					],
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Delete a monitoring exception",
+					"description": "",
+					"item": [
+						{
+							"name": "Delete user monitoring exception",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "565048ad-a875-4528-aca8-33082b97c451",
+										"type": "text/javascript",
+										"exec": [
+											"eval(globals.commonTests)();",
+											"const schema = {",
+											"  \"$id\": \"http://example.com/example.json\",",
+											"  \"type\": \"object\",",
+											"  \"definitions\": {},",
+											"  \"$schema\": \"http://json-schema.org/draft-07/schema#\",",
+											"  \"additionalProperties\": false,",
+											"  \"properties\": {",
+											"    \"status\": {",
+											"      \"$id\": \"/properties/status\",",
+											"      \"type\": \"string\"",
+											"    },",
+											"    \"data\": {",
+											"      \"$id\": \"/properties/data\",",
+											"      \"type\": \"null\"",
+											"    }",
+											"  },",
+											"  \"required\": [",
+											"    \"status\",",
+											"    \"data\"",
+											"  ]",
+											"};",
+											"",
+											"const jsonResponse = JSON.parse(responseBody);",
+											"tests[\"Status code is 200\"] = responseCode.code === 200",
+											"tests[\"Response schema is valid\"] = tv4.validate(jsonResponse, schema);",
+											""
+										]
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{oauthResourceOwnerToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"body": {},
+								"url": {
+									"raw": "{{hostname}}/api/users/{{userId}}/monitoring-exceptions/{{monitoringExceptionId}}",
+									"host": [
+										"{{hostname}}"
+									],
+									"path": [
+										"api",
+										"users",
+										"{{userId}}",
+										"monitoring-exceptions",
+										"{{monitoringExceptionId}}"
+									]
+								},
+								"description": ""
+							},
+							"response": []
+						}
+					],
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Delete an application",
+					"description": "",
+					"item": [
+						{
+							"name": "Delete organisation application",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "53921155-38cf-414a-bc39-f2db2e734706",
+										"type": "text/javascript",
+										"exec": [
+											"eval(globals.commonTests)();",
+											"",
+											"tests[\"Status code is 200\"] = responseCode.code = 200;",
+											""
+										]
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {},
+								"url": {
+									"raw": "{{hostname}}/api/organisations/{{organisationId}}/applications/{{applicationId}}",
+									"host": [
+										"{{hostname}}"
+									],
+									"path": [
+										"api",
+										"organisations",
+										"{{organisationId}}",
+										"applications",
+										"{{applicationId}}"
+									]
+								},
+								"description": ""
+							},
+							"response": []
+						},
+						{
+							"name": "Delete organisation",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "53921155-38cf-414a-bc39-f2db2e734706",
+										"type": "text/javascript",
+										"exec": [
+											"eval(globals.commonTests)();",
+											"",
+											"tests[\"Status code is 200\"] = responseCode.code = 200;",
+											""
+										]
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {},
+								"url": {
+									"raw": "{{hostname}}/api/organisations/{{organisationId}}",
+									"host": [
+										"{{hostname}}"
+									],
+									"path": [
+										"api",
+										"organisations",
+										"{{organisationId}}"
+									]
+								},
+								"description": ""
+							},
+							"response": []
+						}
+					],
+					"auth": {
+						"type": "basic",
+						"basic": [
+							{
+								"key": "password",
+								"value": "password",
+								"type": "string"
+							},
+							{
+								"key": "username",
+								"value": "{{organisationEmail}}",
+								"type": "string"
+							}
+						]
+					},
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "97530366-27c9-43bc-83cd-e96cfd416f84",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "c44f1b82-7b05-48e0-ab90-48ffd5c4735f",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					],
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Delete a user",
+					"description": "",
+					"item": [
+						{
+							"name": "Delete a user",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "2ec2ad16-2295-4c40-ac62-15452d3b117e",
+										"type": "text/javascript",
+										"exec": [
+											"eval(globals.commonTests)();",
+											"const schema = {",
+											"  \"$id\": \"http://example.com/example.json\",",
+											"  \"type\": \"object\",",
+											"  \"definitions\": {},",
+											"  \"$schema\": \"http://json-schema.org/draft-07/schema#\",",
+											"  \"properties\": {",
+											"    \"status\": {",
+											"      \"$id\": \"/properties/status\",",
+											"      \"type\": \"string\"",
+											"    },",
+											"    \"data\": {",
+											"      \"$id\": \"/properties/data\",",
+											"      \"type\": \"null\"",
+											"    }",
+											"  }",
+											"};",
+											"",
+											"const jsonResponse = JSON.parse(responseBody);",
+											"tests[\"Status code is 200\"] = responseCode.code === 200",
+											"tests[\"Response schema is valid\"] = tv4.validate(jsonResponse, schema);"
+										]
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {},
+								"url": {
+									"raw": "{{hostname}}/api/users/{{userId}}",
+									"host": [
+										"{{hostname}}"
+									],
+									"path": [
+										"api",
+										"users",
+										"{{userId}}"
+									]
+								},
+								"description": ""
+							},
+							"response": []
+						}
+					],
+					"auth": {
+						"type": "bearer",
+						"bearer": [
+							{
+								"key": "token",
+								"value": "{{oauthResourceOwnerToken}}",
+								"type": "string"
+							}
+						]
+					},
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"id": "1998edce-5b39-423e-98f3-6967ff3f0a16",
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"id": "9f378bb3-9420-4bf6-812a-c5edf55bf065",
+								"type": "text/javascript"
+							}
+						}
+					],
+					"_postman_isSubFolder": true
+				}
+			]
+		},
+		{
 			"name": "Periods",
 			"description": "",
 			"item": [
