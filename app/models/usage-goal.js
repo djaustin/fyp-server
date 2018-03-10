@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const UsageLog = require('app/models/usage-log');
 const Period = require('app/models/period');
 const logger = require('app/utils/logger');
+const moment = require('moment');
 const UsageGoalSchema = new mongoose.Schema({
   application: {
     type: mongoose.Schema.ObjectId,
@@ -31,8 +32,11 @@ UsageGoalSchema.methods.getProgress = async function(userId){
   // Get the period information for this goal
   const period = await Period.findOne({_id: this.period})
   // Convert period into date range
-  const endTime = new Date();
-  const startTime = new Date(Date.now() - period.duration*1000);
+  const endTime = moment().endOf(period.key).toDate()
+  const startTime = moment().startOf(period.key).toDate();
+  console.log("PERIOD KEY", period.key);
+  console.log("START TIME", startTime);
+  console.log("END TIME", endTime);
   // Find all usage logs in that date range for the platform and applicationId specified
   var logs = await UsageLog.find({
     userId: userId,
@@ -59,6 +63,8 @@ UsageGoalSchema.methods.getProgress = async function(userId){
   // Sum the durations of the usage logs
   const totalDuration = logsWithClients.reduce((acc, e) => e.log.duration + acc, 0)
   // Calculate percentage progress
+  console.log(totalDuration, this.duration);
+  console.log("TOTAL DURATION", totalDuration/this.duration);
   return (totalDuration/this.duration);
 }
 

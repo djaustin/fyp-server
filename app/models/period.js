@@ -9,6 +9,10 @@ const PeriodSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  key: {
+    type: String,
+    required: true
+  },
   duration: {
     type: Number,
     required: true
