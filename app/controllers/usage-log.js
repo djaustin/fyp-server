@@ -1,6 +1,9 @@
 const logger = require('app/utils/logger');
 const UsageLog = require('app/models/usage-log');
 const DeviceToken = require('app/models/deviceToken');
+const Platform = require('app/models/platform');
+const Application = require('app/models/application');
+const MonitoringException = require('app/models/monitoring-exception');
 const rsmq = require('app/utils/rsmq');
 
 /**
@@ -10,11 +13,45 @@ const rsmq = require('app/utils/rsmq');
  * @param next {Object} next piece of middleware to be run after this one. Used to forward errors to error
  */
 exports.newUsageLog = async function(req, res, next){
+  const startTime = req.body.startTime
+  const endTime = req.body.endTime
   if(!req.body.startTime || !req.body.endTime){
     let error = new Error("Usage logs must contain a start and end time")
     error.status = 400
     return next(error);
   }
+
+  const platform = await Platform.findOne({_id: req.client.platform});
+  const application = await Application.findOne({_id: req.client.applicationId});
+
+  let query = {
+    user: req.user._id,
+    platform: platform._id,
+    application: application._id,
+    $or: [
+      {
+          startTime: { $lte: startTime },
+          endTime: { $gte: endTime }
+      },
+      {
+        startTime: { $lte: startTime },
+        endTime: { $gte: startTime }
+      },
+      {
+        startTime: { $lte: endTime },
+        endTime: { $gte: endTime }
+      }
+    ]
+  }
+  const breachedExceptions = await MonitoringException.find(query);
+
+  console.log("EXCEPTIONS", breachedExceptions);
+
+  if(breachedExceptions.length > 0){
+    return res.jsend.success(null)
+  }
+
+
   //TODO: Find a way to allow user to report usage without a client application
   const log = new UsageLog({
     userId: req.user._id,

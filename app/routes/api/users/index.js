@@ -11,6 +11,7 @@ const authentication = require('app/controllers/authentication');
 // Import nested routers
 const usageLogRouter = require('app/routes/api/users/usage-logs');
 const usageLogCollectionsRouter = require('app/routes/api/users/usage-log-collections');
+const monitoringExceptionsRouter = require('app/routes/api/users/monitoring-exceptions');
 const clientsRouter = require('app/routes/api/users/clients');
 const metricsRouter = require('app/routes/api/users/metrics');
 const usageGoalsRouter = require('app/routes/api/users/usage-goals');
@@ -55,4 +56,5 @@ router.use('/:userId/metrics', authentication.isUserAuthenticated, userIdMatches
 router.use('/:userId/usage-goals', authentication.isUserAuthenticated, userIdMatchesAuthenticatedUser, usageGoalsRouter);
 router.use('/:userId/applications', authentication.isUserAuthenticated, userIdMatchesAuthenticatedUser, applicationRouter);
 router.use('/:userId/usage-log-collections', authentication.isUserAuthenticated, userIdMatchesAuthenticatedUser, usageLogCollectionsRouter);
+router.use('/:userId/monitoring-exceptions', authentication.isUserAuthenticated, userIdMatchesAuthenticatedUser, monitoringExceptionsRouter);
 module.exports = router;

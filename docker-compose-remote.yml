@@ -3,6 +3,7 @@ version: '3.1'
 services:
   proxy:
     image: nginx:latest
+    restart: always
     volumes:
       - /etc/letsencrypt:/etc/nginx/ssl
       - ./config/nginx/remote/conf.d:/etc/nginx/conf.d
@@ -14,11 +15,13 @@ services:
       - '443:443'
   db:
     image: mongo
+    restart: always
     volumes:
       - dbdata:/data/db
   web:
     build: .
     image: daustin/monitor-api
+    restart: always
     volumes:
       - ./config/config.json:/var/www/api/config/config.json:ro
       - ./logs:/var/www/api/logs
@@ -27,11 +30,13 @@ services:
       - redis
   redis:
     image: redis:latest
+    restart: always
     command: redis-server --appendonly yes
     volumes:
       - redisdata:/data
   notifications:
     image: daustin/notifications:latest
+    restart: always
     volumes:
       - ./AuthKey_4JB9YML372.p8:/app/AuthKey_4JB9YML372.p8:ro
     depends_on:

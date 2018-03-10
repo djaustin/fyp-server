@@ -3,6 +3,7 @@ version: '3.1'
 services:
   proxy:
     image: nginx
+    restart: always
     volumes:
       - ./config/nginx/local/conf.d:/etc/nginx/conf.d
       - ./images:/usr/share/nginx/html:ro
@@ -12,11 +13,13 @@ services:
       - '80:80'
   db:
     image: mongo
+    restart: always
     # volumes:
     #   - dbdata:/data/db
   web:
     build: .
     image: daustin/monitor-api
+    restart: always
     volumes:
       - ./config/config.json:/var/www/api/config/config.json:ro
       - ./logs:/var/www/api/logs
@@ -24,10 +27,12 @@ services:
       - db
   redis:
     image: redis
+    restart: always
     command: redis-server --appendonly yes
     volumes: redisdata:/data
   notifications:
     image: daustin/digitalmonitor-notifications
+    restart: always
     depends_on:
       - redis
 
