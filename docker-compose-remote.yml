@@ -5,7 +5,7 @@ services:
     image: nginx:latest
     restart: always
     deploy:
-      replicas: 1
+      replicas: 5
     volumes:
       - /etc/letsencrypt:/etc/nginx/ssl
       - ./config/nginx/remote/conf.d:/etc/nginx/conf.d
@@ -30,9 +30,7 @@ services:
     image: daustin/monitor-api
     deploy:
       replicas: 5
-      placement:
-        constraints:
-          - node.hostname!== node1
+
     volumes:
       - ./config/config.json:/var/www/api/config/config.json:ro
       - ./logs:/var/www/api/logs
