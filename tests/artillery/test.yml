@@ -1,0 +1,203 @@
+config:
+  target: 'https://digitalmonitor.tk'
+  processor: "./artillery-functions.js"
+  payload:
+    # order: "sequence"
+    - path: 'users.csv'
+      fields:
+        - "userId"
+        - "userAccessToken"
+    - path: 'orgs.csv'
+      fields:
+        - "orgId"
+        - "orgAccessToken"
+  phases:
+    - duration: 60
+      arrivalRate: 5
+      name: "Warm up"
+    - duration: 120
+      arrivalRate: 5
+      rampTo: 50
+      name: "Ramp up"
+    - duration: 600
+      arrivalRate: 50
+      name: "High load"
+scenarios:
+  - name: "Add usage log"
+    weight: 8580
+    flow:
+      - post:
+          url: '/api/usage-logs'
+          beforeRequest: "generateStartAndEndTime"
+          headers:
+            Authorization: "Bearer {{userAccessToken}}"
+          json:
+            startTime: "{{startTime}}"
+            endTime: "{{endTime}}"
+  # - name: "View app usage"
+  #   flow:
+  #     - get:
+  #         url: '/api/users/{{userId}}/metrics/?fromTime={{fromTime}}&toTime={{toTime}}'
+  #         beforeRequest: "generateFromAndToTimeLast7Days"
+  #         headers:
+  #           Authorization: "Bearer {{userAccessToken}}"
+  #     - think: 5
+  #     - get:
+  #         url: '/api/users/{{userId}}/metrics/applications?fromTime={{fromTime}}&toTime={{toTime}}'
+  #         beforeRequest: "generateFromAndToTimeLast7Days"
+  #         headers:
+  #           Authorization: "Bearer {{userAccessToken}}"
+  #         capture:
+  #           json: '$.data[0].application._id'
+  #           as: 'appId'
+  #     - think: 5
+  #     - get:
+  #         url: '/api/users/{{userId}}/metrics/applications/{{ appId }}?fromTime={{fromTime}}&toTime={{toTime}}'
+  #         beforeRequest: "generateFromAndToTimeLast7Days"
+  #         headers:
+  #           Authorization: "Bearer {{userAccessToken}}"
+  # - name: "View platform usage"
+  #   flow:
+  #     - get:
+  #         url: '/api/users/{{userId}}/metrics/?fromTime={{fromTime}}&toTime={{toTime}}'
+  #         beforeRequest: "generateFromAndToTimeLast7Days"
+  #         headers:
+  #           Authorization: "Bearer {{userAccessToken}}"
+  #     - think: 5
+  #     - get:
+  #         url: '/api/users/{{userId}}/metrics/platforms?fromTime={{fromTime}}&toTime={{toTime}}'
+  #         beforeRequest: "generateFromAndToTimeLast7Days"
+  #         headers:
+  #           Authorization: "Bearer {{userAccessToken}}"
+  #         capture:
+  #           json: '$.data.platforms[0]._id'
+  #           as: 'platformId'
+  #     - think: 5
+  #     - get:
+  #         url: '/api/users/{{userId}}/metrics/platforms/{{ platformId }}?fromTime={{fromTime}}&toTime={{toTime}}'
+  #         beforeRequest: "generateFromAndToTimeLast7Days"
+  #         headers:
+  #           Authorization: "Bearer {{userAccessToken}}"
+  # - name: "View and add new goal"
+  #   flow:
+  #     - get:
+  #         url: '/api/users/{{userId}}/metrics/?fromTime={{fromTime}}&toTime={{toTime}}'
+  #         beforeRequest: "generateFromAndToTimeLast7Days"
+  #         headers:
+  #           Authorization: "Bearer {{userAccessToken}}"
+  #     - think: 5
+  #     - get:
+  #         url: '/api/users/{{userId}}/usage-goals'
+  #         headers:
+  #           Authorization: "Bearer {{userAccessToken}}"
+  #     - think: 5
+  #     - get:
+  #         url: '/api/users/{{userId}}/applications'
+  #         headers:
+  #           Authorization: "Bearer {{userAccessToken}}"
+  #         capture:
+  #           json: '$.data.applications[0]._id'
+  #           as: 'appId'
+  #     - get:
+  #         url: '/api/platforms'
+  #         headers:
+  #           Authorization: "Bearer {{userAccessToken}}"
+  #         capture:
+  #           json: '$.data.platforms[0]._id'
+  #           as: 'platformId'
+  #     - get:
+  #         url: '/api/periods'
+  #         headers:
+  #           Authorization: "Bearer {{userAccessToken}}"
+  #         capture:
+  #           json: '$.data.periods[0]._id'
+  #           as: 'periodId'
+  #     - think: 10
+  #     - post:
+  #         url: '/api/users/{{userId}}/usage-goals/'
+  #         headers:
+  #           Authorization: "Bearer {{userAccessToken}}"
+  #         json:
+  #           duration: 172800
+  #           periodId: "{{periodId}}"
+  #           applicationId: "{{appId}}"
+  #           platformId: "{{platformId}}"
+  # - name: "View and add new monitoring exception"
+  #   flow:
+  #     - get:
+  #         url: '/api/users/{{userId}}/metrics/?fromTime={{fromTime}}&toTime={{toTime}}'
+  #         beforeRequest: "generateFromAndToTimeLast7Days"
+  #         headers:
+  #           Authorization: "Bearer {{userAccessToken}}"
+  #     - think: 5
+  #     - get:
+  #         url: '/api/users/{{userId}}/monitoring-exceptions'
+  #         headers:
+  #           Authorization: "Bearer {{userAccessToken}}"
+  #     - think: 5
+  #     - get:
+  #         url: '/api/users/{{userId}}/applications'
+  #         headers:
+  #           Authorization: "Bearer {{userAccessToken}}"
+  #         capture:
+  #           json: '$.data.applications[0]._id'
+  #           as: 'appId'
+  #     - get:
+  #         url: '/api/platforms'
+  #         headers:
+  #           Authorization: "Bearer {{userAccessToken}}"
+  #         capture:
+  #           json: '$.data.platforms[0]._id'
+  #           as: 'platformId'
+  #     - think: 10
+  #     - post:
+  #         url: '/api/users/{{userId}}/monitoring-exceptions/'
+  #         beforeRequest: "generateStartAndEndTime"
+  #         headers:
+  #           Authorization: "Bearer {{userAccessToken}}"
+  #         json:
+  #           applicationId: "{{appId}}"
+  #           platformId: "{{platformId}}"
+  #           startTime: "{{startTime}}"
+  #           endTime: "{{endTime}}"
+  # - name: "Add organisation app and client"
+  #   flow:
+  #     - get:
+  #         url: '/api/organisations/{{orgId}}/applications'
+  #         headers:
+  #           Authorization: "Bearer {{orgAccessToken}}"
+  #     - think: 5
+  #     - post:
+  #         url: '/api/organisations/{{orgId}}/applications'
+  #         headers:
+  #           Authorization: "Bearer {{orgAccessToken}}"
+  #         json:
+  #           name: "artillery_app"
+  #         capture:
+  #           json: '$.data.application._id'
+  #           as: 'appId'
+  #     - think: 5
+  #     - get:
+  #         url: '/api/organisations/{{orgId}}/applications/{{appId}}/clients'
+  #         headers:
+  #           Authorization: "Bearer {{orgAccessToken}}"
+  #     - think: 5
+  #     - get:
+  #         url: '/api/platforms'
+  #         headers:
+  #           Authorization: "Bearer {{orgAccessToken}}"
+  #         capture:
+  #           json: '$.data.platforms[0]._id'
+  #           as: 'platformId'
+  #     - think: 10
+  #     - post:
+  #         url: '/api/organisations/{{orgId}}/applications/{{appId}}/clients'
+  #         headers:
+  #           Authorization: "Bearer {{orgAccessToken}}"
+  #         json:
+  #           name: "artillery_client"
+  #           redirectUri: "https://artillery.io"
+  #           platformId: "{{platformId}}"
+  #         capture:
+  #           json: '$.data.application._id'
+  #           as: 'appId'

@@ -8,10 +8,12 @@ const Client = require('app/models/client');
 const UsageLogSchema = new mongoose.Schema({
   clientId: {
     type: mongoose.Schema.ObjectId,
+    ref: 'Client',
     required: true,
   },
   userId: {
     type: mongoose.Schema.ObjectId,
+    ref: 'User',
     required: true,
   },
   log: {
@@ -41,7 +43,7 @@ const UsageLogSchema = new mongoose.Schema({
       }
     }
   }
-});
+}, {toObject: {virtuals: true}});
 
 UsageLogSchema.virtual('duration').get(function(){
   return Math.round((this.log.endTime - this.log.startTime) / 1000)

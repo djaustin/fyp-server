@@ -22,26 +22,24 @@ exports.getApplicationMetricsById = async function(req, res, next){
 
 async function getApplicationMetricsById(req){
   const applicationId = req.params.applicationId
+  const applicationClients = await Client.find({applicationId: applicationId})
   const params = generateParamsObject(req)
+  params.clientId = { $in: applicationClients.map(e => e._id) }
   const logs = await UsageLog.find(params)
+    .populate({
+      path: 'clientId',
+      select: {platform: 1},
+      populate: {path: 'platform'}
+    })
+  const platforms = await Platform.find()
   const results = {
     platforms: []
   }
-  for (log of logs){
-    const client = await log.client
-    if(String(client.applicationId) !== applicationId){
-      continue;
-    }
-    const logPlatformId = await log.platform
-    const logPlatform = await Platform.findOne({_id: logPlatformId})
-    const resultPlatform = results.platforms.find(platform => {
-      return platform.platform.name === logPlatform.name
-    })
-    if(!resultPlatform) {
-      results.platforms.push({platform: logPlatform, duration: log.duration})
-    } else {
-      resultPlatform.duration += log.duration
-    }
+  for (platform of platforms) {
+    const applicableLogs = logs.filter(e => String(platform._id) === String(e.clientId.platform._id))
+    if(applicableLogs.length < 1) continue;
+    const usageSum = applicableLogs.reduce(((accumulator, current) => accumulator + current.duration), 0);
+    results.platforms.push({platform: platform, duration: usageSum})
   }
   return results
 }
@@ -115,25 +113,20 @@ async function getPlatformMetricsById(req){
   const results = []
   for (log of logs){
     const logClient = await log.client
-    console.log(logClient.platform, req.params.platformId);
     if (String(logClient.platform) !== req.params.platformId){
       continue;
     }
     const applicationId = logClient.applicationId;
 
-    console.log("Application Id:", applicationId);
     const logApplication = (await Application.findOne({_id: applicationId}));
-    console.log("logApplication", logApplication);
     const resultApplication = results.find(e => {
       return String(e.application._id) === String(logApplication._id)
     })
-    console.log("resultApplication", resultApplication);
     if(!resultApplication) {
       results.push({
         application: logApplication,
         duration: log.duration
       })
-      console.log("results", results);
     } else {
       resultApplication.duration += log.duration
     }
@@ -154,22 +147,39 @@ exports.getPlatformsMetrics = async function(req, res, next){
 async function getPlatformsMetrics(req){
   const params = generateParamsObject(req)
   const logs = await UsageLog.find(params)
+    .populate({
+      path: 'clientId',
+      select: {platform: 1},
+      populate: {path: 'platform'}
+    })
+  const platforms = await Platform.find()
   const results = {
     platforms: []
   }
-  for (log of logs){
-    const logPlatformId = await log.platform
-    const logPlatform = await Platform.findOne({_id: logPlatformId});
-    const resultPlatform = results.platforms.find(platform => {
-      return platform.platform.name === logPlatform.name
-    })
-    if(!resultPlatform) {
-      results.platforms.push({platform: logPlatform, duration: log.duration})
-    } else {
-      resultPlatform.duration += log.duration
-    }
+  for (platform of platforms) {
+    const applicableLogs = logs.filter(e => String(platform._id) === String(e.clientId.platform._id))
+    if(applicableLogs.length < 1) continue;
+    const usageSum = applicableLogs.reduce(((accumulator, current) => accumulator + current.duration), 0);
+    results.platforms.push({platform: platform, duration: usageSum})
   }
   return results
+  // const logs = await UsageLog.find(params)
+  // const results = {
+  //   platforms: []
+  // }
+  // for (log of logs){
+  //   const logPlatformId = await log.platform
+  //   const logPlatform = await Platform.findOne({_id: logPlatformId});
+  //   const resultPlatform = results.platforms.find(platform => {
+  //     return platform.platform.name === logPlatform.name
+  //   })
+  //   if(!resultPlatform) {
+  //     results.platforms.push({platform: logPlatform, duration: log.duration})
+  //   } else {
+  //     resultPlatform.duration += log.duration
+  //   }
+  // }
+  // return results
 }
 
 function generateParamsObject(req){

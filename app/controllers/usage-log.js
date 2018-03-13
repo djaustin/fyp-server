@@ -44,9 +44,6 @@ exports.newUsageLog = async function(req, res, next){
     ]
   }
   const breachedExceptions = await MonitoringException.find(query);
-
-  console.log("EXCEPTIONS", breachedExceptions);
-
   if(breachedExceptions.length > 0){
     return res.jsend.success(null)
   }

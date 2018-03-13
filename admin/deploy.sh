@@ -6,7 +6,7 @@ docker image build . -t daustin/monitor-api
 tar cvz --exclude=./node_modules --exclude=server.tar.gz --exclude=./.git --exclude=docker-compose.yml --exclude=./logs -f server.tar.gz .
 
 # Copy the archive to the remote server
-scp -i ~/.ssh/my-ec2-key-pair.pem server.tar.gz ubuntu@35.177.187.171:~
+scp -i ~/.ssh/my-ec2-key-pair.pem server.tar.gz ec2-user@35.177.187.171:~
 
 # Remove local archive copy
 rm server.tar.gz
@@ -19,7 +19,7 @@ rm server.tar.gz
   # 5. Stop any existing version of the application and remove all containers
   # 6. Create symlink necessary for creating the docker image correctly
   # 7. Build and start the docker system
-ssh -i ~/.ssh/my-ec2-key-pair.pem ubuntu@35.177.187.171 << 'ENDSSH'
+ssh -i ~/.ssh/my-ec2-key-pair.pem ec2-user@35.177.187.171 << 'ENDSSH'
 export NODE_ENV=development
 mkdir server
 cd server

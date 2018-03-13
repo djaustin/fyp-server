@@ -4,6 +4,8 @@ services:
   proxy:
     image: nginx:latest
     restart: always
+    deploy:
+      replicas: 1
     volumes:
       - /etc/letsencrypt:/etc/nginx/ssl
       - ./config/nginx/remote/conf.d:/etc/nginx/conf.d
@@ -14,6 +16,11 @@ services:
       - '80:80'
       - '443:443'
   db:
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.hostname == node3.localdomain
     image: mongo
     restart: always
     volumes:
@@ -21,7 +28,11 @@ services:
   web:
     build: .
     image: daustin/monitor-api
-    restart: always
+    deploy:
+      replicas: 5
+      placement:
+        constraints:
+          - node.hostname!== node1
     volumes:
       - ./config/config.json:/var/www/api/config/config.json:ro
       - ./logs:/var/www/api/logs
@@ -32,11 +43,21 @@ services:
     image: redis:latest
     restart: always
     command: redis-server --appendonly yes
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.hostname == node2.localdomain
     volumes:
       - redisdata:/data
   notifications:
     image: daustin/notifications:latest
     restart: always
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.hostname == node1
     volumes:
       - ./AuthKey_4JB9YML372.p8:/app/AuthKey_4JB9YML372.p8:ro
     depends_on:

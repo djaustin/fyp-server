@@ -34,9 +34,7 @@ UsageGoalSchema.methods.getProgress = async function(userId){
   // Convert period into date range
   const endTime = moment().endOf(period.key).toDate()
   const startTime = moment().startOf(period.key).toDate();
-  console.log("PERIOD KEY", period.key);
-  console.log("START TIME", startTime);
-  console.log("END TIME", endTime);
+
   // Find all usage logs in that date range for the platform and applicationId specified
   var logs = await UsageLog.find({
     userId: userId,
@@ -63,8 +61,6 @@ UsageGoalSchema.methods.getProgress = async function(userId){
   // Sum the durations of the usage logs
   const totalDuration = logsWithClients.reduce((acc, e) => e.log.duration + acc, 0)
   // Calculate percentage progress
-  console.log(totalDuration, this.duration);
-  console.log("TOTAL DURATION", totalDuration/this.duration);
   return (totalDuration/this.duration);
 }
 
