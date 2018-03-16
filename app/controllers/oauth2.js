@@ -118,14 +118,14 @@ server.exchange(oauth2orize.exchange.password(async function(client, email, pass
     // If no user matches, reject exchange
     if(!user) {
       const organisation = await Organisation.findOne({email: email});
+      if (!organisation){
+        return callback(null, false);
+      }
       const match = await organisation.verifyPassword(password);
       if(!match) return callback(null, false);
       const tokens = await generateTokens(client._id, organisation._id);
 
       callback(null, tokens.accessToken.value, tokens.refreshToken.value, {expires_in: accessTokenLifetime});
-      if (!organisation){
-        return callback(null, false);
-      }
     } else {
       // Verify the provided password agains the one in the database
       const match = await user.verifyPassword(password);

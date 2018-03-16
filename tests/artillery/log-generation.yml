@@ -1,0 +1,24 @@
+config:
+  target: 'https://digitalmonitor.tk'
+  processor: "./artillery-functions.js"
+  payload:
+    # order: "sequence"
+    - path: 'users.csv'
+      fields:
+        - "userId"
+        - "userAccessToken"
+  phases:
+    - duration: 60
+      arrivalRate: 1
+scenarios:
+  - name: "Add usage log"
+    weight: 99
+    flow:
+      - post:
+          url: '/api/usage-logs'
+          beforeRequest: "generateStartAndEndTime"
+          headers:
+            Authorization: "Bearer {{userAccessToken}}"
+          json:
+            startTime: "{{startTime}}"
+            endTime: "{{endTime}}"
