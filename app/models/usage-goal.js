@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const UsageLog = require('app/models/usage-log');
+const Client = require('app/models/client');
 const Period = require('app/models/period');
 const logger = require('app/utils/logger');
 const moment = require('moment');
@@ -34,32 +35,30 @@ UsageGoalSchema.methods.getProgress = async function(userId){
   // Convert period into date range
   const endTime = moment().endOf(period.key).toDate()
   const startTime = moment().startOf(period.key).toDate();
-
-  // Find all usage logs in that date range for the platform and applicationId specified
-  var logs = await UsageLog.find({
+  const params = {
     userId: userId,
     'log.startTime': { $gte : startTime},
     'log.endTime': { $lte: endTime},
-  })
-
-
-  let logsWithClients = []
-
-  for (log of logs) {
-    let client =  await log.client
-    logsWithClients.push({log: log, client: client})
   }
-
-  if(this.application){
-    logsWithClients = logsWithClients.filter(e => String(e.client.applicationId) === String(this.application._id))
+  if(this.application && this.platform){
+    console.log("THIS.APPLICATION", this.application);
+    console.log("THIS.PLATFORM", this.platform);
+    const clientIds = await Client.find({applicationId: this.application._id, platform: this.platform._id}).lean().distinct('_id')
+    console.log(clientIds);
+    params.clientId = {$in: clientIds}
+  } else if(this.application){
+    const applicationClientIds = await Client.find({applicationId: this.application._id}).lean().distinct('_id')
+    params.clientId = {$in: applicationClientIds}
+  } else if(this.platform){
+    const platformClientIds = await Client.find({platform: this.platform._id}).lean().distinct('_id')
+    params.clientId = {$in: applicationClientIds}
   }
-  if(this.platform){
-    logsWithClients = logsWithClients.filter(e => String(e.client.platform) === String(this.platform._id))
-  }
-
-
+  console.log("PARAMS", params);
+  // Find all usage logs in that date range for the platform and applicationId specified
+  var logs = await UsageLog.find(params)
+  console.log("GOAL LOGS", logs);
   // Sum the durations of the usage logs
-  const totalDuration = logsWithClients.reduce((acc, e) => e.log.duration + acc, 0)
+  const totalDuration = logs.reduce((acc, e) => e.duration + acc, 0)
   // Calculate percentage progress
   return (totalDuration/this.duration);
 }

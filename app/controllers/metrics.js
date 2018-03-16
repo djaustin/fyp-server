@@ -109,22 +109,27 @@ exports.getPlatformMetricsById = async function(req, res, next){
 
 async function getPlatformMetricsById(req){
   const params = generateParamsObject(req)
-  const logs = await UsageLog.find(params)
+  let logs = await UsageLog.find(params)
+    .populate({
+      path: 'clientId',
+      select: {platform: 1},
+      populate: [{path: 'platform'}, {path: 'applicationId'}]
+    })
+  logs = logs.filter(e => String(e.clientId.platform._id) === String(req.params.platformId))
   const results = []
   for (log of logs){
-    const logClient = await log.client
-    if (String(logClient.platform) !== req.params.platformId){
-      continue;
-    }
-    const applicationId = logClient.applicationId;
-
-    const logApplication = (await Application.findOne({_id: applicationId}));
+    // const logClient = await log.client
+    // if (String(logClient.platform) !== req.params.platformId){
+    //   continue;
+    // }
+    console.log(log);
+    console.log("APPLCIAITON", log.clientId.applicationId);
     const resultApplication = results.find(e => {
-      return String(e.application._id) === String(logApplication._id)
+      return String(e.application._id) === String(log.clientId.applicationId._id)
     })
     if(!resultApplication) {
       results.push({
-        application: logApplication,
+        application: log.clientId.applicationId,
         duration: log.duration
       })
     } else {

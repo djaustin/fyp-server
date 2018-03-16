@@ -30,6 +30,7 @@ const ClientSchema = new mongoose.Schema({
   // This helps speed up querying the application from a clientId which will be retrieved from a log.
   applicationId: {
     type: mongoose.Schema.ObjectId,
+    ref: 'Application',
     required: true
   },
   redirectUri: {
