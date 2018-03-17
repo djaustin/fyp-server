@@ -22,5 +22,16 @@ const ApplicationSchema = new mongoose.Schema({
   }
 }, {usePushEach: true});
 
+ApplicationSchema.pre('remove', async function(next){
+    try{
+      // Remove all clients
+      const clients = await mongoose.model('Client').find({_id: {$in: this.clientIds }})
+      await Promise.all(clients.map(e => e.remove()))
+      next()
+    } catch(err){
+      next(err)
+    }
+  })
+
 // Export the model created by this schema for use in other files
 module.exports = mongoose.model('Application', ApplicationSchema);

@@ -85,7 +85,8 @@ exports.getOrganisationApplication = async function(req, res, next){
  */
 exports.deleteOrganisationApplication = async function(req, res, next){
   try{
-    await Application.remove({_id: req.params.applicationId})
+    const app = await Application.findOne({_id: req.params.applicationId})
+    await app.remove()
     res.jsend.success(null);
   } catch(err){
     next(err);

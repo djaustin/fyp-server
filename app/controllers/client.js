@@ -90,7 +90,8 @@ exports.getApplicationClient = async function(req, res, next){
  //TODO: Consider desired behaviour if this is deleted. Should usage logs also go? Maybe just flag as deleted so it still exists in the system for posterity
 exports.deleteApplicationClient = async function(req, res, next){
   try{
-    await Client.remove({_id: req.params.clientId});
+    const client = await Client.findOne({_id: req.params.clientId});
+    await client.remove()
     res.jsend.success(null);
   } catch(err){
     next(err);

@@ -4,7 +4,9 @@
  *  A client can be something like the Facebook web application or the Facebook mobile application.
  *  A client will access the API using OAuth2 bearer tokens and must therefore be authorized by a user.
  */
-
+const AuthCode = require('app/models/code');
+const AccessToken = require('app/models/accessToken');
+const RefreshToken = require('app/models/refreshToken');
 const mongoose = require('mongoose');
 // cryptographic hashing library
 const bcrypt = require('bcrypt');
@@ -52,7 +54,29 @@ const ClientSchema = new mongoose.Schema({
  * If the client secret has changed and the document is being saved, make sure the secret is hashed
  */
 // ClientSchema.pre('save', crypto.hashSecret('secret'));
-
+ClientSchema.pre('remove', async function(next){
+    try{
+      // Remove all auth codes
+      const authCodes = await AuthCode.find({clientId: this._id});
+      console.log("CODES", authCodes);
+      await Promise.all(authCodes.map(e => e.remove()))
+      // Remove all access tokens
+      const accessTokens = await AccessToken.find({clientId: this._id});
+      console.log("ATOKENS", accessTokens);
+      await Promise.all(accessTokens.map(e => e.remove()))
+      // Remove all refesh tokens
+      const refreshTokens = await RefreshToken.find({clientId: this._id});
+      console.log("RTOKENS", refreshTokens);
+      await Promise.all(refreshTokens.map(e => e.remove()))
+      // Remove all usage logs
+      const logs = await mongoose.model('UsageLog').find({clientId: this._id});
+      console.log("LOGS", logs);
+      await Promise.all(logs.map(e => e.remove()))
+      next()
+    } catch(err){
+      next(err)
+    }
+  })
 /**
  * Verify a plaintext secret by hashing and comparing it to the stored hash
  * @param secret {String} The plaintext secret to verify

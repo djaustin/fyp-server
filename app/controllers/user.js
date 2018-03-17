@@ -58,7 +58,7 @@ exports.getUser = async function(req, res, next){
  */
 exports.deleteUser = async function(req, res, next){
   try{
-    await User.remove({_id: req.params.userId});
+    await req.user.remove();
     res.jsend.success(null);
   } catch(err){
     next(err);
@@ -73,11 +73,11 @@ exports.deleteUser = async function(req, res, next){
  */
 exports.editUser = async function(req, res, next){
   try{
-    const detailsToUpdate = {}
-    if(req.body.email) detailsToUpdate.email = req.body.email;
-    if(req.body.firstName) detailsToUpdate.firstName = req.body.firstName;
-    if(req.body.lastName) detailsToUpdate.lastName = req.body.lastName;
-    await User.update({_id: req.params.userId}, {$set: detailsToUpdate});
+    if(req.body.email) req.user.email = req.body.email;
+    if(req.body.firstName) req.user.firstName = req.body.firstName;
+    if(req.body.lastName) req.user.lastName = req.body.lastName;
+    if(req.body.password) req.user.password = req.body.password;
+    await req.user.save()
     res.jsend.success(null);
   } catch(err){
     next(err);

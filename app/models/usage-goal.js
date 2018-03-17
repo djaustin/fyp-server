@@ -41,10 +41,7 @@ UsageGoalSchema.methods.getProgress = async function(userId){
     'log.endTime': { $lte: endTime},
   }
   if(this.application && this.platform){
-    console.log("THIS.APPLICATION", this.application);
-    console.log("THIS.PLATFORM", this.platform);
     const clientIds = await Client.find({applicationId: this.application._id, platform: this.platform._id}).lean().distinct('_id')
-    console.log(clientIds);
     params.clientId = {$in: clientIds}
   } else if(this.application){
     const applicationClientIds = await Client.find({applicationId: this.application._id}).lean().distinct('_id')
@@ -53,10 +50,8 @@ UsageGoalSchema.methods.getProgress = async function(userId){
     const platformClientIds = await Client.find({platform: this.platform._id}).lean().distinct('_id')
     params.clientId = {$in: applicationClientIds}
   }
-  console.log("PARAMS", params);
   // Find all usage logs in that date range for the platform and applicationId specified
   var logs = await UsageLog.find(params)
-  console.log("GOAL LOGS", logs);
   // Sum the durations of the usage logs
   const totalDuration = logs.reduce((acc, e) => e.duration + acc, 0)
   // Calculate percentage progress
