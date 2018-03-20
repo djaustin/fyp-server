@@ -23,7 +23,8 @@ exports.newUsageLog = async function(req, res, next){
 
   const platform = await Platform.findOne({_id: req.client.platform});
   const application = await Application.findOne({_id: req.client.applicationId});
-
+  console.log("Platform", platform);
+  console.log("Application", application);
   let query = {
     user: req.user._id,
     platform: platform._id,
@@ -44,6 +45,7 @@ exports.newUsageLog = async function(req, res, next){
     ]
   }
   const breachedExceptions = await MonitoringException.find(query);
+  console.log("breachedExceptions", breachedExceptions);
   if(breachedExceptions.length > 0){
     return res.jsend.success(null)
   }

@@ -21,7 +21,8 @@ const UsageGoalSchema = new mongoose.Schema({
   duration: {
     type: Number,
     required: true
-  }
+  },
+  lastNotified: Date
 })
 
 UsageGoalSchema.methods.getProgress = async function(userId){
@@ -30,30 +31,40 @@ UsageGoalSchema.methods.getProgress = async function(userId){
   }
   // Get duration
   const duration = this.duration;
+  console.log("duration", duration);
   // Get the period information for this goal
   const period = await Period.findOne({_id: this.period})
+  console.log("period", period);
   // Convert period into date range
   const endTime = moment().endOf(period.key).toDate()
   const startTime = moment().startOf(period.key).toDate();
-  const params = {
+  console.log("startTime", startTime);
+  console.log("endTime", endTime);
+  // Find all usage logs in that date range for the platform and applicationId specified
+  var logs = await UsageLog.find({
     userId: userId,
     'log.startTime': { $gte : startTime},
     'log.endTime': { $lte: endTime},
+  })
+
+  let logsWithClients = []
+
+  for (log of logs) {
+    let client =  await log.client
+    logsWithClients.push({log: log, client: client})
   }
-  if(this.application && this.platform){
-    const clientIds = await Client.find({applicationId: this.application._id, platform: this.platform._id}).lean().distinct('_id')
-    params.clientId = {$in: clientIds}
-  } else if(this.application){
-    const applicationClientIds = await Client.find({applicationId: this.application._id}).lean().distinct('_id')
-    params.clientId = {$in: applicationClientIds}
-  } else if(this.platform){
-    const platformClientIds = await Client.find({platform: this.platform._id}).lean().distinct('_id')
-    params.clientId = {$in: applicationClientIds}
+
+  if(this.application){
+    // applicationId has been populated so that it is the entire application object and not just the ID
+    logsWithClients = logsWithClients.filter(e => String(e.client.applicationId) === String(this.application._id))
   }
-  // Find all usage logs in that date range for the platform and applicationId specified
-  var logs = await UsageLog.find(params)
+  if(this.platform){
+    logsWithClients = logsWithClients.filter(e => String(e.client.platform) === String(this.platform._id))
+  }
+
+
   // Sum the durations of the usage logs
-  const totalDuration = logs.reduce((acc, e) => e.duration + acc, 0)
+  const totalDuration = logsWithClients.reduce((acc, e) => e.log.duration + acc, 0)
   // Calculate percentage progress
   return (totalDuration/this.duration);
 }

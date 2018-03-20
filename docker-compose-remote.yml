@@ -5,7 +5,7 @@ services:
     image: nginx:latest
     restart: always
     deploy:
-      replicas: 5
+      replicas: 1
       placement:
         constraints:
           - node.labels.proxy == true
@@ -32,7 +32,7 @@ services:
     build: .
     image: daustin/monitor-api
     deploy:
-      replicas: 5
+      replicas: 1
       placement:
         constraints:
           - node.labels.web == true
