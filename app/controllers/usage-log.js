@@ -26,21 +26,35 @@ exports.newUsageLog = async function(req, res, next){
   console.log("Platform", platform);
   console.log("Application", application);
   let query = {
-    user: req.user._id,
-    platform: platform._id,
-    application: application._id,
-    $or: [
+    $and: [
+      {user: req.user._id},
       {
-          startTime: { $lte: startTime },
-          endTime: { $gte: endTime }
+        $or: [
+         {platform: platform._id},
+         {platform: {$exists: false}}
+        ]
       },
       {
-        startTime: { $lte: startTime },
-        endTime: { $gte: startTime }
+        $or: [
+         {application: application._id},
+         {application: {$exists: false}}
+        ]
       },
       {
-        startTime: { $lte: endTime },
-        endTime: { $gte: endTime }
+        $or: [
+          {
+              startTime: { $lte: startTime },
+              endTime: { $gte: endTime }
+          },
+          {
+            startTime: { $lte: startTime },
+            endTime: { $gte: startTime }
+          },
+          {
+            startTime: { $lte: endTime },
+            endTime: { $gte: endTime }
+          }
+        ]
       }
     ]
   }
