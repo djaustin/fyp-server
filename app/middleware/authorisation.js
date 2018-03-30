@@ -23,9 +23,14 @@ exports.authenticatedUserOwnsResource = function(paramIdName){
   }
 };
 
+/**
+ * Checks whether the currently authenticated organisation owns the application that is being accessed
+ * If they are the same, the next middleware is called.
+ * If they are not the same, a 403 error witha message is returned in the response
+ * @param req {Object} Request object containing the authenticated organisation object in req.object
+ */
 exports.organisationOwnsApplication = function(req, res, next){
   const organisation = req.organisation;
-
   // ObjectIDs are not stored as strings in the document. We must call the equals function on each application
   if(!organisation.applicationIds.some((applicationId) => applicationId.equals(req.params.applicationId))){
     const error = new Error('Authenticated user is not authorized for that operation.');

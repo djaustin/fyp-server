@@ -4,8 +4,13 @@
  */
 const mongoose = require('mongoose');
 
+/**
+ * Create the schema.
+ * Value is the actual refresh token value
+ * userId is the ID of the user for which the token provides authorisation
+ * clientId is the ID of the client that owns the refresh token
+ */
 const RefreshTokenSchema = new mongoose.Schema({
-  // TODO: Consider hashing this
   value: {
     type: String,
     required: true

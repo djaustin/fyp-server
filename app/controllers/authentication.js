@@ -1,3 +1,7 @@
+/**
+ * Controller to manage the authentication strategies used by the API
+ */
+
 const passport = require('passport');
 const BasicStrategy = require('passport-http').BasicStrategy;
 const BearerStrategy = require('passport-http-bearer').Strategy;
@@ -9,6 +13,9 @@ const Organisation = require('app/models/organisation');
 const Client = require('app/models/client');
 const Token = require('app/models/accessToken');
 
+/**
+ * Generate an authentication strategy that authenticates organisations by checking the provided email and password against the database documents
+ */
 passport.use('organisation-basic', new BasicStrategy({passReqToCallback: true},
   async function(req, email, password, callback){
     try{
@@ -30,7 +37,7 @@ passport.use('organisation-basic', new BasicStrategy({passReqToCallback: true},
 ));
 
 /**
- * Generate an authentications strategy that authenticates a client by checking the provided client id and client secret against the database documents
+ * Generate an authentication strategy that authenticates a client by checking the provided client id and client secret against the database documents
  */
 passport.use('client-basic', new BasicStrategy(
   async function(id, secret, callback){
@@ -54,7 +61,9 @@ passport.use('client-basic', new BasicStrategy(
   }
 ));
 
-// Allow authentication of requests made by applications on behalf of users
+/**
+ * Generate an authentication strategy that authenticates a user by checking the access token provided
+ */
 passport.use('user-bearer', new BearerStrategy({passReqToCallback: true},
   async function(req, accessToken, callback){
     try{
@@ -74,7 +83,6 @@ passport.use('user-bearer', new BearerStrategy({passReqToCallback: true},
 
       // Add authenticated client to the request object
       req.client = client;
-      // Allow all scopes. TODO: Is this actually going to be used
       return callback(null, user, {scope: '*'});
 
     } catch(err){
@@ -84,7 +92,9 @@ passport.use('user-bearer', new BearerStrategy({passReqToCallback: true},
   }
 ));
 
-
+/**
+ * Generate an authentication strategy that authenticates an organisation by checking the access token provided
+ */
 passport.use('organisation-bearer', new BearerStrategy({passReqToCallback: true},
   async function(req, accessToken, callback){
     try{
@@ -111,7 +121,10 @@ passport.use('organisation-bearer', new BearerStrategy({passReqToCallback: true}
   }
 ));
 
-// Allow authentication of requests made by client with no user authorization (eg. register a new user or organisation);
+
+/**
+ * Generate an authentication strategy that authenticates a client by checking the access token provided. Allows authentication of requests made by client with no user authorization (eg. register a new user or organisation)
+ */
 passport.use('client-bearer', new BearerStrategy({passReqToCallback: true},
   async function(req, accessToken, callback){
     try{
@@ -128,7 +141,6 @@ passport.use('client-bearer', new BearerStrategy({passReqToCallback: true},
 
       // Add authenticated client to the request object
       req.client = client;
-      // Allow all scopes. TODO: Is this actually going to be used
       return callback(null, client, {scope: '*'});
 
     } catch(err){
@@ -138,6 +150,9 @@ passport.use('client-bearer', new BearerStrategy({passReqToCallback: true},
   }
 ));
 
+/**
+ * Generate an authentication strategy that authenticates a user using the username and password provided from HTML form. Used for persistent session on OAauth 2 authorisation code flow.
+ */
 passport.use(new LocalStrategy(async function(email, password, callback){
   try{
     const user = await User.findOne({email: email});
@@ -154,7 +169,7 @@ passport.use(new LocalStrategy(async function(email, password, callback){
 }));
 
 
-// Export authentication for easier use when module is imported
+// Export authentication middleware for easier use when module is imported
 exports.isUserAuthenticated = passport.authenticate('user-bearer', {session: false, failWithError: true});
 exports.isOrganisationAuthenticated = passport.authenticate(['organisation-bearer', 'organisation-basic'], {session: false, failWithError: true});
 exports.isClientSecretAuthenticated = passport.authenticate('client-basic', {session: false, failWithError: true});

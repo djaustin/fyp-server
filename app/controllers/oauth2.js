@@ -17,8 +17,6 @@ const server = oauth2orize.createServer();
 // TTL of the access tokens provided by this server in seconds
 const accessTokenLifetime = config.accessTokenLifetime;
 
-// TODO: Add expiry times to access tokens and change response on current exchanges
-
 /**
  * Generates an access token and refresh token
  * @param clientId {String} ID of client owning the tokens
@@ -115,7 +113,7 @@ server.exchange(oauth2orize.exchange.password(async function(client, email, pass
   try{
     // Try to find user with given email
     const user = await User.findOne({email: email});
-    // If no user matches, reject exchange
+    // If no user matches, check if organisation exists
     if(!user) {
       const organisation = await Organisation.findOne({email: email});
       if (!organisation){
@@ -157,7 +155,7 @@ server.exchange(oauth2orize.exchange.clientCredentials(async function(client, ca
   }
 }));
 
-// TODO: Check these values for null
+// Add 'Authorisation Code' exchange type to allow exchange of access token for a client's authorisation code.
 server.exchange(oauth2orize.exchange.code(async function(client, code, redirectUri, callback){
   try{
     // Attempt to find authorization code with provided value in the database
@@ -186,8 +184,10 @@ server.exchange(oauth2orize.exchange.code(async function(client, code, redirectU
   }
 }));
 
+// Allow valid refresh tokens to be exchanged for a new access token
 server.exchange(oauth2orize.exchange.refreshToken(async function(client, refreshAccessToken, callback){
   try{
+    // Search for the refresh token
     const refreshToken = await RefreshToken.findOne({value: refreshAccessToken, clientId: client._id});
     if(!refreshToken) return callback(refreshToken);
     const tokens = await generateTokens(refreshToken.clientId, refreshToken.userId, false);

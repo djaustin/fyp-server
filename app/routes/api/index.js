@@ -23,7 +23,6 @@ router.use('/device-tokens', deviceTokensRouter);
 router.use('/periods', periodsRouter);
 router.use('/platforms', platformsRouter);
 
-// NOTE: Just here for testing. Could almost definitely have something more useful
 router.get('/', function(req, res){
   res.json({message: 'Welcome to DigitalMonitor API'})
 });

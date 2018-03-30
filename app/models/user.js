@@ -13,7 +13,15 @@ const MonitoringException = require('app/models/monitoring-exception');
 const crypto = require('app/utils/crypto');
 const UsageGoalSchema = require('app/models/usage-goal').schema;
 
-// Define the schema for a user document
+/**
+ * Create the schema.
+ * email is the user's email used as a unique username
+ * password is the password used to authenticate the user
+ * firstName is the user's first name
+ * lastName is the user's last name
+ * uageGoals is an array of subdocuments containing all the user's usage goals
+ * usePushEach is required due to deprecated feature in mongodb being used by mongoose
+ */
 const UserSchema = new mongoose.Schema({
   email: {
     type: String,
@@ -29,7 +37,9 @@ const UserSchema = new mongoose.Schema({
   usageGoals: [UsageGoalSchema]
 }, {usePushEach: true});
 
-
+/**
+ * Function run before removing a user document. This cascades on delete, removing all auth codes, access tokens, refresh tokens, monitoring exceptions, and usage logs
+ */
 UserSchema.pre('remove', async function(next){
     try{
       // Remove all auth codes

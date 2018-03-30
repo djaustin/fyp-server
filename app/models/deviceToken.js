@@ -4,6 +4,11 @@
  */
 const mongoose = require('mongoose');
 
+/**
+ * Create the schema.
+ * Value is the actual iOS device token
+ * user is the ID of the user currently logged in on the device
+ */
 const DeviceTokenSchema = new mongoose.Schema({
   value: {
     type: String,

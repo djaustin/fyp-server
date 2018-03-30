@@ -4,6 +4,12 @@
  */
 const mongoose = require('mongoose');
 
+/**
+ * Create the schema.
+ * name is the name of the period eg. 'Weekly'
+ * key is the API friendly name of the period
+ * duration is the duration of the period in seconds
+ */
 const PeriodSchema = new mongoose.Schema({
   name: {
     type: String,

@@ -4,8 +4,14 @@
  */
 const mongoose = require('mongoose');
 
+/**
+ * Create the schema.
+ * Value is the actual access token that will be used for authentication
+ * userId relates to the user to whose account this provides authorisation. This can be null if the access token does not provide any user access.
+ * clientId relates to the client for which this access token provides access.
+ * expiresAt is used in conjunction with a collection index in mongodb to automatically delete the access tokens when the expiry time is passed
+ */
 const AccessTokenSchema = new mongoose.Schema({
-  // TODO: Consider hashing this
   value: {
     type: String,
     required: true

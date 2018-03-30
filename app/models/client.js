@@ -4,6 +4,7 @@
  *  A client can be something like the Facebook web application or the Facebook mobile application.
  *  A client will access the API using OAuth2 bearer tokens and must therefore be authorized by a user.
  */
+
 const AuthCode = require('app/models/code');
 const AccessToken = require('app/models/accessToken');
 const RefreshToken = require('app/models/refreshToken');
@@ -14,6 +15,17 @@ const bcrypt = require('bcrypt');
 const logger = require('app/utils/logger');
 const crypto = require('app/utils/crypto');
 
+/**
+ * Create the schema.
+ * Name is the name of the client eg. Facebook iOS
+ * id is the OAuth 2 client ID used to authenticate the client
+ * secret is the OAuth2 client secret used to authenticate the client
+ * applicationId refers to the application that owns the client
+ * redirectUri is the uri used in the OAuth 2 exchanges
+ * isThirdParty is used to distinguish between Digital Monitor clients and clients that will be sending usage logs
+ * platform is a reference to the platform the client is used on eg. iOS, Android, Browser
+ * usePushEach is required due to deprecated feature in mongodb being used by mongoose
+ */
 const ClientSchema = new mongoose.Schema({
   name: {
     type:  String,
@@ -51,26 +63,21 @@ const ClientSchema = new mongoose.Schema({
 });
 
 /**
- * If the client secret has changed and the document is being saved, make sure the secret is hashed
+ * Function run before removing a client document. This cascades on delete, removing all auth codes, access tokens, refresh tokens, and usage logs
  */
-// ClientSchema.pre('save', crypto.hashSecret('secret'));
 ClientSchema.pre('remove', async function(next){
     try{
       // Remove all auth codes
       const authCodes = await AuthCode.find({clientId: this._id});
-      console.log("CODES", authCodes);
       await Promise.all(authCodes.map(e => e.remove()))
       // Remove all access tokens
       const accessTokens = await AccessToken.find({clientId: this._id});
-      console.log("ATOKENS", accessTokens);
       await Promise.all(accessTokens.map(e => e.remove()))
       // Remove all refesh tokens
       const refreshTokens = await RefreshToken.find({clientId: this._id});
-      console.log("RTOKENS", refreshTokens);
       await Promise.all(refreshTokens.map(e => e.remove()))
       // Remove all usage logs
       const logs = await mongoose.model('UsageLog').find({clientId: this._id});
-      console.log("LOGS", logs);
       await Promise.all(logs.map(e => e.remove()))
       next()
     } catch(err){
@@ -78,10 +85,9 @@ ClientSchema.pre('remove', async function(next){
     }
   })
 /**
- * Verify a plaintext secret by hashing and comparing it to the stored hash
+ * Verify a secret by comparing it to the stored secret
  * @param secret {String} The plaintext secret to verify
  */
-// ClientSchema.methods.verifySecret = crypto.verifySecret('secret');
 ClientSchema.methods.verifySecret = function(secret){
   return String(secret) === String(this.secret)
 }

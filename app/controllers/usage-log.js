@@ -1,3 +1,7 @@
+/**
+ * Controller to manage the handling of requests to the endpoints for the usage log resource
+ */
+
 const logger = require('app/utils/logger');
 const UsageLog = require('app/models/usage-log');
 const DeviceToken = require('app/models/deviceToken');
@@ -25,6 +29,7 @@ exports.newUsageLog = async function(req, res, next){
   const application = await Application.findOne({_id: req.client.applicationId});
   console.log("Platform", platform);
   console.log("Application", application);
+  // Build a query to check for any monitoring exceptions before saving the usage log
   let query = {
     $and: [
       {user: req.user._id},
@@ -63,9 +68,6 @@ exports.newUsageLog = async function(req, res, next){
   if(breachedExceptions.length > 0){
     return res.jsend.success(null)
   }
-
-
-  //TODO: Find a way to allow user to report usage without a client application
   const log = new UsageLog({
     userId: req.user._id,
     clientId: req.client._id, // client was added to the req object in the BearerStrategy. It only exists if a client made this requets with an access token
@@ -147,6 +149,7 @@ exports.newUsageLogCollection = async function(req, res, next){
         endTime: new Date(Number(log.endTime))
       }
     });
+    // Ensure that all logs sent in the body can be saved before attempting to save any of them
     error = usageLog.validateSync()
     if(error){
       error.status = 400
@@ -156,6 +159,7 @@ exports.newUsageLogCollection = async function(req, res, next){
     }
   }
   try{
+    // Save all logs
     await Promise.all(usageLogs.map(e => e.save()));
     res.status(201);
     addUserIdToNotificationQueue(req.user._id);
@@ -168,7 +172,10 @@ exports.newUsageLogCollection = async function(req, res, next){
   }
 }
 
-
+/**
+ * Add a user to the notification queue to allow the notification service to check and send notifications
+ * @param id {String} User ID of user for which to process notifications
+ */
 function addUserIdToNotificationQueue(id){
   logger.debug("Adding userId " + id + " to message queue");
   rsmq.sendMessage({qname: "userIds", message: String(id)}, function (err, resp) {

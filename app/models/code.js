@@ -7,8 +7,14 @@
 const mongoose = require('mongoose');
 const crypto = require('app/utils/crypto');
 
+/**
+ * Create the schema.
+ * Value is the actual authorisation code value
+ * redirectUri is the uri used during OAuth 2
+ * userId is the user that provided the authorisation
+ * clientId is the client that received the authorisation code
+ */
 const CodeSchema = new mongoose.Schema({
-  // NOTE: Consider hashing this
   value: {
     type: String,
     required: true

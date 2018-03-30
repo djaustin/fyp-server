@@ -1,4 +1,7 @@
-// User model for database interface
+/**
+ * Controller to manage the handling of requests to the endpoints for the monitoring exceptions resource
+ */
+
 const User = require('app/models/user');
 const logger = require('app/utils/logger');
 

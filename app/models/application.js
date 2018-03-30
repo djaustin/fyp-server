@@ -22,6 +22,10 @@ const ApplicationSchema = new mongoose.Schema({
   }
 }, {usePushEach: true});
 
+/*
+ * Function run before calling '.remove' on an application document.
+ * This finds all clients and deletes them, cascading on delete. 
+ */
 ApplicationSchema.pre('remove', async function(next){
     try{
       // Remove all clients

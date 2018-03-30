@@ -1,14 +1,30 @@
+/**
+ * Controller to manage the handling of requests to the endpoints for the usage goal resource
+ */
+
 const UsageGoal = require('app/models/usage-goal').model;
 const Period = require('app/models/period');
 const Application = require('app/models/application');
 const Platform = require('app/models/platform');
 const logger = require('app/utils/logger');
 
+/**
+ * Get a collection of all usage goals for a user.
+ * @param req {Object} Request object containing the authenticated user in req.user
+ * @param res {Object} Response object with which to send client feedback
+ * @param next {Function} Next piece of middleware to be run after this one. Used to forward errors to error handler
+ */
 exports.getUserUsageGoals = function(req, res, next){
   const goals = req.user.usageGoals;
   res.jsend.success({usageGoals: goals})
 }
 
+/**
+ * Add a new usage goal for a user
+ * @param req {Object} Request object containing the authenticated user in req.user and the usage goal details in req.body
+ * @param res {Object} Response object with which to send client feedback
+ * @param next {Function} Next piece of middleware to be run after this one. Used to forward errors to error handler
+ */
 exports.postUserUsageGoal = async function(req, res, next){
   try {
     let platform, application;
@@ -42,6 +58,7 @@ exports.postUserUsageGoal = async function(req, res, next){
       duration: req.body.duration
     })
     const goalObj = goal.toObject();
+    // Add platform, period, application documents as subdocuments so they can be returned in the response
     goalObj.platform = platform;
     goalObj.application = application;
     goalObj.period = period;
@@ -59,6 +76,12 @@ exports.postUserUsageGoal = async function(req, res, next){
   }
 }
 
+/**
+ * Get a the progress of all user usage goals
+ * @param req {Object} Request object containing the authenticated user in req.user
+ * @param res {Object} Response object with which to send client feedback
+ * @param next {Function} Next piece of middleware to be run after this one. Used to forward errors to error handler
+ */
 exports.getUserGoalProgress = async function(req, res, next){
   try{
     const user = req.user
@@ -76,6 +99,12 @@ exports.getUserGoalProgress = async function(req, res, next){
   }
 }
 
+/**
+ * Edit a usage goal for a user
+ * @param req {Object} Request object containing the authenticated user in req.user and the usage goal details in req.body
+ * @param res {Object} Response object with which to send client feedback
+ * @param next {Function} Next piece of middleware to be run after this one. Used to forward errors to error handler
+ */
 exports.putUserUsageGoal = async function(req, res, next){
   try{
     if(req.body.platformId){
@@ -118,6 +147,12 @@ exports.putUserUsageGoal = async function(req, res, next){
   }
 }
 
+/**
+ * Get a user's usage goal by ID
+ * @param req {Object} Request object containing the authenticated user in req.user and the goal id in req.params.goalId
+ * @param res {Object} Response object with which to send client feedback
+ * @param next {Function} Next piece of middleware to be run after this one. Used to forward errors to error handler
+ */
 exports.getUserUsageGoalById = async function(req, res, next){
   const goal = req.user.usageGoals.find(e => String(e._id) === String(req.params.goalId));
   if(!goal){
@@ -129,6 +164,12 @@ exports.getUserUsageGoalById = async function(req, res, next){
   }
 }
 
+/**
+ * Delete a user's usage goal by ID
+ * @param req {Object} Request object containing the authenticated user in req.user and the goal id in req.params.goalId
+ * @param res {Object} Response object with which to send client feedback
+ * @param next {Function} Next piece of middleware to be run after this one. Used to forward errors to error handler
+ */
 exports.deleteUserUsageGoal = async function(req, res, next){
   try{
     const user = req.user;

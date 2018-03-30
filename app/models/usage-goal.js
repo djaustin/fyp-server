@@ -1,9 +1,22 @@
+/**
+ * This module is responsible for enforcing a document schema in the nodejs code through mongoose.
+ * A usage goal allows user to set specific goals of usage across one or all platforms and one or all applications. The user can receive notifications when they approach the goal
+ */
 const mongoose = require('mongoose');
 const UsageLog = require('app/models/usage-log');
 const Client = require('app/models/client');
 const Period = require('app/models/period');
 const logger = require('app/utils/logger');
 const moment = require('moment');
+
+/**
+ * Create the schema.
+ * application is the ID of the application on the goal. If null, the goal applies to all applications
+ * platform is the ID of the platform on the goal. If null, the goal applies to all platforms
+ * period is the ID of the period over which goal progress is assessed eg. Daily
+ * duration is the duration of the goal in seconds
+ * lastNotified is the date that a notification was last sent for this usage goal. Used to prevent sending multiple rapid notifications for one goal
+ */
 const UsageGoalSchema = new mongoose.Schema({
   application: {
     type: mongoose.Schema.ObjectId,
@@ -25,6 +38,9 @@ const UsageGoalSchema = new mongoose.Schema({
   lastNotified: Date
 })
 
+/**
+ * Gets the goal progress for a user's usage goals by the user ID 
+ */
 UsageGoalSchema.methods.getProgress = async function(userId){
   if(!userId){
     throw new Error("Cannot get progress without userId")

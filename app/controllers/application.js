@@ -10,10 +10,10 @@ const Client = require('app/models/client');
 const logger = require('app/utils/logger');
 
 /**
-  Add a new application to the database under the given authenticated and authorized organisation
-  @param req {Object} request object containing the authenticated organisation in req.user
-  @param res {Object} respnse object with which to send client feedback
-  @param next {Object} next piece of middleware to be run after this one. Used to forward errors to error
+ * Add a new application to the database under the given authenticated and authorized organisation
+ * @param req {Object} request object containing the authenticated organisation in req.user
+ * @param res {Object} respnse object with which to send client feedback
+ * @param next {Function} next piece of middleware to be run after this one. Used to forward errors to error handler
  */
 exports.postApplication = async function(req, res, next){
   const organisation = req.organisation;
@@ -49,7 +49,7 @@ exports.postApplication = async function(req, res, next){
  * Get all applications for a given organisation.
  * @param req {Object} request object containing the organisation object in req.user
  * @param res {Object} response object with which to send client feedback.
- * @param next {Object} next piece of middleware to be run after this one. Used to forward errors to error
+ * @param next {Function} next piece of middleware to be run after this one. Used to forward errors to error handler
  */
 exports.getOrganisationApplications = async function(req, res, next){
   const organisation = req.organisation;
@@ -66,7 +66,7 @@ exports.getOrganisationApplications = async function(req, res, next){
  * Retrieve a single application belonging to the authenticated organisation by ID.
  * @param req {Object} request object containing the applicationId in req.params
  * @param res {Object} response object with which to send client feedback
- * @param next {Object} next piece of middleware to be run after this one. Used to forward errors to error
+ * @param next {Function} next piece of middleware to be run after this one. Used to forward errors to error handler
  */
 exports.getOrganisationApplication = async function(req, res, next){
   try{
@@ -79,9 +79,9 @@ exports.getOrganisationApplication = async function(req, res, next){
 
 /**
  * Delete an organisation application by id.
- * @param req Request parameter containing the applicationId in req.parameters
- * @param res Response parameter with which to send result to client
- * @param next {Object} next piece of middleware to be run after this one. Used to forward errors to error
+ * @param req {Object} Request parameter containing the applicationId in req.parameters
+ * @param res {Object} Response parameter with which to send result to client
+ * @param next {Function} next piece of middleware to be run after this one. Used to forward errors to error handler
  */
 exports.deleteOrganisationApplication = async function(req, res, next){
   try{
@@ -97,7 +97,7 @@ exports.deleteOrganisationApplication = async function(req, res, next){
  * Edit an organisation application by id
  * @param req {Object} request object containing the applicationId of the application to be altered in req.params.applicationId and the data to change in req.body
  * @param res {Object} response object with which to send results to client
- * @param next {Object} next piece of middleware to be run after this one. Used to forward errors to error
+ * @param next {Function} next piece of middleware to be run after this one. Used to forward errors to error handler
  */
  exports.editOrganisationApplication = async function(req, res, next){
    const detailsToUpdate = {}
@@ -110,7 +110,12 @@ exports.deleteOrganisationApplication = async function(req, res, next){
    }
  }
 
-
+ /**
+  * Get an organisation application by id
+  * @param req {Object} request object containing the applicationId of the application to be retrieved in req.params.applicationId
+  * @param res {Object} response object with which to send results to client
+  * @param next {Function} next piece of middleware to be run after this one. Used to forward errors to error handler
+  */
 exports.getApplicationById = async function(req, res, next) {
   try {
     const id = req.params.applicationId
@@ -124,7 +129,12 @@ exports.getApplicationById = async function(req, res, next) {
   }
 }
 
-
+/**
+ * Get applications that have clients authorised by the authorised user
+ * @param req {Object} request object containing the authorised user object in req.user
+ * @param res {Object} response object with which to send results to client
+ * @param next {Function} next piece of middleware to be run after this one. Used to forward errors to error handler
+ */
 exports.getUserAuthorisedApplications = async function(req, res, next){
   try {
     // Refresh tokens mean the client has access to this user

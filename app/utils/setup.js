@@ -4,6 +4,7 @@ const Platform = require('app/models/platform');
 const Client = require('app/models/client');
 const logger = require('app/utils/logger')
 
+// Ensure the digital monitor iOS client is added automaticall on container start
 exports.addIOSClient = async () => {
   const org = new Organisation({
     email: 'admin@digitalmonitor.tk',
