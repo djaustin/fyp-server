@@ -148,7 +148,6 @@ exports.getOverallMetrics = async function(req, res, next){
  * Get overall metrics. This shows how long the user has spent across all platforms and all applications as a single value in seconds
  * @param req {Object} Request object containing the authenticated user as well as from and to dates if provided
  */
-export
 async function getOverallMetrics(req){
     const params = generateParamsObject(req)
     // Get the sum of usage logs matching the query for this user

@@ -158,7 +158,10 @@ if (app.get('env') === 'development') {
   });
 }
 
-require('app/utils/setup').addIOSClient();
+require('./admin/generatePeriodsAndPlatforms')().then(() => {
+  console.log("Periods and Platforms generated")
+  require('app/utils/setup').addIOSClient();
+})
 // require('./admin/generateUsageLogs')().then(() => console.log("GENERATION FINISHED"))
 app.listen(80);
 logger.info('Listening on port 80');
